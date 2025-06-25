@@ -107,7 +107,7 @@ export default function RealisticTShirtMockup({
       img.src = 'http://localhost:3002/mockups/tshirt_mockup.jpeg';
     } else {
       console.log('🔄 Using SVG fallback');
-      img.src = '/mockups/tshirt-realistic.svg';
+      img.src = '/mockups/tshirt-front-white.svg';
     }
   };
 
