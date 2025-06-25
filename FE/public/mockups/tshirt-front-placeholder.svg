@@ -1,0 +1,33 @@
+<svg width="400" height="480" viewBox="0 0 400 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="480" fill="white"/>
+  
+  <!-- T-shirt Shape -->
+  <path d="M85 35H315L335 55H355L365 65H375V75H365V445H35V75H25V65H35L45 55H65L85 35Z" 
+        fill="white" 
+        stroke="#E5E7EB" 
+        stroke-width="2"
+        filter="drop-shadow(0 10px 25px rgba(0,0,0,0.15))"/>
+  
+  <!-- Collar -->
+  <ellipse cx="200" cy="45" rx="22" ry="10" 
+           fill="none" 
+           stroke="#D1D5DB" 
+           stroke-width="1"/>
+  
+  <!-- Sleeve Shadows -->
+  <path d="M35 75L45 55H65L85 35H95L75 85H35V75Z" fill="rgba(0,0,0,0.08)"/>
+  <path d="M365 75L355 55H335L315 35H305L325 85H365V75Z" fill="rgba(0,0,0,0.08)"/>
+  
+  <!-- Design Area Indicator -->
+  <rect x="140" y="180" width="120" height="120" 
+        fill="rgba(59, 130, 246, 0.1)" 
+        stroke="#3B82F6" 
+        stroke-width="2" 
+        stroke-dasharray="5 5"/>
+  
+  <!-- Design Area Label -->
+  <text x="200" y="245" text-anchor="middle" fill="#3B82F6" font-family="Arial" font-size="12" font-weight="500">
+    Design Area
+  </text>
+</svg>

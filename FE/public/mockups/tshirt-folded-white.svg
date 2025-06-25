@@ -1,0 +1,43 @@
+<svg width="400" height="320" viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="400" height="320" fill="transparent"/>
+  
+  <!-- Folded T-shirt Shape -->
+  <g transform="perspective(800) rotateX(25deg) translate(0, 20)">
+    <!-- Main body -->
+    <rect x="50" y="80" width="300" height="200" 
+          fill="white" 
+          stroke="#E5E7EB" 
+          stroke-width="2"
+          filter="drop-shadow(0 15px 35px rgba(0,0,0,0.2))"/>
+    
+    <!-- Fold line -->
+    <line x1="50" y1="180" x2="350" y2="180" 
+          stroke="#D1D5DB" 
+          stroke-width="1" 
+          opacity="0.6"/>
+    
+    <!-- Sleeves (folded) -->
+    <rect x="20" y="100" width="60" height="80" 
+          fill="rgba(255,255,255,0.9)" 
+          stroke="#E5E7EB" 
+          stroke-width="1"/>
+    <rect x="320" y="100" width="60" height="80" 
+          fill="rgba(255,255,255,0.9)" 
+          stroke="#E5E7EB" 
+          stroke-width="1"/>
+  </g>
+  
+  <!-- Design Area Indicator -->
+  <rect x="140" y="120" width="120" height="80" 
+        fill="#F9FAFB" 
+        stroke="#D1D5DB" 
+        stroke-width="2" 
+        stroke-dasharray="5 5" 
+        opacity="0.7"/>
+  
+  <!-- Design Area Label -->
+  <text x="200" y="165" text-anchor="middle" fill="#9CA3AF" font-family="Arial" font-size="12" font-weight="500">
+    Design Area
+  </text>
+</svg>

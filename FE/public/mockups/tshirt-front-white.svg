@@ -1,0 +1,57 @@
+<svg width="400" height="480" viewBox="0 0 400 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Fabric Texture -->
+    <pattern id="fabric" patternUnits="userSpaceOnUse" width="8" height="8">
+      <rect width="8" height="8" fill="white"/>
+      <circle cx="4" cy="4" r="0.5" fill="rgba(0,0,0,0.02)"/>
+    </pattern>
+
+    <!-- Lighting Gradient -->
+    <linearGradient id="lighting" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="rgba(255,255,255,0.3)"/>
+      <stop offset="30%" stopColor="rgba(255,255,255,0.1)"/>
+      <stop offset="70%" stopColor="transparent"/>
+      <stop offset="100%" stopColor="rgba(0,0,0,0.1)"/>
+    </linearGradient>
+
+    <!-- Shadow Filter -->
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feDropShadow dx="0" dy="15" stdDeviation="20" floodColor="rgba(0,0,0,0.2)"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="480" fill="transparent"/>
+
+  <!-- T-shirt Main Body -->
+  <path d="M85 35H315L335 55H355L365 65H375V75H365V445H35V75H25V65H35L45 55H65L85 35Z"
+        fill="url(#fabric)"
+        stroke="#E5E7EB"
+        stroke-width="1"
+        filter="url(#shadow)"/>
+
+  <!-- Lighting Overlay -->
+  <path d="M85 35H315L335 55H355L365 65H375V75H365V445H35V75H25V65H35L45 55H65L85 35Z"
+        fill="url(#lighting)"/>
+
+  <!-- Collar -->
+  <ellipse cx="200" cy="45" rx="22" ry="10"
+           fill="none"
+           stroke="#D1D5DB"
+           stroke-width="1"/>
+
+  <!-- Collar Inner -->
+  <ellipse cx="200" cy="45" rx="18" ry="8"
+           fill="rgba(0,0,0,0.02)"
+           stroke="none"/>
+
+  <!-- Sleeve Shadows -->
+  <path d="M35 75L45 55H65L85 35H95L75 85H35V75Z" fill="rgba(0,0,0,0.08)"/>
+  <path d="M365 75L355 55H335L315 35H305L325 85H365V75Z" fill="rgba(0,0,0,0.08)"/>
+
+  <!-- Seam Lines -->
+  <line x1="35" y1="75" x2="35" y2="445" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <line x1="365" y1="75" x2="365" y2="445" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <line x1="85" y1="35" x2="65" y2="55" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+  <line x1="315" y1="35" x2="335" y2="55" stroke="rgba(0,0,0,0.06)" stroke-width="0.5"/>
+</svg>
