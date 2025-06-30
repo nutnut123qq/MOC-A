@@ -5,6 +5,7 @@ import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { TShirt } from '@/types/tshirt';
 import { TShirtDesignSession } from '@/types/tshirt-design';
 import MockupRenderer from '@/components/tshirt-design/MockupRenderer';
+import { storageManager } from '@/utils/storageManager';
 
 type MockupView = 'front' | 'back' | 'folded' | 'hanging';
 
@@ -29,14 +30,13 @@ export default function TShirtPreviewPage() {
     try {
       setLoading(true);
 
-      // Get design session from localStorage or URL params
-      const sessionData = localStorage.getItem(`design-session-${tshirtId}`);
-      if (!sessionData) {
+      // Get design session using storage manager
+      const session = storageManager.getItem(`design-session-${tshirtId}`);
+      if (!session) {
         setError('No design session found');
         return;
       }
 
-      const session: TShirtDesignSession = JSON.parse(sessionData);
       setDesignSession(session);
 
       // Load T-shirt data (same mock data as before)
@@ -211,7 +211,7 @@ export default function TShirtPreviewPage() {
     try {
       const updatedSession = { ...designSession!, selectedColor: color };
       setDesignSession(updatedSession);
-      localStorage.setItem(`design-session-${tshirt!.id}`, JSON.stringify(updatedSession));
+      storageManager.setItem(`design-session-${tshirt!.id}`, updatedSession);
     } finally {
       setTimeout(() => setUpdating(false), 300); // Small delay for smooth transition
     }
@@ -222,7 +222,7 @@ export default function TShirtPreviewPage() {
     try {
       const updatedSession = { ...designSession!, selectedSize: size };
       setDesignSession(updatedSession);
-      localStorage.setItem(`design-session-${tshirt!.id}`, JSON.stringify(updatedSession));
+      storageManager.setItem(`design-session-${tshirt!.id}`, updatedSession);
     } finally {
       setTimeout(() => setUpdating(false), 300);
     }

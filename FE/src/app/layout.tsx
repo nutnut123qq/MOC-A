@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { googleFontsUrl } from "@/data/fonts";
+import StorageDebug from "@/components/debug/StorageDebug";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -36,6 +37,8 @@ export default function RootLayout({
         <main>
           {children}
         </main>
+        {/* Storage Debug - Only in development */}
+        {process.env.NODE_ENV === 'development' && <StorageDebug />}
       </body>
     </html>
   );

@@ -7,6 +7,8 @@ import { TShirtDesignSession } from '@/types/tshirt-design';
 import DesignToolbar from './DesignToolbar';
 import TShirtCanvas from './TShirtCanvas';
 import TShirtPanel from './TShirtPanel';
+import { storageManager } from '@/utils/storageManager';
+import { useStorageWarning } from '@/components/debug/StorageDebug';
 
 interface TShirtDesignStudioProps {
   tshirt: TShirt;
@@ -26,6 +28,9 @@ export default function TShirtDesignStudio({
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [saving, setSaving] = useState(false);
 
+  // Monitor storage usage
+  useStorageWarning();
+
   const handleSessionUpdate = (updatedSession: TShirtDesignSession) => {
     setCurrentSession({
       ...updatedSession,
@@ -43,9 +48,15 @@ export default function TShirtDesignStudio({
   };
 
   const handlePreview = () => {
-    // Save current session to localStorage before navigating to preview
-    localStorage.setItem(`design-session-${tshirt.id}`, JSON.stringify(currentSession));
-    router.push(`/design/tshirt/${tshirt.id}/preview`);
+    // Save current session using storage manager with quota handling
+    const success = storageManager.setItem(`design-session-${tshirt.id}`, currentSession);
+
+    if (success) {
+      router.push(`/design/tshirt/${tshirt.id}/preview`);
+    } else {
+      // Show error message if storage failed
+      alert('⚠️ Không thể lưu thiết kế do bộ nhớ đầy. Vui lòng xóa các thiết kế cũ hoặc làm mới trang.');
+    }
   };
 
   return (
