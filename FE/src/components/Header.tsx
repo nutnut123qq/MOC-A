@@ -2,10 +2,12 @@
 
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { usePrefetch } from '@/hooks/usePrefetch';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [cartItemCount, setCartItemCount] = useState(0);
+  const { handleLinkHover } = usePrefetch();
 
   useEffect(() => {
     // Update cart count on mount and when localStorage changes
@@ -56,7 +58,11 @@ export default function Header() {
             <Link href="/" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
               Trang chủ
             </Link>
-            <Link href="/design" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
+            <Link
+              href="/design"
+              className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200"
+              onMouseEnter={() => handleLinkHover('/design')}
+            >
               Thiết kế
             </Link>
             <Link href="/gallery" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
@@ -69,7 +75,11 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-3">
-            <Link href="/cart" className="relative px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg transition-colors duration-200">
+            <Link
+              href="/cart"
+              className="relative px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg transition-colors duration-200"
+              onMouseEnter={() => handleLinkHover('/cart')}
+            >
               <div className="flex items-center space-x-1">
                 <span>🛒</span>
                 <span>Giỏ hàng</span>

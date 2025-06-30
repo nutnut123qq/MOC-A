@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import TShirtSelector from '@/components/tshirt-design/TShirtSelector';
 import { TShirt } from '@/types/tshirt';
 import { apiClient } from '@/lib/api';
+import LoadingSpinner, { SkeletonCard } from '@/components/ui/LoadingSpinner';
 
 export default function TShirtDesignPage() {
   const router = useRouter();
@@ -210,10 +211,15 @@ export default function TShirtDesignPage() {
       {/* Content */}
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
         {loading ? (
-          <div className="flex items-center justify-center py-20">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="text-gray-600 mt-4">Đang tải T-shirts...</p>
+          <div className="py-8">
+            <div className="text-center mb-8">
+              <LoadingSpinner size="lg" text="Đang tải T-shirts..." />
+            </div>
+            {/* Skeleton loading */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
             </div>
           </div>
         ) : error ? (

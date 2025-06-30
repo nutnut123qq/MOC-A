@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Product, ProductType } from '@/types/product';
 import { apiClient } from '@/lib/api';
+import { useApiCache } from '@/hooks/useApiCache';
 
 interface ProductGalleryProps {
   onProductSelect?: (product: Product) => void;
@@ -10,30 +11,22 @@ interface ProductGalleryProps {
 }
 
 export default function ProductGallery({ onProductSelect, selectedProductId }: ProductGalleryProps) {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [selectedType, setSelectedType] = useState<ProductType | 'all'>('all');
 
-  useEffect(() => {
-    fetchProducts();
-  }, []);
+  // Use cached API call
+  const {
+    data: products = [],
+    loading,
+    error,
+    refresh: fetchProducts
+  } = useApiCache(
+    'products',
+    () => apiClient.getProducts(),
+    { ttl: 10 * 60 * 1000 } // Cache for 10 minutes
+  );
 
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-      const data = await apiClient.getProducts();
-      setProducts(data);
-    } catch (err) {
-      setError('Failed to fetch products');
-      console.error('Error fetching products:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const filteredProducts = selectedType === 'all' 
-    ? products 
+  const filteredProducts = selectedType === 'all'
+    ? products
     : products.filter(p => p.type === selectedType);
 
   const getProductTypeIcon = (type: ProductType) => {
@@ -66,6 +59,7 @@ export default function ProductGallery({ onProductSelect, selectedProductId }: P
     return (
       <div className="flex justify-center items-center p-8">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <span className="ml-3 text-gray-600">Đang tải sản phẩm...</span>
       </div>
     );
   }
@@ -74,11 +68,11 @@ export default function ProductGallery({ onProductSelect, selectedProductId }: P
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <p className="text-red-800">{error}</p>
-        <button 
+        <button
           onClick={fetchProducts}
-          className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition-colors"
         >
-          Retry
+          Thử lại
         </button>
       </div>
     );
@@ -88,7 +82,7 @@ export default function ProductGallery({ onProductSelect, selectedProductId }: P
     <div className="bg-white rounded-lg shadow-md p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Chọn Sản Phẩm</h2>
-        
+
         {/* Product Type Filter */}
         <div className="flex space-x-2">
           <button
@@ -173,9 +167,9 @@ export default function ProductGallery({ onProductSelect, selectedProductId }: P
                     {getProductTypeName(product.type)}
                   </span>
                 </div>
-                
+
                 <p className="text-gray-600 text-sm">{product.description}</p>
-                
+
                 <div className="flex items-center justify-between">
                   <span className="text-lg font-bold text-blue-600">
                     {product.basePrice.toLocaleString('vi-VN')} VND

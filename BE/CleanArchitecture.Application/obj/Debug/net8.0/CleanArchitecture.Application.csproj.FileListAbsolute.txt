@@ -13,3 +13,4 @@ C:\Users\hahuy\Desktop\cc\BE\CleanArchitecture.Application\obj\Debug\net8.0\Clea
 C:\Users\hahuy\Desktop\cc\BE\CleanArchitecture.Application\obj\Debug\net8.0\refint\CleanArchitecture.Application.dll
 C:\Users\hahuy\Desktop\cc\BE\CleanArchitecture.Application\obj\Debug\net8.0\CleanArchitecture.Application.pdb
 C:\Users\hahuy\Desktop\cc\BE\CleanArchitecture.Application\obj\Debug\net8.0\ref\CleanArchitecture.Application.dll
+C:\Users\hahuy\Desktop\cc\BE\CleanArchitecture.Application\obj\Debug\net8.0\CleanArchitecture.Application.sourcelink.json

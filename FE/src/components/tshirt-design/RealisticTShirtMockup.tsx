@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 
 interface RealisticTShirtMockupProps {
@@ -16,6 +16,8 @@ export default function RealisticTShirtMockup({
   children,
   className = ''
 }: RealisticTShirtMockupProps) {
+  const [imageLoading, setImageLoading] = useState(true);
+  const [imageError, setImageError] = useState(false);
 
   // Map colors to available mockup images
   const getImagePath = () => {
@@ -113,24 +115,49 @@ export default function RealisticTShirtMockup({
 
   return (
     <div className={`relative ${className}`}>
+      {/* Loading Spinner */}
+      {imageLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-100 rounded-lg">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      )}
+
       {/* T-shirt Image Container */}
       <div className="relative w-full h-full flex items-center justify-center">
         <div className="relative" style={{ width: '500px', height: '600px' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={getImagePath()}
-            alt={`T-shirt ${view} view`}
-            className="w-full h-full object-cover"
-            onError={handleImageError}
-            onLoad={(e) => {
-              const img = e.target as HTMLImageElement;
-              console.log('✅ Image loaded successfully:', img.src);
-              console.log('✅ Image dimensions:', img.naturalWidth, 'x', img.naturalHeight);
-            }}
-            style={{
-              filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.15))'
-            }}
-          />
+          {!imageError ? (
+            <Image
+              src={getImagePath()}
+              alt={`T-shirt ${view} view`}
+              fill
+              className="object-cover"
+              priority={view === 'front'}
+              quality={85}
+              onLoad={() => {
+                setImageLoading(false);
+                console.log('✅ Image loaded successfully:', getImagePath());
+              }}
+              onError={() => {
+                setImageError(true);
+                setImageLoading(false);
+                console.error('❌ Image failed to load:', getImagePath());
+              }}
+              style={{
+                filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.15))'
+              }}
+            />
+          ) : (
+            // Fallback SVG
+            <img
+              src={`/mockups/tshirt-front-white.svg`}
+              alt={`T-shirt ${view} view (fallback)`}
+              className="w-full h-full object-cover"
+              onLoad={() => setImageLoading(false)}
+              style={{
+                filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.15))'
+              }}
+            />
+          )}
 
           {/* Design Overlay */}
           <div

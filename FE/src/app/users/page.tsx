@@ -3,28 +3,20 @@
 import { useState, useEffect } from 'react';
 import { User } from '@/types/user';
 import { apiClient } from '@/lib/api';
+import { useApiCache } from '@/hooks/useApiCache';
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      setLoading(true);
-      const data = await apiClient.getUsers();
-      setUsers(data);
-    } catch (err) {
-      setError('Failed to fetch users. Make sure the backend is running.');
-      console.error('Error fetching users:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Use cached API call
+  const {
+    data: users = [],
+    loading,
+    error,
+    refresh: fetchUsers
+  } = useApiCache(
+    'users',
+    () => apiClient.getUsers(),
+    { ttl: 5 * 60 * 1000 } // Cache for 5 minutes
+  );
 
   if (loading) {
     return (
@@ -38,7 +30,7 @@ export default function UsersPage() {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-4">
         <p className="text-red-800">{error}</p>
-        <button 
+        <button
           onClick={fetchUsers}
           className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
@@ -97,8 +89,8 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      user.isActive 
-                        ? 'bg-green-100 text-green-800' 
+                      user.isActive
+                        ? 'bg-green-100 text-green-800'
                         : 'bg-red-100 text-red-800'
                     }`}>
                       {user.isActive ? 'Active' : 'Inactive'}

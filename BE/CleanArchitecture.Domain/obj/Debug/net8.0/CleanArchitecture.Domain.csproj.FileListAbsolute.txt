@@ -9,3 +9,4 @@ C:\Users\hahuy\Desktop\cc\BE\CleanArchitecture.Domain\obj\Debug\net8.0\CleanArch
 C:\Users\hahuy\Desktop\cc\BE\CleanArchitecture.Domain\obj\Debug\net8.0\refint\CleanArchitecture.Domain.dll
 C:\Users\hahuy\Desktop\cc\BE\CleanArchitecture.Domain\obj\Debug\net8.0\CleanArchitecture.Domain.pdb
 C:\Users\hahuy\Desktop\cc\BE\CleanArchitecture.Domain\obj\Debug\net8.0\ref\CleanArchitecture.Domain.dll
+C:\Users\hahuy\Desktop\cc\BE\CleanArchitecture.Domain\obj\Debug\net8.0\CleanArchitecture.Domain.sourcelink.json
