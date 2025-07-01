@@ -1,0 +1,139 @@
+# ===================================
+# GLOBAL .GITIGNORE FOR FULL PROJECT
+# ===================================
+
+# ===== FRONTEND (Next.js) =====
+# Dependencies
+FE/node_modules/
+FE/.pnp
+FE/.pnp.*
+FE/.yarn/*
+!FE/.yarn/patches
+!FE/.yarn/plugins
+!FE/.yarn/releases
+!FE/.yarn/versions
+
+# Next.js build outputs
+FE/.next/
+FE/out/
+FE/build/
+
+# Environment files
+FE/.env*
+
+# Logs
+FE/npm-debug.log*
+FE/yarn-debug.log*
+FE/yarn-error.log*
+FE/.pnpm-debug.log*
+
+# TypeScript
+FE/*.tsbuildinfo
+FE/next-env.d.ts
+
+# Testing
+FE/coverage/
+
+# Vercel
+FE/.vercel
+
+# ===== BACKEND (.NET) =====
+# Build outputs
+BE/**/bin/
+BE/**/obj/
+BE/**/*.user
+BE/**/*.suo
+BE/**/*.cache
+BE/**/*.docstates
+
+# Visual Studio files
+BE/.vs/
+BE/**/*.sln.docstates
+BE/**/*.userprefs
+BE/**/*.pidb
+BE/**/*.booproj
+BE/**/*.svd
+BE/**/*.pdb
+BE/**/*.dll
+BE/**/*.exe
+BE/**/*.deps.json
+BE/**/*.runtimeconfig.json
+
+# NuGet
+BE/**/packages/
+BE/**/*.nupkg
+BE/**/*.snupkg
+BE/**/project.lock.json
+BE/**/project.fragment.lock.json
+BE/**/artifacts/
+
+# Entity Framework
+BE/**/Migrations/*.Designer.cs
+BE/**/Migrations/*.cs
+!BE/**/Migrations/ApplicationDbContextModelSnapshot.cs
+
+# ===== GENERAL =====
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+*.lcov
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Temporary folders
+tmp/
+temp/
+
+# ===== PROJECT SPECIFIC =====
+# Large image files (keep only essential ones)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.bmp
+*.tiff
+*.ico
+!FE/public/images/essential-*
+!FE/public/mockups/essential-*
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Documentation drafts
+*-draft.md
+*-temp.md
+
+# Test files
+test-*
+*-test.*

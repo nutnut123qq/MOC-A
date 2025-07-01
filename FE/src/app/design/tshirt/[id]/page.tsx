@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import TShirtDesignStudio from '@/components/tshirt-design/TShirtDesignStudio';
+import AuthGuard from '@/components/auth/AuthGuard';
 import { TShirt } from '@/types/tshirt';
 import { TShirtDesignSession } from '@/types/tshirt-design';
+import { DEFAULT_TSHIRT_SIZE, DEFAULT_TSHIRT_COLOR } from '@/data/tshirt-options';
 
 export default function TShirtDesignStudioPage() {
   const params = useParams();
@@ -187,8 +189,8 @@ export default function TShirtDesignStudioPage() {
       const newSession: TShirtDesignSession = {
         id: `session-${Date.now()}`,
         tshirtId: foundTShirt.id,
-        selectedColor: foundTShirt.variants[0].color,
-        selectedSize: foundTShirt.variants[0].sizes[0].size,
+        selectedColor: DEFAULT_TSHIRT_COLOR,
+        selectedSize: DEFAULT_TSHIRT_SIZE,
         designLayers: [],
         currentPrintArea: 'front',
         createdAt: new Date().toISOString(),
@@ -216,10 +218,10 @@ export default function TShirtDesignStudioPage() {
       setDesignSession(session);
 
       // Show success message
-      alert('Design saved successfully!');
+      alert('Thiết kế đã được lưu thành công!');
     } catch (error) {
       console.error('Error saving design:', error);
-      alert('Failed to save design. Please try again.');
+      alert('Không thể lưu thiết kế. Vui lòng thử lại.');
     }
   };
 
@@ -228,7 +230,7 @@ export default function TShirtDesignStudioPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Loading T-shirt design studio...</p>
+          <p className="text-gray-600 mt-4">Đang tải studio thiết kế áo thun...</p>
         </div>
       </div>
     );
@@ -251,11 +253,13 @@ export default function TShirtDesignStudioPage() {
   }
 
   return (
-    <TShirtDesignStudio
-      tshirt={tshirt}
-      designSession={designSession}
-      onSave={handleSaveDesign}
-      onBack={handleBackToSelector}
-    />
+    <AuthGuard>
+      <TShirtDesignStudio
+        tshirt={tshirt}
+        designSession={designSession}
+        onSave={handleSaveDesign}
+        onBack={handleBackToSelector}
+      />
+    </AuthGuard>
   );
 }

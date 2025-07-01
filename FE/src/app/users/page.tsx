@@ -34,7 +34,7 @@ export default function UsersPage() {
           onClick={fetchUsers}
           className="mt-2 bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
         >
-          Retry
+          Thử Lại
         </button>
       </div>
     );
@@ -43,16 +43,16 @@ export default function UsersPage() {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Users</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Người Dùng</h1>
         <button className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
-          Add User
+          Thêm Người Dùng
         </button>
       </div>
 
       {users.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500 text-lg">No users found</p>
-          <p className="text-gray-400 mt-2">Create your first user to get started</p>
+          <p className="text-gray-500 text-lg">Không tìm thấy người dùng</p>
+          <p className="text-gray-400 mt-2">Tạo người dùng đầu tiên để bắt đầu</p>
         </div>
       ) : (
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
@@ -60,19 +60,19 @@ export default function UsersPage() {
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
+                  Tên
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Email
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                  Trạng Thái
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
+                  Ngày Tạo
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                  Hành Động
                 </th>
               </tr>
             </thead>
@@ -93,7 +93,7 @@ export default function UsersPage() {
                         ? 'bg-green-100 text-green-800'
                         : 'bg-red-100 text-red-800'
                     }`}>
-                      {user.isActive ? 'Active' : 'Inactive'}
+                      {user.isActive ? 'Hoạt Động' : 'Không Hoạt Động'}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -101,10 +101,10 @@ export default function UsersPage() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button className="text-blue-600 hover:text-blue-900 mr-3">
-                      Edit
+                      Sửa
                     </button>
                     <button className="text-red-600 hover:text-red-900">
-                      Delete
+                      Xóa
                     </button>
                   </td>
                 </tr>

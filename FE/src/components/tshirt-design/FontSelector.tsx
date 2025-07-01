@@ -14,18 +14,18 @@ interface FontSelectorProps {
 export default function FontSelector({
   selectedFont,
   onFontChange,
-  previewText = 'Sample Text'
+  previewText = 'Text Mẫu'
 }: FontSelectorProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   const categories = [
-    { id: 'all', name: 'All Fonts', icon: 'type' },
-    { id: 'cute', name: 'Cute', icon: 'heart' },
-    { id: 'handwriting', name: 'Handwriting', icon: 'handwriting' },
-    { id: 'display', name: 'Display', icon: 'display' },
+    { id: 'all', name: 'Tất Cả Font', icon: 'type' },
+    { id: 'cute', name: 'Dễ Thương', icon: 'heart' },
+    { id: 'handwriting', name: 'Viết Tay', icon: 'handwriting' },
+    { id: 'display', name: 'Hiển Thị', icon: 'display' },
     { id: 'sans-serif', name: 'Sans Serif', icon: 'serif' },
-    { id: 'decorative', name: 'Decorative', icon: 'decorative' },
+    { id: 'decorative', name: 'Trang Trí', icon: 'decorative' },
   ];
 
   const filteredFonts = fontFamilies.filter(font => {

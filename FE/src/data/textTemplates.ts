@@ -4,9 +4,9 @@ export const textTemplates: TextTemplate[] = [
   // Cute Category
   {
     id: 'cute-1',
-    name: 'Sweet Dreams',
+    name: 'Giấc Mơ Ngọt Ngào',
     category: 'cute',
-    previewText: 'Sweet Dreams ✨',
+    previewText: 'Giấc Mơ Ngọt Ngào ✨',
     style: {
       fontSize: 32,
       fontFamily: 'Pacifico',
@@ -18,7 +18,7 @@ export const textTemplates: TextTemplate[] = [
   },
   {
     id: 'cute-5',
-    name: 'Kawaii Style',
+    name: 'Phong Cách Kawaii',
     category: 'cute',
     previewText: 'Kawaii ♡(˃͈ દ ˂͈ ༶ )',
     style: {
@@ -69,9 +69,9 @@ export const textTemplates: TextTemplate[] = [
   },
   {
     id: 'cute-2',
-    name: 'Love You',
+    name: 'Yêu Bạn',
     category: 'cute',
-    previewText: 'Love You ♡',
+    previewText: 'Yêu Bạn ♡',
     style: {
       fontSize: 28,
       fontFamily: 'Dancing Script',
@@ -83,9 +83,9 @@ export const textTemplates: TextTemplate[] = [
   },
   {
     id: 'cute-3',
-    name: 'Happy Vibes',
+    name: 'Năng Lượng Vui Vẻ',
     category: 'cute',
-    previewText: 'Happy Vibes ✨',
+    previewText: 'Năng Lượng Vui Vẻ ✨',
     style: {
       fontSize: 30,
       fontFamily: 'Fredoka One',
@@ -162,9 +162,9 @@ export const textTemplates: TextTemplate[] = [
   // Elegant Category
   {
     id: 'elegant-1',
-    name: 'Signature Style',
+    name: 'Phong Cách Chữ Ký',
     category: 'elegant',
-    previewText: 'Signature',
+    previewText: 'Chữ Ký',
     style: {
       fontSize: 38,
       fontFamily: 'Satisfy',
@@ -177,9 +177,9 @@ export const textTemplates: TextTemplate[] = [
   },
   {
     id: 'elegant-2',
-    name: 'Modern Clean',
+    name: 'Hiện Đại Sạch Sẽ',
     category: 'elegant',
-    previewText: 'MINIMAL',
+    previewText: 'TỐI GIẢN',
     style: {
       fontSize: 32,
       fontFamily: 'Poppins',
@@ -225,7 +225,7 @@ export const textTemplates: TextTemplate[] = [
   },
   {
     id: 'bold-2',
-    name: 'Retro Style',
+    name: 'Phong Cách Retro',
     category: 'bold',
     previewText: 'Retro',
     style: {
@@ -241,9 +241,9 @@ export const textTemplates: TextTemplate[] = [
   // Minimal Category
   {
     id: 'minimal-1',
-    name: 'Simple Text',
+    name: 'Text Đơn Giản',
     category: 'minimal',
-    previewText: 'simple',
+    previewText: 'đơn giản',
     style: {
       fontSize: 28,
       fontFamily: 'Poppins',
@@ -255,9 +255,9 @@ export const textTemplates: TextTemplate[] = [
   },
   {
     id: 'minimal-2',
-    name: 'Light & Airy',
+    name: 'Nhẹ Nhàng & Thoáng Đãng',
     category: 'minimal',
-    previewText: 'breathe',
+    previewText: 'thở',
     style: {
       fontSize: 30,
       fontFamily: 'Montserrat',
@@ -272,9 +272,9 @@ export const textTemplates: TextTemplate[] = [
   // Vintage Category
   {
     id: 'vintage-1',
-    name: 'Classic Comic',
+    name: 'Truyện Tranh Cổ Điển',
     category: 'vintage',
-    previewText: 'CLASSIC',
+    previewText: 'CỔ ĐIỂN',
     style: {
       fontSize: 34,
       fontFamily: 'Comic Neue',
@@ -290,37 +290,37 @@ export const textTemplates: TextTemplate[] = [
 export const textCategories: TextCategory[] = [
   {
     id: 'cute',
-    name: 'Cute & Sweet',
+    name: 'Dễ Thương & Ngọt Ngào',
     icon: 'heart',
     templates: textTemplates.filter(t => t.category === 'cute'),
   },
   {
     id: 'playful',
-    name: 'Playful & Fun',
+    name: 'Vui Tươi & Thú Vị',
     icon: 'sparkles',
     templates: textTemplates.filter(t => t.category === 'playful'),
   },
   {
     id: 'elegant',
-    name: 'Elegant & Classy',
+    name: 'Thanh Lịch & Sang Trọng',
     icon: 'star',
     templates: textTemplates.filter(t => t.category === 'elegant'),
   },
   {
     id: 'bold',
-    name: 'Bold & Strong',
+    name: 'Mạnh Mẽ & Nổi Bật',
     icon: 'zap',
     templates: textTemplates.filter(t => t.category === 'bold'),
   },
   {
     id: 'minimal',
-    name: 'Minimal & Clean',
+    name: 'Tối Giản & Sạch Sẽ',
     icon: 'circle',
     templates: textTemplates.filter(t => t.category === 'minimal'),
   },
   {
     id: 'vintage',
-    name: 'Vintage & Retro',
+    name: 'Cổ Điển & Retro',
     icon: 'clock',
     templates: textTemplates.filter(t => t.category === 'vintage'),
   },

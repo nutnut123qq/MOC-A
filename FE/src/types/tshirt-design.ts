@@ -1,8 +1,24 @@
+export type TShirtSizeType = 's' | 'm' | 'l' | 'xl' | 'xxl';
+export type TShirtColorType = 'white' | 'black' | 'beige' | 'navi';
+
+export interface TShirtSizeInfo {
+  id: TShirtSizeType;
+  name: string;
+  displayName: string;
+}
+
+export interface TShirtColorInfo {
+  id: TShirtColorType;
+  name: string;
+  displayName: string;
+  hexCode: string;
+}
+
 export interface TShirtDesignSession {
   id: string;
   tshirtId: number;
-  selectedColor: string;
-  selectedSize: string;
+  selectedColor: TShirtColorType;
+  selectedSize: TShirtSizeType;
   designLayers: DesignLayer[];
   currentPrintArea: 'front' | 'back';
   createdAt: string;

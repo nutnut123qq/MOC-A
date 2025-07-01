@@ -136,7 +136,7 @@ export default function MockupRenderer({
         {layer.type === 'image' ? (
           <img
             src={layer.content}
-            alt="Design element"
+            alt="Phần tử thiết kế"
             className="w-full h-full object-cover rounded"
             draggable={false}
           />
@@ -174,6 +174,8 @@ export default function MockupRenderer({
       >
         <RealisticTShirtMockup
           color={currentVariant.colorHex}
+          size={designSession.selectedSize}
+          colorType={designSession.selectedColor}
           view={view}
           className="w-full h-full"
         >

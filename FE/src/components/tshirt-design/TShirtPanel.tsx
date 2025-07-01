@@ -50,8 +50,8 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
     <div className="h-full flex flex-col bg-white">
       {/* Header */}
       <div className="p-6 border-b border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-2">Product Options</h3>
-        <p className="text-sm text-gray-500">Customize your T-shirt</p>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">Tùy Chọn Sản Phẩm</h3>
+        <p className="text-sm text-gray-500">Tùy chỉnh áo thun của bạn</p>
       </div>
 
       {/* Content */}
@@ -170,19 +170,19 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
 
         {/* Design Guidelines */}
         <div>
-          <h5 className="font-medium text-gray-900 mb-3">Design Guidelines</h5>
+          <h5 className="font-medium text-gray-900 mb-3">Hướng Dẫn Thiết Kế</h5>
           <div className="bg-blue-50 rounded-lg p-4 space-y-2">
             <div className="flex items-start space-x-2">
               <svg className="w-4 h-4 text-blue-600 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div className="text-sm text-blue-800">
-                <div className="font-medium mb-1">Best Practices:</div>
+                <div className="font-medium mb-1">Thực Hành Tốt Nhất:</div>
                 <ul className="space-y-1 text-xs">
-                  <li>• Use high-resolution images (300 DPI)</li>
-                  <li>• Keep designs within print area</li>
-                  <li>• Avoid very small text (min 12pt)</li>
-                  <li>• Use RGB color mode</li>
+                  <li>• Sử dụng hình ảnh độ phân giải cao (300 DPI)</li>
+                  <li>• Giữ thiết kế trong vùng in</li>
+                  <li>• Tránh text quá nhỏ (tối thiểu 12pt)</li>
+                  <li>• Sử dụng chế độ màu RGB</li>
                 </ul>
               </div>
             </div>
@@ -225,14 +225,14 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
               onClick={onPreview}
               className="w-full bg-gray-100 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors"
             >
-              🔍 Preview Mockup
+              🔍 Xem Trước Mockup
             </button>
           )}
           <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
-            Add to Cart
+            Thêm Vào Giỏ Hàng
           </button>
           <button className="w-full border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors">
-            Save Design
+            Lưu Thiết Kế
           </button>
         </div>
       </div>

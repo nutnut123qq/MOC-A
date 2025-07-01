@@ -40,7 +40,7 @@ public class UserService : IUserService
             LastName = createUserDto.LastName,
             Email = createUserDto.Email,
             PasswordHash = HashPassword(createUserDto.Password), // In real app, use proper hashing
-            IsActive = true,
+            Status = Domain.Enums.UserStatus.Active,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -56,7 +56,7 @@ public class UserService : IUserService
         user.FirstName = updateUserDto.FirstName;
         user.LastName = updateUserDto.LastName;
         user.Email = updateUserDto.Email;
-        user.IsActive = updateUserDto.IsActive;
+        user.Status = updateUserDto.IsActive ? Domain.Enums.UserStatus.Active : Domain.Enums.UserStatus.Inactive;
         user.UpdatedAt = DateTime.UtcNow;
 
         await _userRepository.UpdateAsync(user);
@@ -86,7 +86,7 @@ public class UserService : IUserService
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
-            IsActive = user.IsActive,
+            IsActive = user.Status == Domain.Enums.UserStatus.Active,
             CreatedAt = user.CreatedAt,
             UpdatedAt = user.UpdatedAt
         };

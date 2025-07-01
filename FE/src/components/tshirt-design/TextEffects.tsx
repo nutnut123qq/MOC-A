@@ -270,7 +270,7 @@ export default function TextEffects({ style, onStyleChange, text }: TextEffectsP
               letterSpacing: style.letterSpacing,
             }}
           >
-            {text || 'Preview Text'}
+            {text || 'Xem Trước Text'}
           </div>
         </div>
       </div>
@@ -284,7 +284,7 @@ export default function TextEffects({ style, onStyleChange, text }: TextEffectsP
         })}
         className="w-full p-3 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors font-medium"
       >
-        🗑️ Clear All Effects
+        🗑️ Xóa Tất Cả Hiệu Ứng
       </button>
     </div>
   );

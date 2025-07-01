@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { usePrefetch } from '@/hooks/usePrefetch';
+import UserMenu from '@/components/layout/UserMenu';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -90,12 +91,10 @@ export default function Header() {
                 )}
               </div>
             </Link>
-            <Link href="/login" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg transition-colors duration-200">
-              Đăng nhập
-            </Link>
             <Link href="/design" className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
               Bắt đầu thiết kế
             </Link>
+            <UserMenu />
           </div>
 
           {/* Mobile menu button */}
@@ -142,12 +141,12 @@ export default function Header() {
                 </div>
               </Link>
               <div className="pt-4 border-t border-gray-100">
-                <Link href="/login" className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-                  Đăng nhập
-                </Link>
-                <Link href="/design" className="block mt-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200">
+                <Link href="/design" className="block px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200">
                   Bắt đầu thiết kế
                 </Link>
+                <div className="mt-4">
+                  <UserMenu />
+                </div>
               </div>
             </div>
           </div>

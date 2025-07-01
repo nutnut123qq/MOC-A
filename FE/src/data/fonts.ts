@@ -8,8 +8,8 @@ export const fontFamilies: FontFamily[] = [
     name: 'Pacifico',
     displayName: 'Pacifico',
     category: 'cute',
-    variants: [{ weight: '400', style: 'normal', displayName: 'Regular' }],
-    previewText: 'Cute Text',
+    variants: [{ weight: '400', style: 'normal', displayName: 'Thường' }],
+    previewText: 'Text Dễ Thương',
     googleFont: true,
   },
   {
@@ -18,11 +18,11 @@ export const fontFamilies: FontFamily[] = [
     displayName: 'Kalam',
     category: 'handwriting',
     variants: [
-      { weight: '300', style: 'normal', displayName: 'Light' },
-      { weight: '400', style: 'normal', displayName: 'Regular' },
-      { weight: '700', style: 'normal', displayName: 'Bold' },
+      { weight: '300', style: 'normal', displayName: 'Nhẹ' },
+      { weight: '400', style: 'normal', displayName: 'Thường' },
+      { weight: '700', style: 'normal', displayName: 'Đậm' },
     ],
-    previewText: 'Sweet Dreams',
+    previewText: 'Giấc Mơ Ngọt Ngào',
     googleFont: true,
   },
   {

@@ -2,9 +2,13 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { getTShirtImagePath } from '@/data/tshirt-options';
+import { TShirtSizeType, TShirtColorType } from '@/types/tshirt-design';
 
 interface RealisticTShirtMockupProps {
   color: string;
+  size: TShirtSizeType;
+  colorType: TShirtColorType;
   view: 'front' | 'back' | 'folded' | 'hanging';
   children?: React.ReactNode;
   className?: string;
@@ -12,6 +16,8 @@ interface RealisticTShirtMockupProps {
 
 export default function RealisticTShirtMockup({
   color,
+  size,
+  colorType,
   view,
   children,
   className = ''
@@ -19,18 +25,12 @@ export default function RealisticTShirtMockup({
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
-  // Map colors to available mockup images
+  // Get image path based on size, color, and view
   const getImagePath = () => {
-    // Use JPEG mockup for front view
-    if (view === 'front') {
-      const path = '/mockups/tshirt_mockup.jpeg';
-      console.log('Loading JPEG front view image:', path);
-      return path;
-    }
-    // Use backside image for back view
-    if (view === 'back') {
-      const path = '/images/tshirt_backside.png';
-      console.log('Loading PNG back view image:', path);
+    // For front and back views, use the áo vector collection
+    if (view === 'front' || view === 'back') {
+      const path = getTShirtImagePath(size, colorType, view);
+      console.log(`Loading ${view} view image:`, path);
       return path;
     }
     // Fallback to SVG for other views until we have more images
@@ -128,7 +128,7 @@ export default function RealisticTShirtMockup({
           {!imageError ? (
             <Image
               src={getImagePath()}
-              alt={`T-shirt ${view} view`}
+              alt={`Áo thun góc nhìn ${view === 'front' ? 'trước' : view === 'back' ? 'sau' : view}`}
               fill
               className="object-cover"
               priority={view === 'front'}

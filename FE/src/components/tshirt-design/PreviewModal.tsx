@@ -40,10 +40,10 @@ export default function PreviewModal({
   };
 
   const mockupViews = [
-    { id: 'front', name: 'Front', icon: '👕' },
-    { id: 'back', name: 'Back', icon: '🔄' },
-    { id: 'folded', name: 'Folded', icon: '📦' },
-    { id: 'hanging', name: 'Hanging', icon: '🪝' },
+    { id: 'front', name: 'Mặt Trước', icon: '👕' },
+    { id: 'back', name: 'Mặt Sau', icon: '🔄' },
+    { id: 'folded', name: 'Gấp Lại', icon: '📦' },
+    { id: 'hanging', name: 'Treo', icon: '🪝' },
   ];
 
   const renderMockup = () => {
@@ -63,7 +63,7 @@ export default function PreviewModal({
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">T-Shirt Preview</h2>
+            <h2 className="text-2xl font-bold text-gray-900">Xem Trước Áo Thun</h2>
             <p className="text-sm text-gray-500 mt-1">
               {tshirt.name} • {currentVariant.colorName} • Size {designSession.selectedSize}
             </p>
@@ -113,7 +113,7 @@ export default function PreviewModal({
                 {calculatePrice().toLocaleString('vi-VN')} ₫
               </div>
               <div className="text-sm text-gray-500">
-                {designSession.designLayers.length} design elements
+                {designSession.designLayers.length} phần tử thiết kế
               </div>
             </div>
             <div className="flex items-center space-x-3">
@@ -121,13 +121,13 @@ export default function PreviewModal({
                 onClick={onSave}
                 className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
               >
-                Save Design
+                Lưu Thiết Kế
               </button>
               <button
                 onClick={onAddToCart}
                 className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
-                Add to Cart
+                Thêm Vào Giỏ Hàng
               </button>
             </div>
           </div>

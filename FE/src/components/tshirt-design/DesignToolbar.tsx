@@ -79,7 +79,7 @@ export default function DesignToolbar({
     const newLayer: DesignLayer = {
       id: `text-${Date.now()}`,
       type: 'text',
-      content: 'Your Text Here',
+      content: 'Text Của Bạn',
       position: centerPos,
       transform: { rotation: 0, scaleX: 1, scaleY: 1 },
       printArea: designSession.currentPrintArea,
@@ -335,9 +335,9 @@ export default function DesignToolbar({
             {/* Text Sub-tabs */}
             <div className="flex border-b border-gray-200">
               {[
-                { id: 'templates', label: 'Templates', icon: 'palette' },
-                { id: 'fonts', label: 'Fonts', icon: 'type' },
-                { id: 'style', label: 'Style', icon: 'edit' },
+                { id: 'templates', label: 'Mẫu', icon: 'palette' },
+                { id: 'fonts', label: 'Font', icon: 'type' },
+                { id: 'style', label: 'Kiểu', icon: 'edit' },
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -367,16 +367,16 @@ export default function DesignToolbar({
                   onClick={handleAddText}
                   className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
                 >
-                  ➕ Add New Text
+                  ➕ Thêm Text Mới
                 </button>
                 <FontSelector
                   selectedFont={selectedLayer?.style?.fontFamily || 'Pacifico'}
                   onFontChange={handleFontChange}
-                  previewText={selectedLayer?.content || 'Sample Text'}
+                  previewText={selectedLayer?.content || 'Text Mẫu'}
                 />
                 {!selectedLayerId && (
                   <div className="text-center py-4 text-gray-500 text-sm">
-                    Select a text layer to change font
+                    Chọn một lớp text để thay đổi font
                   </div>
                 )}
               </div>
@@ -389,7 +389,7 @@ export default function DesignToolbar({
                     onClick={handleAddText}
                     className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm"
                   >
-                    ➕ Add New Text
+                    ➕ Thêm Text Mới
                   </button>
                 )}
                 {selectedLayer && selectedLayer.type === 'text' ? (
@@ -402,7 +402,7 @@ export default function DesignToolbar({
                 ) : (
                   <div className="text-center py-8 text-gray-500 text-sm">
                     <div className="text-2xl mb-2">📝</div>
-                    <div>Select a text layer to edit style</div>
+                    <div>Chọn một lớp text để chỉnh sửa kiểu</div>
                   </div>
                 )}
               </div>

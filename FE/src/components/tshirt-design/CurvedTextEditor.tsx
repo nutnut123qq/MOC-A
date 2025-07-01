@@ -10,11 +10,11 @@ interface CurvedTextEditorProps {
   onStyleChange: (style: LayerStyle) => void;
 }
 
-export default function CurvedTextEditor({ 
-  text, 
-  style, 
-  onTextChange, 
-  onStyleChange 
+export default function CurvedTextEditor({
+  text,
+  style,
+  onTextChange,
+  onStyleChange
 }: CurvedTextEditorProps) {
   const [curvature, setCurvature] = useState(0);
   const [radius, setRadius] = useState(100);
@@ -29,50 +29,50 @@ export default function CurvedTextEditor({
     const circumference = 2 * Math.PI * radius;
     const textLength = text.length;
     const anglePerChar = (circumference / textLength) * (curvature / 100);
-    
+
     let path = '';
     const centerX = 150;
     const centerY = 150;
-    
+
     for (let i = 0; i < textLength; i++) {
       const angle = (i - textLength / 2) * anglePerChar;
       const x = centerX + radius * Math.cos(angle - Math.PI / 2);
       const y = centerY + radius * Math.sin(angle - Math.PI / 2);
-      
+
       if (i === 0) {
         path += `M ${x} ${y}`;
       } else {
         path += ` L ${x} ${y}`;
       }
     }
-    
+
     return path;
   };
 
   const curvedTextTemplates = [
-    { name: 'Smile Curve', curvature: 30, radius: 80 },
-    { name: 'Big Smile', curvature: 50, radius: 60 },
-    { name: 'Arch', curvature: 20, radius: 100 },
-    { name: 'Wave', curvature: 15, radius: 120 },
-    { name: 'Circle', curvature: 100, radius: 50 },
+    { name: 'Cong Mỉm Cười', curvature: 30, radius: 80 },
+    { name: 'Cười Lớn', curvature: 50, radius: 60 },
+    { name: 'Vòng Cung', curvature: 20, radius: 100 },
+    { name: 'Sóng', curvature: 15, radius: 120 },
+    { name: 'Hình Tròn', curvature: 100, radius: 50 },
   ];
 
   return (
     <div className="space-y-4">
       <div className="text-sm font-medium text-gray-700 mb-2">
-        Curved Text Editor
+        Trình Chỉnh Sửa Text Cong
       </div>
 
       {/* Text Input */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Text Content
+          Nội Dung Text
         </label>
         <input
           type="text"
           value={text}
           onChange={(e) => onTextChange(e.target.value)}
-          placeholder="Enter curved text..."
+          placeholder="Nhập text cong..."
           className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
@@ -80,7 +80,7 @@ export default function CurvedTextEditor({
       {/* Curve Templates */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Curve Presets
+          Mẫu Đường Cong
         </label>
         <div className="grid grid-cols-2 gap-2">
           {curvedTextTemplates.map((template, index) => (
@@ -101,7 +101,7 @@ export default function CurvedTextEditor({
       {/* Curvature Control */}
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-2">
-          Curvature: {curvature}%
+          Độ Cong: {curvature}%
         </label>
         <input
           type="range"
@@ -130,7 +130,7 @@ export default function CurvedTextEditor({
 
       {/* Preview */}
       <div className="bg-gray-50 rounded-lg p-4">
-        <div className="text-sm font-medium text-gray-700 mb-2">Preview</div>
+        <div className="text-sm font-medium text-gray-700 mb-2">Xem Trước</div>
         <div className="flex justify-center">
           <svg
             ref={svgRef}
@@ -154,7 +154,7 @@ export default function CurvedTextEditor({
               textAnchor="middle"
             >
               <textPath href="#curve-path" startOffset="50%">
-                {text || 'Curved Text'}
+                {text || 'Text Cong'}
               </textPath>
             </text>
           </svg>
@@ -213,11 +213,11 @@ export default function CurvedTextEditor({
         }}
         className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
       >
-        Apply Curved Text
+        Áp Dụng Text Cong
       </button>
 
       <div className="text-xs text-gray-500 text-center">
-        💡 Tip: Adjust curvature and radius to create the perfect curve for your text
+        💡 Mẹo: Điều chỉnh độ cong và bán kính để tạo đường cong hoàn hảo cho text của bạn
       </div>
     </div>
   );

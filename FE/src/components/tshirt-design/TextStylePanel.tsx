@@ -27,7 +27,7 @@ export default function TextStylePanel({
   };
 
   const currentFont = fontFamilies.find(f => f.name === style.fontFamily);
-  const availableWeights = currentFont?.variants || [{ weight: '400', style: 'normal', displayName: 'Regular' }];
+  const availableWeights = currentFont?.variants || [{ weight: '400', style: 'normal', displayName: 'Thường' }];
 
   const colorPresets = [
     '#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF',
@@ -41,9 +41,9 @@ export default function TextStylePanel({
       <div className="flex border-b border-gray-200">
         {[
           { id: 'text', label: 'Text', icon: 'edit' },
-          { id: 'style', label: 'Style', icon: 'palette' },
-          { id: 'effects', label: 'Effects', icon: 'sparkles' },
-          { id: 'curved', label: 'Curved', icon: 'curve' },
+          { id: 'style', label: 'Kiểu', icon: 'palette' },
+          { id: 'effects', label: 'Hiệu Ứng', icon: 'sparkles' },
+          { id: 'curved', label: 'Cong', icon: 'curve' },
         ].map(tab => (
           <button
             key={tab.id}
@@ -65,12 +65,12 @@ export default function TextStylePanel({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Text Content
+              Nội Dung Text
             </label>
             <textarea
               value={text}
               onChange={(e) => onTextChange(e.target.value)}
-              placeholder="Enter your text..."
+              placeholder="Nhập text của bạn..."
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
               rows={3}
             />
@@ -78,7 +78,7 @@ export default function TextStylePanel({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Font Size
+              Kích Thước Font
             </label>
             <div className="flex items-center space-x-2">
               <input
@@ -97,13 +97,13 @@ export default function TextStylePanel({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Text Alignment
+              Căn Chỉnh Text
             </label>
             <div className="flex space-x-1">
               {[
-                { value: 'left', icon: '⬅️', label: 'Left' },
-                { value: 'center', icon: '↔️', label: 'Center' },
-                { value: 'right', icon: '➡️', label: 'Right' },
+                { value: 'left', icon: '⬅️', label: 'Trái' },
+                { value: 'center', icon: '↔️', label: 'Giữa' },
+                { value: 'right', icon: '➡️', label: 'Phải' },
               ].map(align => (
                 <button
                   key={align.value}
@@ -128,7 +128,7 @@ export default function TextStylePanel({
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Font Weight
+              Độ Đậm Font
             </label>
             <select
               value={style.fontWeight || '400'}
@@ -145,7 +145,7 @@ export default function TextStylePanel({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Text Color
+              Màu Text
             </label>
             <div className="space-y-2">
               <input
@@ -172,23 +172,23 @@ export default function TextStylePanel({
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Text Transform
+              Biến Đổi Text
             </label>
             <select
               value={style.textTransform || 'none'}
               onChange={(e) => updateStyle({ textTransform: e.target.value as any })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
-              <option value="none">Normal</option>
-              <option value="uppercase">UPPERCASE</option>
-              <option value="lowercase">lowercase</option>
-              <option value="capitalize">Capitalize</option>
+              <option value="none">Bình Thường</option>
+              <option value="uppercase">CHỮ HOA</option>
+              <option value="lowercase">chữ thường</option>
+              <option value="capitalize">Viết Hoa Đầu Từ</option>
             </select>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Letter Spacing
+              Khoảng Cách Chữ
             </label>
             <div className="flex items-center space-x-2">
               <input

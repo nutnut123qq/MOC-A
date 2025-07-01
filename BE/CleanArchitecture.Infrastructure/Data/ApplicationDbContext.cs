@@ -11,6 +11,7 @@ public class ApplicationDbContext : DbContext
 
     // Core entities
     public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Design> Designs { get; set; }
     public DbSet<Product> Products { get; set; }
     public DbSet<Order> Orders { get; set; }

@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import { googleFontsUrl } from "@/data/fonts";
 import StorageDebug from "@/components/debug/StorageDebug";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -26,19 +27,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="vi">
       <head>
         <link href={googleFontsUrl} rel="stylesheet" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white`}
       >
-        <Header />
-        <main>
-          {children}
-        </main>
-        {/* Storage Debug - Only in development */}
-        {process.env.NODE_ENV === 'development' && <StorageDebug />}
+        <AuthProvider>
+          <Header />
+          <main>
+            {children}
+          </main>
+          {/* Storage Debug - Only in development */}
+          {process.env.NODE_ENV === 'development' && <StorageDebug />}
+        </AuthProvider>
       </body>
     </html>
   );

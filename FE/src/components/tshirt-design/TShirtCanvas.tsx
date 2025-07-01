@@ -1,12 +1,15 @@
 'use client';
 
 import React, { useState, useRef } from 'react';
-import { TShirt, DesignSession } from '@/types/design';
+import { TShirt } from '@/types/tshirt';
+import { TShirtDesignSession } from '@/types/tshirt-design';
+import { getTShirtImagePath } from '@/data/tshirt-options';
+import TShirtOptionsPanel from './TShirtOptionsPanel';
 
 interface TShirtCanvasProps {
   tshirt: TShirt;
-  designSession: DesignSession;
-  onSessionUpdate: (session: DesignSession) => void;
+  designSession: TShirtDesignSession;
+  onSessionUpdate: (session: TShirtDesignSession) => void;
 }
 
 export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }: TShirtCanvasProps) {
@@ -36,7 +39,7 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
   const handleLayerDoubleClick = (layerId: string) => {
     const layer = currentLayers.find(l => l.id === layerId);
     if (layer?.type === 'text') {
-      const newText = prompt('Edit text:', layer.content);
+      const newText = prompt('Chỉnh sửa text:', layer.content);
       if (newText !== null) {
         const updatedLayers = designSession.designLayers.map(l =>
           l.id === layerId ? { ...l, content: newText } : l
@@ -280,16 +283,24 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
     });
   };
 
-  // Get T-shirt image based on current view
+  // Get T-shirt image based on current view, size, and color
   const getTShirtImage = () => {
-    if (designSession.currentPrintArea === 'back') {
-      return '/images/tshirt_backside.png';
-    }
-    return '/images/tshirt.png';
+    const view = designSession.currentPrintArea === 'back' ? 'back' : 'front';
+    return getTShirtImagePath(
+      designSession.selectedSize,
+      designSession.selectedColor,
+      view
+    );
   };
 
   return (
     <div className="flex flex-col h-full bg-gray-50">
+      {/* T-Shirt Options Panel */}
+      <TShirtOptionsPanel
+        designSession={designSession}
+        onSessionUpdate={onSessionUpdate}
+      />
+
       {/* Header Controls */}
       <div className="bg-white border-b border-gray-200 p-4">
         <div className="flex items-center justify-between">
@@ -396,11 +407,11 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
             <div className="absolute inset-0">
               <img
                 src={getTShirtImage()}
-                alt={`T-shirt ${designSession.currentPrintArea} view`}
+                alt={`Áo thun góc nhìn ${designSession.currentPrintArea === 'front' ? 'trước' : 'sau'}`}
                 className="w-full h-full object-contain"
                 onError={(e) => {
                   const img = e.target as HTMLImageElement;
-                  img.src = "https://via.placeholder.com/400x500/f8f9fa/6b7280?text=T-Shirt+Mockup";
+                  img.src = "https://via.placeholder.com/400x500/f8f9fa/6b7280?text=Mockup+Ao+Thun";
                 }}
               />
             </div>

@@ -26,7 +26,7 @@ export default function TextTemplates({ onTemplateSelect }: TextTemplatesProps) 
       <div className="relative">
         <input
           type="text"
-          placeholder="Search templates..."
+          placeholder="Tìm kiếm template..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -134,9 +134,9 @@ export default function TextTemplates({ onTemplateSelect }: TextTemplatesProps) 
       {filteredTemplates.length === 0 && (
         <div className="text-center py-8 text-gray-500">
           <div className="text-2xl mb-2">🎨</div>
-          <div className="text-sm">No templates found</div>
+          <div className="text-sm">Không tìm thấy template</div>
           <div className="text-xs text-gray-400 mt-1">
-            Try adjusting your search or category
+            Thử điều chỉnh tìm kiếm hoặc danh mục
           </div>
         </div>
       )}
@@ -146,9 +146,9 @@ export default function TextTemplates({ onTemplateSelect }: TextTemplatesProps) 
         <button
           onClick={() => onTemplateSelect({
             id: 'custom',
-            name: 'Custom Text',
+            name: 'Text Tùy Chỉnh',
             category: 'cute',
-            previewText: 'Your Text Here',
+            previewText: 'Text Của Bạn',
             style: {
               fontSize: 24,
               fontFamily: 'Pacifico',
@@ -160,7 +160,7 @@ export default function TextTemplates({ onTemplateSelect }: TextTemplatesProps) 
           })}
           className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
         >
-          ✨ Add Custom Text
+          ✨ Thêm Text Tùy Chỉnh
         </button>
       </div>
     </div>

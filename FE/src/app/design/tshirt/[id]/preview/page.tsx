@@ -232,10 +232,10 @@ export default function TShirtPreviewPage() {
     try {
       // TODO: Implement save to backend
       console.log('Saving product:', { tshirt, designSession });
-      alert('Product saved successfully!');
+      alert('Sản phẩm đã được lưu thành công!');
     } catch (error) {
       console.error('Error saving product:', error);
-      alert('Failed to save product. Please try again.');
+      alert('Không thể lưu sản phẩm. Vui lòng thử lại.');
     }
   };
 
@@ -243,10 +243,10 @@ export default function TShirtPreviewPage() {
     try {
       // TODO: Implement add to cart
       console.log('Adding to cart:', { tshirt, designSession });
-      alert('Added to cart successfully!');
+      alert('Đã thêm vào giỏ hàng thành công!');
     } catch (error) {
       console.error('Error adding to cart:', error);
-      alert('Failed to add to cart. Please try again.');
+      alert('Không thể thêm vào giỏ hàng. Vui lòng thử lại.');
     }
   };
 
@@ -255,7 +255,7 @@ export default function TShirtPreviewPage() {
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-          <p className="text-gray-600 mt-4">Loading preview...</p>
+          <p className="text-gray-600 mt-4">Đang tải xem trước...</p>
         </div>
       </div>
     );
@@ -270,7 +270,7 @@ export default function TShirtPreviewPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
             </svg>
           </div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Preview Not Available</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Không Thể Xem Trước</h2>
           <p className="text-gray-600 mb-6">
             {error || 'No design session found. Please create a design first before previewing.'}
           </p>
