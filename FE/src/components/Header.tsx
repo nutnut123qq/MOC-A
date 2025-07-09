@@ -43,7 +43,7 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
+              <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
                 <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
                 </svg>
@@ -94,7 +94,7 @@ export default function Header() {
                 )}
               </div>
             </Link>
-            <Link href="/design" className="px-6 py-2.5 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-medium rounded-xl hover:from-blue-700 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+            <Link href="/design" className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm font-medium rounded-xl hover:from-amber-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
               Bắt đầu thiết kế
             </Link>
             <UserMenu />
@@ -144,7 +144,7 @@ export default function Header() {
                 </div>
               </Link>
               <div className="pt-4 border-t border-gray-100">
-                <Link href="/design" className="block px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white text-base font-medium rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200">
+                <Link href="/design" className="block px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-base font-medium rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all duration-200">
                   Bắt đầu thiết kế
                 </Link>
                 <div className="mt-4">

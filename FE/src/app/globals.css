@@ -136,7 +136,7 @@ html {
   height: 20px;
   width: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -159,7 +159,7 @@ html {
   height: 20px;
   width: 20px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
   cursor: pointer;
   border: 2px solid white;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

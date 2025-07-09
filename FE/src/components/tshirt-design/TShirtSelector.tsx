@@ -73,7 +73,7 @@ export default function TShirtSelector({ tshirts, onTShirtSelect }: TShirtSelect
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Tìm theo tên hoặc thương hiệu..."
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200"
               />
               <svg
                 className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
@@ -119,7 +119,7 @@ export default function TShirtSelector({ tshirts, onTShirtSelect }: TShirtSelect
               setSearchQuery('');
               setSelectedStyle('all');
             }}
-            className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+            className="text-amber-600 hover:text-amber-700 font-medium text-sm"
           >
             Xóa bộ lọc
           </button>
@@ -141,7 +141,7 @@ export default function TShirtSelector({ tshirts, onTShirtSelect }: TShirtSelect
               setSearchQuery('');
               setSelectedStyle('all');
             }}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
           >
             Xem tất cả T-shirts
           </button>

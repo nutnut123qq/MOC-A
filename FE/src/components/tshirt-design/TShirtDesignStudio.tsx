@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { TShirt } from '@/types/tshirt';
 import { TShirtDesignSession } from '@/types/tshirt-design';
@@ -37,6 +37,17 @@ export default function TShirtDesignStudio({
 
   // Monitor storage usage
   useStorageWarning();
+
+  // Sync currentSession với designSession prop khi thay đổi
+  useEffect(() => {
+    console.log('🔄 TShirtDesignStudio: designSession prop changed', {
+      propSession: designSession,
+      currentSession: currentSession,
+      layersCount: designSession.designLayers.length
+    });
+
+    setCurrentSession(designSession);
+  }, [designSession]);
 
   const handleSessionUpdate = (updatedSession: TShirtDesignSession) => {
     setCurrentSession({
@@ -165,7 +176,7 @@ export default function TShirtDesignStudio({
             <button
               onClick={handleSave}
               disabled={saving}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {saving ? 'Đang lưu...' : 'Lưu'}
             </button>

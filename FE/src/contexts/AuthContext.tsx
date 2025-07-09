@@ -28,12 +28,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // Try to refresh token if we have a refresh token
         const refreshToken = TokenManager.getRefreshToken();
         if (refreshToken) {
-          await refreshTokens();
+          try {
+            await refreshTokens();
+          } catch (refreshError) {
+            // Refresh token failed, clear tokens silently
+            // This is normal when refresh token is expired
+            TokenManager.clearTokens();
+            setUser(null);
+          }
         }
       }
     } catch (error) {
       console.error('Auth initialization failed:', error);
       TokenManager.clearTokens();
+      setUser(null);
     } finally {
       setIsLoading(false);
     }

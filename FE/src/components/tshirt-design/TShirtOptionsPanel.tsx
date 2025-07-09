@@ -65,7 +65,7 @@ export default function TShirtOptionsPanel({ designSession, onSessionUpdate }: T
                   onClick={() => handleColorChange(color.id)}
                   className={`w-8 h-8 rounded-full border-2 transition-all ${
                     designSession.selectedColor === color.id
-                      ? 'border-blue-500 ring-2 ring-blue-200'
+                      ? 'border-amber-500 ring-2 ring-amber-200'
                       : 'border-gray-300 hover:border-gray-400'
                   }`}
                   style={{ backgroundColor: color.hexCode }}

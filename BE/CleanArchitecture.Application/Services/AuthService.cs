@@ -124,24 +124,14 @@ public class AuthService : IAuthService
     {
         try
         {
-            if (!await _tokenService.ValidateRefreshTokenAsync(refreshToken))
+            // Get refresh token from database
+            var refreshTokenEntity = await _tokenService.GetRefreshTokenAsync(refreshToken);
+            if (refreshTokenEntity == null || !refreshTokenEntity.IsActive)
             {
-                throw new UnauthorizedAccessException("Refresh token không hợp lệ");
+                throw new UnauthorizedAccessException("Refresh token không hợp lệ hoặc đã hết hạn");
             }
 
-            var principal = _tokenService.GetPrincipalFromExpiredToken(refreshToken);
-            if (principal == null)
-            {
-                throw new UnauthorizedAccessException("Token không hợp lệ");
-            }
-
-            var userIdClaim = principal.FindFirst("sub")?.Value;
-            if (!int.TryParse(userIdClaim, out var userId))
-            {
-                throw new UnauthorizedAccessException("Token không hợp lệ");
-            }
-
-            var user = await _userRepository.GetByIdAsync(userId);
+            var user = await _userRepository.GetByIdAsync(refreshTokenEntity.UserId);
             if (user == null || user.Status != UserStatus.Active)
             {
                 throw new UnauthorizedAccessException("User không tồn tại hoặc đã bị khóa");

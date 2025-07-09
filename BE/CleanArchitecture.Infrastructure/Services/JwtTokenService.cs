@@ -113,6 +113,11 @@ public class JwtTokenService : ITokenService
         return refreshToken != null && refreshToken.IsActive;
     }
 
+    public async Task<RefreshToken?> GetRefreshTokenAsync(string token)
+    {
+        return await _refreshTokenRepository.GetByTokenAsync(token);
+    }
+
     public async Task RevokeRefreshTokenAsync(string token)
     {
         await _refreshTokenRepository.RevokeTokenAsync(token);

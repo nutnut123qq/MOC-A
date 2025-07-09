@@ -99,10 +99,10 @@ export default function TShirtDesignStudioPage() {
               id: 'back',
               name: 'back',
               displayName: 'Back',
-              bounds: { x: 128, y: 155, width: 138, height: 171 },
-              maxDimensions: { width: 138, height: 171 },
+              bounds: { x: 129, y: 135, width: 131, height: 165 },
+              maxDimensions: { width: 131, height: 165 },
               guidelines: {
-                safeArea: { x: 133, y: 160, width: 128, height: 161 },
+                safeArea: { x: 134, y: 140, width: 121, height: 155 },
                 recommendedDPI: 300,
                 maxFileSize: 10,
                 allowedFormats: ['PNG', 'JPG', 'SVG'],
@@ -211,8 +211,22 @@ export default function TShirtDesignStudioPage() {
               id: `session-${Date.now()}`,
               tshirtId: foundTShirt.id,
               updatedAt: new Date().toISOString(),
+              // Đảm bảo có các giá trị mặc định
+              currentPrintArea: savedDesign.designSession.currentPrintArea || 'front',
+              selectedSize: savedDesign.designSession.selectedSize || DEFAULT_TSHIRT_SIZE,
+              selectedColor: savedDesign.designSession.selectedColor || DEFAULT_TSHIRT_COLOR,
             };
-            setDesignSession(loadedSession);
+
+            console.log('🔄 Loading saved design:', {
+              designId: loadDesignId,
+              session: loadedSession,
+              layersCount: loadedSession.designLayers.length
+            });
+
+            // Delay nhỏ để đảm bảo component được mount hoàn toàn
+            setTimeout(() => {
+              setDesignSession(loadedSession);
+            }, 100);
             return;
           }
         } catch (error) {
@@ -243,8 +257,8 @@ export default function TShirtDesignStudioPage() {
     }
   };
 
-  const handleBackToSelector = () => {
-    router.push('/design');
+  const handleBackToHome = () => {
+    router.push('/');
   };
 
   const handleSaveDesign = async (session: TShirtDesignSession) => {
@@ -285,10 +299,10 @@ export default function TShirtDesignStudioPage() {
         <div className="text-center">
           <div className="text-red-500 text-lg mb-4">❌ {error || 'T-shirt not found'}</div>
           <button
-            onClick={handleBackToSelector}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            onClick={handleBackToHome}
+            className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
           >
-            Back to T-shirt Selection
+            Quay về Trang chủ
           </button>
         </div>
       </div>
@@ -301,7 +315,7 @@ export default function TShirtDesignStudioPage() {
         tshirt={tshirt}
         designSession={designSession}
         onSave={handleSaveDesign}
-        onBack={handleBackToSelector}
+        onBack={handleBackToHome}
       />
 
       <AuthPrompt

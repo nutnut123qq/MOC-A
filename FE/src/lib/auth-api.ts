@@ -35,26 +35,21 @@ class AuthAPI {
     }
 
     try {
-      console.log('Making API request to:', url);
-      console.log('Request config:', config);
-
       const response = await fetch(url, config);
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
 
       let data;
       try {
         data = await response.json();
-        console.log('Response data:', data);
       } catch (parseError) {
-        console.error('Failed to parse JSON response:', parseError);
         const text = await response.text();
-        console.log('Response text:', text);
         throw new Error(`Failed to parse response: ${text}`);
       }
 
       if (!response.ok) {
-        console.error('Validation errors:', data.errors);
+        // Only log validation errors for debugging, not for normal auth failures
+        if (response.status !== 401) {
+          console.error('Validation errors:', data.errors);
+        }
         const errorMessage = data.errors ?
           Object.entries(data.errors).map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`).join('; ') :
           data.message || `API request failed with status ${response.status}`;
@@ -63,9 +58,12 @@ class AuthAPI {
 
       return data;
     } catch (error) {
-      console.error('API request error:', error);
-      console.error('URL:', url);
-      console.error('Config:', config);
+      // Only log non-auth errors to avoid spam in console
+      if (!error.message.includes('Token') && !error.message.includes('token')) {
+        console.error('API request error:', error);
+        console.error('URL:', url);
+        console.error('Config:', config);
+      }
       throw error;
     }
   }

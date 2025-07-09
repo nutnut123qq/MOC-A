@@ -50,7 +50,7 @@ export default function TextStylePanel({
             onClick={() => setActiveTab(tab.id as any)}
             className={`flex-1 px-3 py-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === tab.id
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-amber-500 text-amber-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -133,7 +133,7 @@ export default function TextStylePanel({
             <select
               value={style.fontWeight || '400'}
               onChange={(e) => updateStyle({ fontWeight: e.target.value as any })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
             >
               {availableWeights.map(weight => (
                 <option key={`${weight.weight}-${weight.style}`} value={weight.weight}>
@@ -160,7 +160,7 @@ export default function TextStylePanel({
                     key={color}
                     onClick={() => updateStyle({ color })}
                     className={`w-8 h-8 rounded border-2 transition-all ${
-                      style.color === color ? 'border-blue-500 scale-110' : 'border-gray-300'
+                      style.color === color ? 'border-amber-500 scale-110' : 'border-gray-300'
                     }`}
                     style={{ backgroundColor: color }}
                     title={color}

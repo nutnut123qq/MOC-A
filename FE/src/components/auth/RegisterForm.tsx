@@ -213,7 +213,7 @@ export default function RegisterForm() {
               <select
                 value={formData.gender}
                 onChange={handleInputChange('gender')}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200"
               >
                 <option value="">Chọn giới tính</option>
                 <option value="male">Nam</option>
@@ -249,15 +249,15 @@ export default function RegisterForm() {
                 type="checkbox"
                 checked={formData.acceptTerms}
                 onChange={handleInputChange('acceptTerms')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1"
+                className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded mt-1"
               />
               <span className="ml-2 text-sm text-gray-600">
                 Tôi đồng ý với{' '}
-                <Link href="/terms" className="text-blue-600 hover:text-blue-500 font-medium">
+                <Link href="/terms" className="text-amber-600 hover:text-amber-500 font-medium">
                   Điều khoản sử dụng
                 </Link>{' '}
                 và{' '}
-                <Link href="/privacy" className="text-blue-600 hover:text-blue-500 font-medium">
+                <Link href="/privacy" className="text-amber-600 hover:text-amber-500 font-medium">
                   Chính sách bảo mật
                 </Link>
               </span>
@@ -270,7 +270,7 @@ export default function RegisterForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-3 px-4 rounded-lg font-medium hover:from-amber-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
           >
             {isSubmitting ? (
               <div className="flex items-center justify-center">
@@ -288,7 +288,7 @@ export default function RegisterForm() {
             Đã có tài khoản?{' '}
             <Link
               href="/auth/login"
-              className="text-blue-600 hover:text-blue-500 font-medium"
+              className="text-amber-600 hover:text-amber-500 font-medium"
             >
               Đăng nhập ngay
             </Link>

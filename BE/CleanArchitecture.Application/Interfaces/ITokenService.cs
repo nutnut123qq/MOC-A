@@ -10,6 +10,7 @@ public interface ITokenService
     ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
     Task<string> CreateRefreshTokenAsync(int userId);
     Task<bool> ValidateRefreshTokenAsync(string token);
+    Task<RefreshToken?> GetRefreshTokenAsync(string token);
     Task RevokeRefreshTokenAsync(string token);
     Task RevokeAllUserTokensAsync(int userId);
 }

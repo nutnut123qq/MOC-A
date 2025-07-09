@@ -65,10 +65,10 @@ export default function TextTemplates({ onTemplateSelect }: TextTemplatesProps) 
           <div
             key={template.id}
             onClick={() => onTemplateSelect(template)}
-            className="p-4 border border-gray-200 rounded-lg cursor-pointer transition-all hover:shadow-md hover:border-blue-300 group"
+            className="p-4 border border-gray-200 rounded-lg cursor-pointer transition-all hover:shadow-md hover:border-amber-300 group"
           >
             <div className="flex items-center justify-between mb-3">
-              <h4 className="font-medium text-gray-900 group-hover:text-blue-600">
+              <h4 className="font-medium text-gray-900 group-hover:text-amber-600">
                 {template.name}
               </h4>
               {template.isPremium && (
@@ -158,7 +158,7 @@ export default function TextTemplates({ onTemplateSelect }: TextTemplatesProps) 
             },
             tags: ['custom'],
           })}
-          className="w-full p-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+          className="w-full p-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium"
         >
           ✨ Thêm Text Tùy Chỉnh
         </button>

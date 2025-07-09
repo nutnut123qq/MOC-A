@@ -84,7 +84,7 @@ export default function FontSelector({
             onClick={() => onFontChange(font.name)}
             className={`p-3 border rounded-lg cursor-pointer transition-all hover:shadow-md ${
               selectedFont === font.name
-                ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                ? 'border-amber-500 bg-amber-50 ring-2 ring-amber-200'
                 : 'border-gray-200 hover:border-gray-300'
             }`}
           >

@@ -2,6 +2,7 @@
 
 import { TShirt } from '@/types/tshirt';
 import { TShirtDesignSession } from '@/types/tshirt-design';
+import { getPrintAreaBounds, getMaxDimensions } from '@/utils/printAreaCalculator';
 
 interface TShirtPanelProps {
   tshirt: TShirt;
@@ -85,7 +86,7 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
         {/* Color Selection */}
         <div>
           <h5 className="font-medium text-gray-900 mb-3">
-            Color: <span className="text-blue-600">{currentVariant.colorName}</span>
+            Color: <span className="text-amber-600">{currentVariant.colorName}</span>
           </h5>
           <div className="grid grid-cols-4 gap-3">
             {tshirt.variants.map((variant) => (
@@ -94,7 +95,7 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
                 onClick={() => handleColorChange(variant.color)}
                 className={`aspect-square rounded-lg border-2 transition-all ${
                   designSession.selectedColor === variant.color
-                    ? 'border-blue-500 ring-2 ring-blue-200'
+                    ? 'border-amber-500 ring-2 ring-amber-200'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
                 style={{ backgroundColor: variant.colorHex }}
@@ -115,7 +116,7 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
         {/* Size Selection */}
         <div>
           <h5 className="font-medium text-gray-900 mb-3">
-            Size: <span className="text-blue-600">{designSession.selectedSize}</span>
+            Size: <span className="text-amber-600">{designSession.selectedSize}</span>
           </h5>
           <div className="grid grid-cols-3 gap-2">
             {currentVariant.sizes.map((size) => (
@@ -125,7 +126,7 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
                 disabled={!size.available}
                 className={`py-2 px-3 text-sm font-medium rounded-lg border transition-all ${
                   designSession.selectedSize === size.size
-                    ? 'border-blue-500 bg-blue-50 text-blue-700'
+                    ? 'border-amber-500 bg-amber-50 text-amber-700'
                     : size.available
                     ? 'border-gray-200 hover:border-gray-300 text-gray-700'
                     : 'border-gray-100 bg-gray-50 text-gray-400 cursor-not-allowed'
@@ -151,7 +152,7 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
                   key={printArea.id}
                   className={`p-3 rounded-lg border transition-all ${
                     designSession.currentPrintArea === printArea.name
-                      ? 'border-blue-500 bg-blue-50'
+                      ? 'border-amber-500 bg-amber-50'
                       : 'border-gray-200'
                   }`}
                 >
@@ -160,7 +161,10 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
                     <span className="text-sm text-gray-500">{layerCount} layers</span>
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
-                    Max: {printArea.maxDimensions.width} × {printArea.maxDimensions.height} px
+                    {(() => {
+                      const dynamicDimensions = getMaxDimensions(designSession.selectedSize, printArea.name);
+                      return `Max: ${dynamicDimensions.width} × ${dynamicDimensions.height} px (Size ${designSession.selectedSize})`;
+                    })()}
                   </div>
                 </div>
               );
@@ -228,7 +232,7 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
               🔍 Xem Trước Mockup
             </button>
           )}
-          <button className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+          <button className="w-full bg-amber-600 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition-colors">
             Thêm Vào Giỏ Hàng
           </button>
           <button className="w-full border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors">

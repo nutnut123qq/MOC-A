@@ -1,12 +1,18 @@
-# T-Shirt Mockup Images
+# T-Shirt 3D Mockup Images
 
-This folder contains 3D T-shirt mockup images for the preview functionality.
+This folder contains realistic 3D T-shirt mockup images for the preview functionality.
 
-## Required Images:
-- `tshirt-front-white.png` - Front view of white t-shirt
-- `tshirt-back-white.png` - Back view of white t-shirt  
-- `tshirt-folded-white.png` - Folded view of white t-shirt
-- `tshirt-hanging-white.png` - Hanging view of white t-shirt
+## Current Images:
+- `tshirt_mockup.jpeg` - Main 3D front view (REAL PHOTO - WORKING!)
+- `tshirt-back-mockup.jpeg` - Back view placeholder (copy of front)
+- `tshirt-folded-mockup.jpeg` - Folded view placeholder (copy of front)
+- `tshirt-hanging-mockup.jpeg` - Hanging view placeholder (copy of front)
+- `placeholder-tshirt.png` - Fallback image
+
+## Note:
+- Currently using the main 3D mockup for all views as placeholders
+- Vector images (áo vector folder) are used for design canvas only
+- 3D mockups are used for preview page only
 
 ## Image Requirements:
 - PNG format with transparent background

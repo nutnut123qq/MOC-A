@@ -288,15 +288,15 @@ export default function TShirtPreviewPage() {
           <div className="space-y-3">
             <button
               onClick={handleBackToEditor}
-              className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="w-full px-6 py-3 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors font-medium"
             >
-              Back to Design Editor
+              Quay lại Editor
             </button>
             <button
-              onClick={() => window.location.href = '/design'}
+              onClick={() => window.location.href = '/'}
               className="w-full px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium"
             >
-              Choose T-shirt
+              Quay về Trang chủ
             </button>
           </div>
         </div>

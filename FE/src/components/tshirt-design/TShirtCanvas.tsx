@@ -1,11 +1,12 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { TShirt } from '@/types/tshirt';
 import { TShirtDesignSession } from '@/types/tshirt-design';
 import { getTShirtImagePath } from '@/data/tshirt-options';
 import TShirtOptionsPanel from './TShirtOptionsPanel';
 import ImageLayer from './ImageLayer';
+import { getPrintAreaBounds } from '@/utils/printAreaCalculator';
 
 interface TShirtCanvasProps {
   tshirt: TShirt;
@@ -22,11 +23,39 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
   const [zoomLevel, setZoomLevel] = useState(1);
   const canvasRef = useRef<HTMLDivElement>(null);
 
+  const [forceRender, setForceRender] = useState(0);
+
   const currentVariant = tshirt.variants.find(v => v.color === designSession.selectedColor) || tshirt.variants[0];
   const currentPrintArea = tshirt.printAreas.find(pa => pa.name === designSession.currentPrintArea);
   const currentLayers = designSession.designLayers.filter(layer =>
     layer.printArea === designSession.currentPrintArea && layer.visible
   );
+
+  // Force re-render khi designSession thay đổi để đảm bảo print area hiển thị
+  useEffect(() => {
+    console.log('🔄 TShirtCanvas: designSession changed', {
+      currentPrintArea: designSession.currentPrintArea,
+      selectedSize: designSession.selectedSize,
+      selectedColor: designSession.selectedColor,
+      layersCount: designSession.designLayers.length,
+      currentPrintAreaFound: !!currentPrintArea,
+      currentLayersCount: currentLayers.length
+    });
+    setForceRender(prev => prev + 1);
+  }, [designSession.currentPrintArea, designSession.selectedSize, designSession.selectedColor, designSession.designLayers.length]);
+
+  // Debug log khi component mount
+  useEffect(() => {
+    console.log('🎯 TShirtCanvas mounted with:', {
+      tshirtId: tshirt.id,
+      printAreas: tshirt.printAreas.map(pa => ({ id: pa.id, name: pa.name })),
+      designSession: {
+        currentPrintArea: designSession.currentPrintArea,
+        selectedSize: designSession.selectedSize,
+        layersCount: designSession.designLayers.length
+      }
+    });
+  }, []);
 
   const handleLayerClick = (layerId: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -418,18 +447,29 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
             </div>
 
             {/* Print Area Boundary */}
-            {currentPrintArea && (() => {
-              const isBackView = designSession.currentPrintArea === 'back';
-              console.log('Current print area:', designSession.currentPrintArea, 'isBackView:', isBackView);
+            {(() => {
+              const currentView = designSession.currentPrintArea || 'front';
+              const currentSize = designSession.selectedSize || 'M';
+
+              // Lấy bounds động dựa trên size và view
+              const dynamicBounds = getPrintAreaBounds(currentSize, currentView);
+
+              console.log('🎯 Print Area Boundary:', {
+                currentView,
+                currentSize,
+                bounds: dynamicBounds,
+                forceRender,
+                hasCurrentPrintArea: !!currentPrintArea
+              });
 
               return (
                 <div
-                  className="absolute border-2 border-dashed border-blue-500 bg-blue-50/10 rounded-sm pointer-events-none"
+                  className="absolute border-2 border-dashed border-amber-500 bg-amber-50/10 rounded-sm pointer-events-none"
                   style={{
-                    left: isBackView ? 129 : currentPrintArea.bounds.x,
-                    top: isBackView ? 135 : currentPrintArea.bounds.y,
-                    width: isBackView ? 131 : currentPrintArea.bounds.width,
-                    height: isBackView ? 165 : currentPrintArea.bounds.height,
+                    left: dynamicBounds.x,
+                    top: dynamicBounds.y,
+                    width: dynamicBounds.width,
+                    height: dynamicBounds.height,
                   }}
                 >
                 </div>
@@ -437,16 +477,28 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
             })()}
 
             {/* Print Area Clipping Container */}
-            {currentPrintArea && (
-              <div
-                className="absolute overflow-hidden"
-                style={{
-                  left: designSession.currentPrintArea === 'back' ? 129 : currentPrintArea.bounds.x,
-                  top: designSession.currentPrintArea === 'back' ? 135 : currentPrintArea.bounds.y,
-                  width: designSession.currentPrintArea === 'back' ? 131 : currentPrintArea.bounds.width,
-                  height: designSession.currentPrintArea === 'back' ? 165 : currentPrintArea.bounds.height,
-                }}
-              >
+            {(() => {
+              const currentView = designSession.currentPrintArea || 'front';
+              const currentSize = designSession.selectedSize || 'M';
+              const dynamicBounds = getPrintAreaBounds(currentSize, currentView);
+
+              console.log('🎨 Clipping Container:', {
+                currentView,
+                currentSize,
+                bounds: dynamicBounds,
+                layersCount: currentLayers.length
+              });
+
+              return (
+                <div
+                  className="absolute overflow-hidden"
+                  style={{
+                    left: dynamicBounds.x,
+                    top: dynamicBounds.y,
+                    width: dynamicBounds.width,
+                    height: dynamicBounds.height,
+                  }}
+                >
                 {/* Design Layers - Clipped versions (only visible parts within print area) */}
                 {currentLayers.map((layer) => {
                   return (
@@ -454,8 +506,8 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
                       key={layer.id}
                       className={`absolute select-none ${
                         selectedLayerId === layer.id
-                          ? 'ring-2 ring-blue-500 ring-offset-1'
-                          : 'hover:ring-1 hover:ring-blue-300'
+                          ? 'ring-2 ring-amber-500 ring-offset-1'
+                          : 'hover:ring-1 hover:ring-amber-300'
                       } ${
                         isDragging && selectedLayerId === layer.id ? 'opacity-75 cursor-grabbing' :
                         isResizing && selectedLayerId === layer.id ? 'cursor-crosshair' :
@@ -463,8 +515,8 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
                         'cursor-move'
                       }`}
                       style={{
-                        left: layer.position.x - (designSession.currentPrintArea === 'back' ? 129 : currentPrintArea.bounds.x),
-                        top: layer.position.y - (designSession.currentPrintArea === 'back' ? 135 : currentPrintArea.bounds.y),
+                        left: layer.position.x - dynamicBounds.x,
+                        top: layer.position.y - dynamicBounds.y,
                         transform: `rotate(${layer.transform?.rotation || 0}deg) scale(${layer.transform?.scaleX || 1}, ${layer.transform?.scaleY || 1})`,
                         width: layer.style?.width,
                         height: layer.style?.height,
@@ -630,8 +682,9 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
                     </div>
                   );
                 })}
-              </div>
-            )}
+                </div>
+              );
+            })()}
           </div>
         </div>
       </div>
