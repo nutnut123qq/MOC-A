@@ -6,6 +6,7 @@ import FontSelector from './FontSelector';
 import TextStylePanel from './TextStylePanel';
 import TextTemplates from './TextTemplates';
 import Icon from '@/components/ui/Icon';
+import { designAPI } from '@/lib/design-api';
 
 interface DesignToolbarProps {
   collapsed: boolean;
@@ -40,20 +41,83 @@ export default function DesignToolbar({
     return { x: centerX, y: centerY };
   };
 
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const compressImage = (file: File, maxSizeKB: number = 500): Promise<string> => {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d')!;
+      const img = new Image();
+
+      img.onload = () => {
+        // Calculate new dimensions to keep aspect ratio
+        const maxWidth = 800;
+        const maxHeight = 600;
+        let { width, height } = img;
+
+        if (width > height) {
+          if (width > maxWidth) {
+            height = (height * maxWidth) / width;
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = (width * maxHeight) / height;
+            height = maxHeight;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+
+        // Draw and compress
+        ctx.drawImage(img, 0, 0, width, height);
+
+        // Try different quality levels until size is acceptable
+        let quality = 0.8;
+        let compressedData = canvas.toDataURL('image/jpeg', quality);
+
+        while (compressedData.length > maxSizeKB * 1024 && quality > 0.1) {
+          quality -= 0.1;
+          compressedData = canvas.toDataURL('image/jpeg', quality);
+        }
+
+        resolve(compressedData);
+      };
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('Vui lòng chọn file ảnh hợp lệ.');
+      return;
+    }
+
+    // Validate file size (max 10MB)
+    if (file.size > 10 * 1024 * 1024) {
+      alert('File quá lớn. Vui lòng chọn file nhỏ hơn 10MB.');
+      return;
+    }
+
+    try {
       const imageWidth = 100;
       const imageHeight = 100;
       const centerPos = getCenterPosition(imageWidth, imageHeight);
+      const layerId = `image-${Date.now()}`;
 
-      const newLayer: DesignLayer = {
-        id: `image-${Date.now()}`,
+      // Create temporary layer with loading state
+      const tempLayer: DesignLayer = {
+        id: layerId,
         type: 'image',
-        content: event.target?.result as string,
+        content: { loading: true, originalFile: file.name },
         position: centerPos,
         transform: { rotation: 0, scaleX: 1, scaleY: 1 },
         printArea: designSession.currentPrintArea,
@@ -62,13 +126,81 @@ export default function DesignToolbar({
         locked: false,
       };
 
-      const updatedLayers = [...designSession.designLayers, newLayer];
+      // Add temporary layer to show loading state
+      const tempLayers = [...designSession.designLayers, tempLayer];
+      console.log('🔄 Adding temp layer. Before:', designSession.designLayers.length, 'After:', tempLayers.length);
+
+      onSessionUpdate({
+        ...designSession,
+        designLayers: tempLayers,
+      });
+
+      console.log('📤 Uploading image to temp storage...', {
+        fileName: file.name,
+        fileSize: file.size,
+        fileSizeKB: Math.round(file.size / 1024),
+        layerId: layerId
+      });
+
+      // Upload file to temporary storage
+      const uploadResponse = await designAPI.uploadTempImageFile(layerId, file);
+
+      console.log('✅ Image uploaded to temp storage:', uploadResponse);
+
+      // Update layer with temp file path
+      const finalLayer: DesignLayer = {
+        ...tempLayer,
+        content: {
+          type: 'temp',
+          tempPath: uploadResponse.tempPath,
+          sessionId: uploadResponse.sessionId,
+          originalFile: file.name,
+          fileSize: uploadResponse.fileSize
+        }
+      };
+
+      console.log('🔄 Updating layer:', layerId, 'with content:', finalLayer.content);
+
+      // Get current layers (might include the temp layer we just added)
+      const currentLayers = designSession.designLayers;
+      console.log('📋 Current layers before update:', currentLayers.map(l => ({ id: l.id, content: l.content })));
+
+      // Find and update the layer, or add it if not found
+      const existingLayerIndex = currentLayers.findIndex(layer => layer.id === layerId);
+      let updatedLayers;
+
+      if (existingLayerIndex >= 0) {
+        // Update existing layer
+        updatedLayers = currentLayers.map(layer =>
+          layer.id === layerId ? finalLayer : layer
+        );
+        console.log('📝 Updated existing layer at index:', existingLayerIndex);
+      } else {
+        // Add new layer if not found
+        updatedLayers = [...currentLayers, finalLayer];
+        console.log('➕ Added new layer (not found in current layers)');
+      }
+
+      console.log('📋 Updated layers:', updatedLayers.map(l => ({ id: l.id, content: l.content })));
+
       onSessionUpdate({
         ...designSession,
         designLayers: updatedLayers,
       });
-    };
-    reader.readAsDataURL(file);
+
+    } catch (error) {
+      console.error('❌ Error uploading image:', error);
+      alert('Không thể tải ảnh lên. Vui lòng thử lại.');
+
+      // Remove failed layer
+      const cleanedLayers = designSession.designLayers.filter(layer =>
+        layer.id !== layerId
+      );
+      onSessionUpdate({
+        ...designSession,
+        designLayers: cleanedLayers,
+      });
+    }
   };
 
   const handleAddText = () => {

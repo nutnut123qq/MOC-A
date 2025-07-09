@@ -4,6 +4,7 @@ import React from 'react';
 import { TShirt } from '@/types/tshirt';
 import { TShirtDesignSession, DesignLayer } from '@/types/tshirt-design';
 import RealisticTShirtMockup from './RealisticTShirtMockup';
+import ImageLayer from './ImageLayer';
 
 interface MockupRendererProps {
   tshirt: TShirt;
@@ -134,8 +135,8 @@ export default function MockupRenderer({
         style={layerStyle}
       >
         {layer.type === 'image' ? (
-          <img
-            src={layer.content}
+          <ImageLayer
+            content={layer.content}
             alt="Phần tử thiết kế"
             className="w-full h-full object-cover rounded"
             draggable={false}

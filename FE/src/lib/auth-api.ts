@@ -8,7 +8,7 @@ import {
   User
 } from '@/types/auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5168/api';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5168';
 
 class AuthAPI {
   private async request<T>(
@@ -71,7 +71,7 @@ class AuthAPI {
   }
 
   async login(credentials: LoginRequest): Promise<AuthResponse> {
-    return this.request<AuthResponse>('/auth/login', {
+    return this.request<AuthResponse>('/api/auth/login', {
       method: 'POST',
       body: JSON.stringify(credentials),
     });
@@ -79,41 +79,41 @@ class AuthAPI {
 
   async register(userData: RegisterRequest): Promise<AuthResponse> {
     console.log('Register userData:', userData);
-    return this.request<AuthResponse>('/auth/register', {
+    return this.request<AuthResponse>('/api/auth/register', {
       method: 'POST',
       body: JSON.stringify(userData),
     });
   }
 
   async refreshToken(refreshToken: string): Promise<AuthResponse> {
-    return this.request<AuthResponse>('/auth/refresh-token', {
+    return this.request<AuthResponse>('/api/auth/refresh-token', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
     });
   }
 
   async logout(refreshToken: string): Promise<{ success: boolean; message: string }> {
-    return this.request('/auth/logout', {
+    return this.request('/api/auth/logout', {
       method: 'POST',
       body: JSON.stringify({ refreshToken }),
     });
   }
 
   async getCurrentUser(): Promise<{ success: boolean; data: User }> {
-    return this.request('/auth/me', {
+    return this.request('/api/auth/me', {
       method: 'GET',
     });
   }
 
   async forgotPassword(email: ForgotPasswordRequest): Promise<{ success: boolean; message: string }> {
-    return this.request('/auth/forgot-password', {
+    return this.request('/api/auth/forgot-password', {
       method: 'POST',
       body: JSON.stringify(email),
     });
   }
 
   async resetPassword(data: ResetPasswordRequest): Promise<{ success: boolean; message: string }> {
-    return this.request('/auth/reset-password', {
+    return this.request('/api/auth/reset-password', {
       method: 'POST',
       body: JSON.stringify(data),
     });

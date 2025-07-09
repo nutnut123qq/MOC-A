@@ -15,44 +15,29 @@ public class DesignRepository : Repository<Design>, IDesignRepository
     {
         return await _dbSet
             .Where(d => d.UserId == userId)
+            .Include(d => d.Product)
             .OrderByDescending(d => d.CreatedAt)
             .ToListAsync();
     }
 
-    public async Task<IEnumerable<Design>> GetPublicDesignsAsync()
+    public async Task<Design?> GetByIdAndUserIdAsync(int id, int userId)
     {
         return await _dbSet
-            .Where(d => d.IsPublic)
-            .Include(d => d.User)
-            .OrderByDescending(d => d.ViewCount)
-            .ThenByDescending(d => d.CreatedAt)
-            .ToListAsync();
+            .Include(d => d.Product)
+            .FirstOrDefaultAsync(d => d.Id == id && d.UserId == userId);
     }
 
-    public async Task<IEnumerable<Design>> GetPopularDesignsAsync(int count = 10)
+    public async Task<Design?> GetWithProductAsync(int id)
     {
         return await _dbSet
-            .Where(d => d.IsPublic)
-            .Include(d => d.User)
-            .OrderByDescending(d => d.ViewCount)
-            .Take(count)
-            .ToListAsync();
-    }
-
-    public async Task<Design?> GetWithUserAsync(int id)
-    {
-        return await _dbSet
+            .Include(d => d.Product)
             .Include(d => d.User)
             .FirstOrDefaultAsync(d => d.Id == id);
     }
 
-    public async Task IncrementViewCountAsync(int id)
+    public async Task<bool> IsOwnerAsync(int designId, int userId)
     {
-        var design = await _dbSet.FindAsync(id);
-        if (design != null)
-        {
-            design.ViewCount++;
-            await _context.SaveChangesAsync();
-        }
+        return await _dbSet
+            .AnyAsync(d => d.Id == designId && d.UserId == userId);
     }
 }

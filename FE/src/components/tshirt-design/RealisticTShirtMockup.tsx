@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { getTShirtImagePath } from '@/data/tshirt-options';
 import { TShirtSizeType, TShirtColorType } from '@/types/tshirt-design';
 
 interface RealisticTShirtMockupProps {
@@ -25,18 +24,23 @@ export default function RealisticTShirtMockup({
   const [imageLoading, setImageLoading] = useState(true);
   const [imageError, setImageError] = useState(false);
 
-  // Get image path based on size, color, and view
+  // Get 3D mockup image path based on view
   const getImagePath = () => {
-    // For front and back views, use the áo vector collection
-    if (view === 'front' || view === 'back') {
-      const path = getTShirtImagePath(size, colorType, view);
-      console.log(`Loading ${view} view image:`, path);
-      return path;
+    // Use realistic 3D mockup images for preview (not vector images)
+    // Note: Currently using the same 3D image for all views as placeholders
+    // TODO: Replace with actual back/folded/hanging 3D mockup photos later
+    switch (view) {
+      case 'front':
+        return '/mockups/tshirt_mockup.jpeg'; // Main 3D front view mockup
+      case 'back':
+        return '/mockups/tshirt-back-mockup.jpeg'; // Placeholder (same as front for now)
+      case 'folded':
+        return '/mockups/tshirt-folded-mockup.jpeg'; // Placeholder (same as front for now)
+      case 'hanging':
+        return '/mockups/tshirt-hanging-mockup.jpeg'; // Placeholder (same as front for now)
+      default:
+        return '/mockups/tshirt_mockup.jpeg'; // Default to main 3D mockup
     }
-    // Fallback to SVG for other views until we have more images
-    const path = `/mockups/tshirt-${view}-white.svg`;
-    console.log('Loading SVG image:', path);
-    return path;
   };
 
   // Get design overlay position based on view
@@ -95,22 +99,22 @@ export default function RealisticTShirtMockup({
     }
   };
 
-  // Fallback to placeholder if image not found
+  // Fallback to main 3D mockup if specific view not found
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     console.error('❌ Image failed to load:', getImagePath());
     console.error('❌ Error event:', e);
     const img = e.target as HTMLImageElement;
     console.log('🔄 Trying fallback image...');
 
-    // Don't fallback, keep trying the JPEG
-    if (img.src.includes('tshirt_mockup.jpeg')) {
-      console.log('🔄 JPEG failed, trying direct path...');
-      // Try with different path format
-      img.src = 'http://localhost:3002/mockups/tshirt_mockup.jpeg';
+    // If specific view image fails, fallback to main 3D mockup
+    if (!img.src.includes('tshirt_mockup.jpeg')) {
+      console.log('🔄 Using main 3D mockup as fallback');
+      img.src = '/mockups/tshirt_mockup.jpeg';
     } else {
-      console.log('🔄 Using SVG fallback');
-      img.src = '/mockups/tshirt-front-white.svg';
+      console.log('🔄 Main mockup also failed, using placeholder');
+      img.src = '/mockups/placeholder-tshirt.png';
     }
+    setImageError(true);
   };
 
   return (

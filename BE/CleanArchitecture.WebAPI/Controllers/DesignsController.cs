@@ -1,180 +1,189 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using CleanArchitecture.Application.Interfaces;
-using CleanArchitecture.Application.DTOs;
+using CleanArchitecture.Application.DTOs.Design;
+using CleanArchitecture.Infrastructure.Data;
+using System.Security.Claims;
 
 namespace CleanArchitecture.WebAPI.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class DesignsController : ControllerBase
 {
     private readonly IDesignService _designService;
+    private readonly ApplicationDbContext _context;
 
-    public DesignsController(IDesignService designService)
+    public DesignsController(IDesignService designService, ApplicationDbContext context)
     {
         _designService = designService;
+        _context = context;
     }
 
-    [HttpGet("user/{userId}")]
-    public async Task<ActionResult<IEnumerable<DesignListDto>>> GetUserDesigns(int userId)
+    private int GetCurrentUserId()
+    {
+        var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        return int.TryParse(userIdClaim, out var userId) ? userId : 0;
+    }
+
+    [HttpGet("test")]
+    public IActionResult TestEndpoint()
+    {
+        return Ok(new { message = "Designs controller is working!", timestamp = DateTime.Now });
+    }
+
+    [HttpPost("seed-products")]
+    public async Task<IActionResult> SeedProducts()
     {
         try
         {
+            await CleanArchitecture.Infrastructure.Data.DataSeeder.SeedAsync(_context);
+            return Ok(new { message = "Products seeded successfully!" });
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Error seeding products: {ex.Message}");
+        }
+    }
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<DesignDto>>> GetMyDesigns()
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            Console.WriteLine($"GetMyDesigns called for user: {userId}");
+
+            if (userId == 0)
+                return Unauthorized("User not authenticated");
+
             var designs = await _designService.GetUserDesignsAsync(userId);
+            Console.WriteLine($"Found {designs.Count()} designs for user {userId}");
             return Ok(designs);
         }
         catch (Exception ex)
         {
-            // Return mock data for testing
-            var mockDesigns = new List<DesignListDto>
-            {
-                new DesignListDto
-                {
-                    Id = 1,
-                    Name = "Thiết kế mẫu 1",
-                    PreviewImageUrl = "/images/design1-thumb.jpg",
-                    Width = 20,
-                    Height = 15,
-                    ViewCount = 25,
-                    CreatedAt = DateTime.Now.AddDays(-2)
-                },
-                new DesignListDto
-                {
-                    Id = 2,
-                    Name = "Logo công ty",
-                    PreviewImageUrl = "/images/design2-thumb.jpg",
-                    Width = 18,
-                    Height = 12,
-                    ViewCount = 12,
-                    CreatedAt = DateTime.Now.AddDays(-1)
-                }
-            };
-            return Ok(mockDesigns);
+            Console.WriteLine($"Error in GetMyDesigns: {ex.Message}");
+            return StatusCode(500, $"Internal server error: {ex.Message}");
         }
-    }
-
-    [HttpGet("public")]
-    public async Task<ActionResult<IEnumerable<DesignListDto>>> GetPublicDesigns()
-    {
-        try
-        {
-            var designs = await _designService.GetPublicDesignsAsync();
-            return Ok(designs);
-        }
-        catch (Exception ex)
-        {
-            // Return mock data for testing
-            var mockDesigns = new List<DesignListDto>
-            {
-                new DesignListDto
-                {
-                    Id = 3,
-                    Name = "Thiết kế trending 1",
-                    PreviewImageUrl = "/images/design3-thumb.jpg",
-                    Width = 25,
-                    Height = 20,
-                    ViewCount = 150,
-                    CreatedAt = DateTime.Now.AddDays(-5)
-                },
-                new DesignListDto
-                {
-                    Id = 4,
-                    Name = "Vintage Style",
-                    PreviewImageUrl = "/images/design4-thumb.jpg",
-                    Width = 22,
-                    Height = 18,
-                    ViewCount = 89,
-                    CreatedAt = DateTime.Now.AddDays(-3)
-                },
-                new DesignListDto
-                {
-                    Id = 5,
-                    Name = "Modern Art",
-                    PreviewImageUrl = "/images/design5-thumb.jpg",
-                    Width = 20,
-                    Height = 20,
-                    ViewCount = 67,
-                    CreatedAt = DateTime.Now.AddDays(-1)
-                }
-            };
-            return Ok(mockDesigns);
-        }
-    }
-
-    [HttpGet("popular")]
-    public async Task<ActionResult<IEnumerable<DesignListDto>>> GetPopularDesigns([FromQuery] int count = 10)
-    {
-        var designs = await _designService.GetPopularDesignsAsync(count);
-        return Ok(designs);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<DesignDto>> GetDesign(int id)
     {
-        var design = await _designService.GetDesignByIdAsync(id);
-        if (design == null)
+        try
         {
-            return NotFound();
+            var userId = GetCurrentUserId();
+            if (userId == 0)
+                return Unauthorized("User not authenticated");
+
+            var design = await _designService.GetDesignByIdAsync(id, userId);
+            if (design == null)
+            {
+                return NotFound("Design not found or access denied");
+            }
+
+            return Ok(design);
         }
-
-        // Increment view count
-        await _designService.IncrementViewCountAsync(id);
-
-        return Ok(design);
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
     [HttpPost]
-    public async Task<ActionResult<DesignDto>> CreateDesign([FromBody] CreateDesignRequest request)
+    public async Task<ActionResult<DesignDto>> CreateDesign([FromBody] CreateDesignDto createDesignDto)
     {
-        var design = await _designService.CreateDesignAsync(request.UserId, request.Design);
-        return CreatedAtAction(nameof(GetDesign), new { id = design.Id }, design);
+        try
+        {
+            Console.WriteLine($"CreateDesign called with data: {System.Text.Json.JsonSerializer.Serialize(createDesignDto)}");
+
+            var userId = GetCurrentUserId();
+            Console.WriteLine($"Current user ID: {userId}");
+
+            if (userId == 0)
+                return Unauthorized("User not authenticated");
+
+            var design = await _designService.CreateDesignAsync(userId, createDesignDto);
+            Console.WriteLine($"Design created successfully with ID: {design.Id}");
+
+            return CreatedAtAction(nameof(GetDesign), new { id = design.Id }, design);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error creating design: {ex.Message}");
+            Console.WriteLine($"Stack trace: {ex.StackTrace}");
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
     [HttpPut("{id}")]
-    public async Task<ActionResult<DesignDto>> UpdateDesign(int id, [FromBody] UpdateDesignRequest request)
+    public async Task<ActionResult<DesignDto>> UpdateDesign(int id, [FromBody] UpdateDesignDto updateDesignDto)
     {
-        var design = await _designService.UpdateDesignAsync(id, request.UserId, request.Design);
-        if (design == null)
+        try
         {
-            return NotFound();
-        }
+            var userId = GetCurrentUserId();
+            if (userId == 0)
+                return Unauthorized("User not authenticated");
 
-        return Ok(design);
+            var design = await _designService.UpdateDesignAsync(id, userId, updateDesignDto);
+            if (design == null)
+            {
+                return NotFound("Design not found or access denied");
+            }
+
+            return Ok(design);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteDesign(int id, [FromQuery] int userId)
+    public async Task<IActionResult> DeleteDesign(int id)
     {
-        var result = await _designService.DeleteDesignAsync(id, userId);
-        if (!result)
+        try
         {
-            return NotFound();
+            var userId = GetCurrentUserId();
+            if (userId == 0)
+                return Unauthorized("User not authenticated");
+
+            var result = await _designService.DeleteDesignAsync(id, userId);
+            if (!result)
+            {
+                return NotFound("Design not found or access denied");
+            }
+
+            return NoContent();
         }
-
-        return NoContent();
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 
-    [HttpPost("preview")]
-    public async Task<ActionResult<string>> GeneratePreview([FromBody] GeneratePreviewRequest request)
+    [HttpPost("{id}/clone")]
+    public async Task<ActionResult<DesignDto>> CloneDesign(int id, [FromBody] CloneDesignRequest request)
     {
-        var previewUrl = await _designService.GeneratePreviewImageAsync(request.CanvasData);
-        return Ok(new { previewUrl });
+        try
+        {
+            var userId = GetCurrentUserId();
+            if (userId == 0)
+                return Unauthorized("User not authenticated");
+
+            var design = await _designService.CloneDesignAsync(id, userId, request.NewName);
+            return CreatedAtAction(nameof(GetDesign), new { id = design.Id }, design);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
 }
 
-public class CreateDesignRequest
+public class CloneDesignRequest
 {
-    public int UserId { get; set; }
-    public CreateDesignDto Design { get; set; } = new();
-}
-
-public class UpdateDesignRequest
-{
-    public int UserId { get; set; }
-    public UpdateDesignDto Design { get; set; } = new();
-}
-
-public class GeneratePreviewRequest
-{
-    public string CanvasData { get; set; } = string.Empty;
+    public string NewName { get; set; } = string.Empty;
 }

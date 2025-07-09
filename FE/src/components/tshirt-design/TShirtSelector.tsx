@@ -54,7 +54,7 @@ export default function TShirtSelector({ tshirts, onTShirtSelect }: TShirtSelect
           Chọn T-Shirt để bắt đầu thiết kế
         </h2>
         <p className="text-gray-600 max-w-2xl mx-auto">
-          Chọn loại T-shirt phù hợp với ý tưởng thiết kế của bạn. 
+          Chọn loại T-shirt phù hợp với ý tưởng thiết kế của bạn.
           Mỗi sản phẩm có nhiều màu sắc và kích cỡ khác nhau.
         </p>
       </div>
@@ -75,10 +75,10 @@ export default function TShirtSelector({ tshirts, onTShirtSelect }: TShirtSelect
                 placeholder="Tìm theo tên hoặc thương hiệu..."
                 className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
               />
-              <svg 
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" 
-                fill="none" 
-                viewBox="0 0 24 24" 
+              <svg
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                fill="none"
+                viewBox="0 0 24 24"
                 stroke="currentColor"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -112,7 +112,7 @@ export default function TShirtSelector({ tshirts, onTShirtSelect }: TShirtSelect
         <p className="text-gray-600">
           Hiển thị <span className="font-semibold text-gray-900">{filteredTShirts.length}</span> sản phẩm
         </p>
-        
+
         {(searchQuery || selectedStyle !== 'all') && (
           <button
             onClick={() => {
@@ -151,15 +151,14 @@ export default function TShirtSelector({ tshirts, onTShirtSelect }: TShirtSelect
           {filteredTShirts.map((tshirt) => (
             <div
               key={tshirt.id}
-              onClick={() => onTShirtSelect(tshirt)}
-              className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 cursor-pointer transform hover:scale-105"
+              className="group bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-xl hover:border-blue-200 transition-all duration-300 transform hover:scale-105"
             >
               {/* T-Shirt Preview */}
               <div className="aspect-square bg-gradient-to-br from-gray-50 to-gray-100 p-8 flex items-center justify-center relative overflow-hidden">
                 <div className="text-8xl group-hover:scale-110 transition-transform duration-300">
                   {getStyleIcon(tshirt.style)}
                 </div>
-                
+
                 {/* Color Variants Preview */}
                 <div className="absolute bottom-4 left-4 flex space-x-1">
                   {tshirt.variants.slice(0, 4).map((variant, index) => (
@@ -213,7 +212,10 @@ export default function TShirtSelector({ tshirts, onTShirtSelect }: TShirtSelect
                 </div>
 
                 {/* Action Button */}
-                <button className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform group-hover:scale-105">
+                <button
+                  onClick={() => onTShirtSelect(tshirt)}
+                  className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform group-hover:scale-105"
+                >
                   Bắt đầu thiết kế
                 </button>
               </div>

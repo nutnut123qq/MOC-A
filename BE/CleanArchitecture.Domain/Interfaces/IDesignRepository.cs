@@ -5,8 +5,7 @@ namespace CleanArchitecture.Domain.Interfaces;
 public interface IDesignRepository : IRepository<Design>
 {
     Task<IEnumerable<Design>> GetByUserIdAsync(int userId);
-    Task<IEnumerable<Design>> GetPublicDesignsAsync();
-    Task<IEnumerable<Design>> GetPopularDesignsAsync(int count = 10);
-    Task<Design?> GetWithUserAsync(int id);
-    Task IncrementViewCountAsync(int id);
+    Task<Design?> GetByIdAndUserIdAsync(int id, int userId);
+    Task<Design?> GetWithProductAsync(int id);
+    Task<bool> IsOwnerAsync(int designId, int userId);
 }

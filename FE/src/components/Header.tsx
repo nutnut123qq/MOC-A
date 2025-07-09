@@ -66,6 +66,9 @@ export default function Header() {
             >
               Thiết kế
             </Link>
+            <Link href="/my-designs" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
+              Thiết kế của tôi
+            </Link>
             <Link href="/gallery" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
               Thư viện
             </Link>

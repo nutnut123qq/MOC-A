@@ -5,6 +5,7 @@ import { TShirt } from '@/types/tshirt';
 import { TShirtDesignSession } from '@/types/tshirt-design';
 import { getTShirtImagePath } from '@/data/tshirt-options';
 import TShirtOptionsPanel from './TShirtOptionsPanel';
+import ImageLayer from './ImageLayer';
 
 interface TShirtCanvasProps {
   tshirt: TShirt;
@@ -464,7 +465,7 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
                       style={{
                         left: layer.position.x - (designSession.currentPrintArea === 'back' ? 129 : currentPrintArea.bounds.x),
                         top: layer.position.y - (designSession.currentPrintArea === 'back' ? 135 : currentPrintArea.bounds.y),
-                        transform: `rotate(${layer.transform.rotation}deg) scale(${layer.transform.scaleX}, ${layer.transform.scaleY})`,
+                        transform: `rotate(${layer.transform?.rotation || 0}deg) scale(${layer.transform?.scaleX || 1}, ${layer.transform?.scaleY || 1})`,
                         width: layer.style?.width,
                         height: layer.style?.height,
                         fontSize: layer.style?.fontSize,
@@ -501,8 +502,8 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
                       onDoubleClick={() => handleLayerDoubleClick(layer.id)}
                     >
                       {layer.type === 'image' ? (
-                        <img
-                          src={layer.content}
+                        <ImageLayer
+                          content={layer.content}
                           alt="Design element"
                           className="w-full h-full object-cover rounded pointer-events-none"
                           draggable={false}

@@ -8,6 +8,7 @@ using CleanArchitecture.Infrastructure.Repositories;
 using CleanArchitecture.Application.Interfaces;
 using CleanArchitecture.Application.Services;
 using CleanArchitecture.Infrastructure.Services;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,10 +21,10 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:3000", "http://localhost:3001", "https://localhost:3000", "https://localhost:3001")
+        policy.AllowAnyOrigin() // Allow all origins for testing
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowAnyMethod();
+              // Note: Cannot use AllowCredentials() with AllowAnyOrigin()
     });
 });
 
@@ -66,6 +67,8 @@ builder.Services.AddScoped<ITokenService, JwtTokenService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IDesignService, DesignService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IFileStorageService, FileStorageService>();
+builder.Services.AddScoped<ITempFileService, TempFileService>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -83,11 +86,31 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Serve static files from wwwroot
+app.UseStaticFiles();
+
+// Serve temp files from /temp path
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "temp")),
+    RequestPath = "/temp"
+});
+
 // Add request logging middleware
 app.Use(async (context, next) =>
 {
     Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
     Console.WriteLine($"Headers: {string.Join(", ", context.Request.Headers.Select(h => $"{h.Key}={h.Value}"))}");
+
+    // Log request body for POST requests
+    if (context.Request.Method == "POST" && context.Request.Path.StartsWithSegments("/api/designs"))
+    {
+        context.Request.EnableBuffering();
+        var body = await new StreamReader(context.Request.Body).ReadToEndAsync();
+        context.Request.Body.Position = 0;
+        Console.WriteLine($"Request Body: {body}");
+    }
+
     await next();
 });
 
@@ -105,6 +128,13 @@ app.MapControllers();
 // {
 //     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 //     await CleanArchitecture.Infrastructure.Data.SeedData.SeedAsync(context);
+// }
+
+// Seed data - Temporarily disabled due to SQL connection timeout
+// using (var scope = app.Services.CreateScope())
+// {
+//     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+//     await CleanArchitecture.Infrastructure.Data.DataSeeder.SeedAsync(context);
 // }
 
 app.Run();

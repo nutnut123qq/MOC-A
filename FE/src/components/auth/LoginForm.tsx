@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import FormInput from '@/components/ui/FormInput';
@@ -25,6 +25,7 @@ export default function LoginForm() {
 
   const { login } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const validateForm = (): boolean => {
     const newErrors: Partial<LoginFormData> = {};
@@ -54,7 +55,9 @@ export default function LoginForm() {
     setIsSubmitting(true);
     try {
       await login(formData.email, formData.password, formData.rememberMe);
-      router.push('/'); // Redirect to home after successful login
+      // Redirect to returnUrl if provided, otherwise to home
+      const returnUrl = searchParams.get('returnUrl') || '/';
+      router.push(returnUrl);
     } catch (error: any) {
       setApiError(error.message || 'Đăng nhập thất bại');
     } finally {

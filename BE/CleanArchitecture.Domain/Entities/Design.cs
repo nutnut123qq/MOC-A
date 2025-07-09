@@ -6,14 +6,15 @@ public class Design : BaseEntity
 {
     public int UserId { get; set; }
     public string Name { get; set; } = string.Empty;
-    public string CanvasData { get; set; } = string.Empty; // JSON data của canvas
-    public string PreviewImageUrl { get; set; } = string.Empty;
-    public decimal Width { get; set; } // Width in cm
-    public decimal Height { get; set; } // Height in cm
-    public bool IsPublic { get; set; } = false;
-    public int ViewCount { get; set; } = 0;
+    public string? Description { get; set; }
+    public int ProductId { get; set; }
+    public string DesignData { get; set; } = string.Empty; // JSON data của T-shirt design session
+    public string? PreviewImageUrl { get; set; }
+    // Removed: IsPublic, ViewCount, Width, Height (chỉ private designs)
 
     // Navigation properties
     public virtual User User { get; set; } = null!;
+    public virtual Product Product { get; set; } = null!;
     public virtual ICollection<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
+    public virtual ICollection<DesignFile> DesignFiles { get; set; } = new List<DesignFile>();
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import FormInput from '@/components/ui/FormInput';
@@ -30,6 +30,7 @@ export default function RegisterForm() {
 
   const { register } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const validateForm = (): boolean => {
     const newErrors: Partial<RegisterFormData> = {};
@@ -52,7 +53,7 @@ export default function RegisterForm() {
       newErrors.password = 'Mật khẩu là bắt buộc';
     } else if (formData.password.length < 6) {
       newErrors.password = 'Mật khẩu phải có ít nhất 6 ký tự';
-    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?])/.test(formData.password)) {
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).*$/.test(formData.password)) {
       newErrors.password = 'Mật khẩu phải chứa ít nhất 1 chữ hoa, 1 chữ thường, 1 số và 1 ký tự đặc biệt';
     }
 
@@ -95,7 +96,9 @@ export default function RegisterForm() {
       };
 
       await register(registerData);
-      router.push('/'); // Redirect to home after successful registration
+      // Redirect to returnUrl if provided, otherwise to home
+      const returnUrl = searchParams.get('returnUrl') || '/';
+      router.push(returnUrl);
     } catch (error: any) {
       setApiError(error.message || 'Đăng ký thất bại');
     } finally {

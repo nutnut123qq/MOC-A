@@ -7,8 +7,11 @@ import { TShirtDesignSession } from '@/types/tshirt-design';
 import DesignToolbar from './DesignToolbar';
 import TShirtCanvas from './TShirtCanvas';
 import TShirtPanel from './TShirtPanel';
+import SaveDesignModal from '@/components/design/SaveDesignModal';
 import { storageManager } from '@/utils/storageManager';
 import { useStorageWarning } from '@/components/debug/StorageDebug';
+import { useDesigns } from '@/hooks/useDesigns';
+import { CreateDesignRequest } from '@/lib/design-api';
 
 interface TShirtDesignStudioProps {
   tshirt: TShirt;
@@ -27,6 +30,10 @@ export default function TShirtDesignStudio({
   const [currentSession, setCurrentSession] = useState<TShirtDesignSession>(designSession);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+
+  // Design management hook
+  const { createDesign, loading: designLoading } = useDesigns();
 
   // Monitor storage usage
   useStorageWarning();
@@ -39,9 +46,42 @@ export default function TShirtDesignStudio({
   };
 
   const handleSave = async () => {
+    // Show save modal instead of calling onSave directly
+    setShowSaveModal(true);
+  };
+
+  const handleSaveDesign = async (designData: CreateDesignRequest) => {
     try {
       setSaving(true);
-      await onSave(currentSession);
+
+      console.log('💾 Saving design data:', {
+        name: designData.name,
+        productId: designData.productId,
+        layersCount: designData.designSession.designLayers.length,
+        layers: designData.designSession.designLayers.map(layer => ({
+          id: layer.id,
+          type: layer.type,
+          contentSize: typeof layer.content === 'string' ? layer.content.length : 'N/A',
+          position: layer.position,
+          transform: layer.transform
+        }))
+      });
+
+      const savedDesign = await createDesign(designData);
+
+      if (savedDesign) {
+        console.log('✅ Design saved successfully:', savedDesign);
+        // Also call the original onSave for backward compatibility
+        await onSave(currentSession);
+        alert('Thiết kế đã được lưu thành công!');
+      } else {
+        // If savedDesign is null, createDesign failed but didn't throw
+        throw new Error('Failed to save design');
+      }
+    } catch (error) {
+      console.error('❌ Error saving design:', error);
+      alert('Không thể lưu thiết kế. Vui lòng thử lại.');
+      // Don't redirect or do anything else, just show error
     } finally {
       setSaving(false);
     }
@@ -167,6 +207,17 @@ export default function TShirtDesignStudio({
           />
         </div>
       </div>
+
+      {/* Save Design Modal */}
+      <SaveDesignModal
+        isOpen={showSaveModal}
+        onClose={() => setShowSaveModal(false)}
+        onSave={handleSaveDesign}
+        designSession={currentSession}
+        productId={tshirt.id}
+        productName={tshirt.name}
+        loading={saving || designLoading}
+      />
     </div>
   );
 }
