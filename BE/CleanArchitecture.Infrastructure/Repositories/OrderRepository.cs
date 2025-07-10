@@ -86,4 +86,27 @@ public class OrderRepository : Repository<Order>, IOrderRepository
         var lastNumber = int.Parse(lastOrder.OrderNumber.Substring(11));
         return $"ORD{today}{(lastNumber + 1):D3}";
     }
+
+    public async Task<IEnumerable<Order>> GetUserOrdersAsync(int userId)
+    {
+        return await _dbSet
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Design)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .Where(o => o.UserId == userId)
+            .OrderByDescending(o => o.CreatedAt)
+            .ToListAsync();
+    }
+
+    public async Task<Order?> GetOrderWithItemsAsync(int id)
+    {
+        return await _dbSet
+            .Include(o => o.User)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Design)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .FirstOrDefaultAsync(o => o.Id == id);
+    }
 }

@@ -316,6 +316,7 @@ export default function TShirtDesignStudioPage() {
         designSession={designSession}
         onSave={handleSaveDesign}
         onBack={handleBackToHome}
+        initialSavedDesignId={searchParams.get('loadDesign') ? parseInt(searchParams.get('loadDesign')!) : null}
       />
 
       <AuthPrompt

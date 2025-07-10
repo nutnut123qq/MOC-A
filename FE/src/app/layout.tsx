@@ -3,8 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import { googleFontsUrl } from "@/data/fonts";
-import StorageDebug from "@/components/debug/StorageDebug";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { CartProvider } from "@/contexts/CartContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,12 +35,12 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white`}
       >
         <AuthProvider>
-          <Header />
-          <main>
-            {children}
-          </main>
-          {/* Storage Debug - Only in development */}
-          {process.env.NODE_ENV === 'development' && <StorageDebug />}
+          <CartProvider>
+            <Header />
+            <main>
+              {children}
+            </main>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

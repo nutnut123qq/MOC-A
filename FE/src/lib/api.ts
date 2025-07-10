@@ -10,9 +10,13 @@ class ApiClient {
   private async request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     const url = `${API_BASE_URL}${endpoint}`;
 
+    // Get token from localStorage using correct key
+    const token = localStorage.getItem('accessToken');
+
     const config: RequestInit = {
       headers: {
         'Content-Type': 'application/json',
+        ...(token && { 'Authorization': `Bearer ${token}` }),
         ...options?.headers,
       },
       ...options,
@@ -136,6 +140,63 @@ class ApiClient {
     return this.request<Order>(`/api/orders/${id}`);
   }
 
+  // Cart endpoints
+  async getCart(): Promise<CartItem[]> {
+    return this.request<CartItem[]>('/api/cart');
+  }
+
+  async addToCart(addToCartDto: AddToCartDto): Promise<CartItem> {
+    return this.request<CartItem>('/api/cart/add', {
+      method: 'POST',
+      body: JSON.stringify(addToCartDto),
+    });
+  }
+
+  async updateCartItem(cartItemId: number, updateCartItemDto: UpdateCartItemDto): Promise<CartItem> {
+    return this.request<CartItem>(`/api/cart/${cartItemId}`, {
+      method: 'PUT',
+      body: JSON.stringify(updateCartItemDto),
+    });
+  }
+
+  async removeFromCart(cartItemId: number): Promise<void> {
+    return this.request<void>(`/api/cart/${cartItemId}`, {
+      method: 'DELETE',
+    });
+  }
+
+  async clearCart(): Promise<void> {
+    return this.request<void>('/api/cart/clear', {
+      method: 'DELETE',
+    });
+  }
+
+  async getCartItemCount(): Promise<number> {
+    return this.request<number>('/api/cart/count');
+  }
+
+  async getCartTotal(): Promise<number> {
+    return this.request<number>('/api/cart/total');
+  }
+
+  // Order endpoints (updated)
+  async getMyOrders(): Promise<Order[]> {
+    return this.request<Order[]>('/api/orders/my');
+  }
+
+  async createOrderFromCart(orderData: CreateOrderDto): Promise<Order> {
+    return this.request<Order>('/api/orders/from-cart', {
+      method: 'POST',
+      body: JSON.stringify(orderData),
+    });
+  }
+
+  async cancelOrder(orderId: number): Promise<void> {
+    return this.request<void>(`/api/orders/${orderId}/cancel`, {
+      method: 'POST',
+    });
+  }
+
   // Sticker endpoints
   async getStickers(): Promise<Sticker[]> {
     return this.request<Sticker[]>('/api/stickers');
@@ -164,3 +225,4 @@ class ApiClient {
 }
 
 export const apiClient = new ApiClient();
+export const api = apiClient;

@@ -3,15 +3,17 @@
 import { TShirt } from '@/types/tshirt';
 import { TShirtDesignSession } from '@/types/tshirt-design';
 import { getPrintAreaBounds, getMaxDimensions } from '@/utils/printAreaCalculator';
+import AddToCartButton from '@/components/ui/AddToCartButton';
 
 interface TShirtPanelProps {
   tshirt: TShirt;
   designSession: TShirtDesignSession;
   onSessionUpdate: (session: TShirtDesignSession) => void;
   onPreview?: () => void;
+  savedDesignId?: number | null;
 }
 
-export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, onPreview }: TShirtPanelProps) {
+export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, onPreview, savedDesignId }: TShirtPanelProps) {
   const currentVariant = tshirt.variants.find(v => v.color === designSession.selectedColor) || tshirt.variants[0];
   const currentSize = currentVariant.sizes.find(s => s.size === designSession.selectedSize) || currentVariant.sizes[0];
 
@@ -232,9 +234,23 @@ export default function TShirtPanel({ tshirt, designSession, onSessionUpdate, on
               🔍 Xem Trước Mockup
             </button>
           )}
-          <button className="w-full bg-amber-600 text-white py-3 rounded-lg font-semibold hover:bg-amber-700 transition-colors">
-            Thêm Vào Giỏ Hàng
-          </button>
+          {savedDesignId ? (
+            <AddToCartButton
+              designId={savedDesignId}
+              productId={tshirt.id}
+              sizeWidth={200} // Default size
+              sizeHeight={200} // Default size
+              className="w-full py-3 rounded-lg font-semibold"
+            />
+          ) : (
+            <button
+              className="w-full bg-gray-400 text-white py-3 rounded-lg font-semibold cursor-not-allowed"
+              disabled
+              title="Vui lòng lưu thiết kế trước"
+            >
+              Thêm Vào Giỏ Hàng
+            </button>
+          )}
           <button className="w-full border border-gray-300 text-gray-700 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors">
             Lưu Thiết Kế
           </button>

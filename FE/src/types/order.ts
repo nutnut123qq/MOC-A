@@ -62,6 +62,7 @@ export interface CreateOrderItemDto {
 }
 
 export interface CartItem {
+  id: number;
   designId: number;
   designName: string;
   designPreviewUrl: string;
@@ -73,5 +74,20 @@ export interface CartItem {
   quantity: number;
   unitPrice: number;
   totalPrice: number;
+  specialInstructions: string;
+  addedAt: string;
+}
+
+export interface AddToCartDto {
+  designId: number;
+  productId: number;
+  sizeWidth: number;
+  sizeHeight: number;
+  quantity: number;
+  specialInstructions: string;
+}
+
+export interface UpdateCartItemDto {
+  quantity: number;
   specialInstructions: string;
 }

@@ -9,7 +9,6 @@ import TShirtCanvas from './TShirtCanvas';
 import TShirtPanel from './TShirtPanel';
 import SaveDesignModal from '@/components/design/SaveDesignModal';
 import { storageManager } from '@/utils/storageManager';
-import { useStorageWarning } from '@/components/debug/StorageDebug';
 import { useDesigns } from '@/hooks/useDesigns';
 import { CreateDesignRequest } from '@/lib/design-api';
 
@@ -18,25 +17,25 @@ interface TShirtDesignStudioProps {
   designSession: TShirtDesignSession;
   onSave: (session: TShirtDesignSession) => void;
   onBack: () => void;
+  initialSavedDesignId?: number | null;
 }
 
 export default function TShirtDesignStudio({
   tshirt,
   designSession,
   onSave,
-  onBack
+  onBack,
+  initialSavedDesignId
 }: TShirtDesignStudioProps) {
   const router = useRouter();
   const [currentSession, setCurrentSession] = useState<TShirtDesignSession>(designSession);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [saving, setSaving] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [savedDesignId, setSavedDesignId] = useState<number | null>(initialSavedDesignId || null);
 
   // Design management hook
   const { createDesign, loading: designLoading } = useDesigns();
-
-  // Monitor storage usage
-  useStorageWarning();
 
   // Sync currentSession với designSession prop khi thay đổi
   useEffect(() => {
@@ -82,6 +81,7 @@ export default function TShirtDesignStudio({
 
       if (savedDesign) {
         console.log('✅ Design saved successfully:', savedDesign);
+        setSavedDesignId(savedDesign.id);
         // Also call the original onSave for backward compatibility
         await onSave(currentSession);
         alert('Thiết kế đã được lưu thành công!');
@@ -180,6 +180,7 @@ export default function TShirtDesignStudio({
             >
               {saving ? 'Đang lưu...' : 'Lưu'}
             </button>
+
           </div>
         </div>
       </div>
@@ -215,6 +216,7 @@ export default function TShirtDesignStudio({
             designSession={currentSession}
             onSessionUpdate={handleSessionUpdate}
             onPreview={handlePreview}
+            savedDesignId={savedDesignId}
           />
         </div>
       </div>

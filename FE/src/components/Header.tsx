@@ -1,40 +1,15 @@
 'use client';
 
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import UserMenu from '@/components/layout/UserMenu';
+import { useCart } from '@/contexts/CartContext';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [cartItemCount, setCartItemCount] = useState(0);
+  const { cartCount } = useCart();
   const { handleLinkHover } = usePrefetch();
-
-  useEffect(() => {
-    // Update cart count on mount and when localStorage changes
-    const updateCartCount = () => {
-      const savedCart = localStorage.getItem('designCart');
-      if (savedCart) {
-        const cartItems = JSON.parse(savedCart);
-        setCartItemCount(cartItems.length);
-      } else {
-        setCartItemCount(0);
-      }
-    };
-
-    updateCartCount();
-
-    // Listen for storage changes
-    window.addEventListener('storage', updateCartCount);
-
-    // Custom event for cart updates within the same tab
-    window.addEventListener('cartUpdated', updateCartCount);
-
-    return () => {
-      window.removeEventListener('storage', updateCartCount);
-      window.removeEventListener('cartUpdated', updateCartCount);
-    };
-  }, []);
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
@@ -87,9 +62,9 @@ export default function Header() {
               <div className="flex items-center space-x-1">
                 <span>🛒</span>
                 <span>Giỏ hàng</span>
-                {cartItemCount > 0 && (
+                {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartItemCount}
+                    {cartCount}
                   </span>
                 )}
               </div>
@@ -136,9 +111,9 @@ export default function Header() {
               <Link href="/cart" className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
                 <div className="flex items-center justify-between">
                   <span>🛒 Giỏ hàng</span>
-                  {cartItemCount > 0 && (
+                  {cartCount > 0 && (
                     <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                      {cartItemCount}
+                      {cartCount}
                     </span>
                   )}
                 </div>

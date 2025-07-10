@@ -10,4 +10,6 @@ public interface IOrderRepository : IRepository<Order>
     Task<Order?> GetWithItemsAsync(int id);
     Task<IEnumerable<Order>> GetWithItemsAsync();
     Task<string> GenerateOrderNumberAsync();
+    Task<IEnumerable<Order>> GetUserOrdersAsync(int userId);
+    Task<Order?> GetOrderWithItemsAsync(int id);
 }
