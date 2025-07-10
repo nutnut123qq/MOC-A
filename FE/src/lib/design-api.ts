@@ -93,6 +93,11 @@ class DesignAPI {
     return this.request<Design>(`/api/designs/${id}`);
   }
 
+  // Alias for getDesignById for easier usage
+  async getDesign(id: number): Promise<Design> {
+    return this.getDesignById(id);
+  }
+
   // Create new design
   async createDesign(designData: CreateDesignRequest): Promise<Design> {
     console.log('🚀 Creating design with data:', designData);

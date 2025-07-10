@@ -4,6 +4,12 @@ namespace CleanArchitecture.Application.DTOs.Design;
 
 public class TShirtDesignSessionDto
 {
+    [JsonPropertyName("id")]
+    public string Id { get; set; } = string.Empty;
+
+    [JsonPropertyName("tshirtId")]
+    public int TshirtId { get; set; }
+
     [JsonPropertyName("selectedSize")]
     public string SelectedSize { get; set; } = "M";
 
@@ -12,6 +18,15 @@ public class TShirtDesignSessionDto
 
     [JsonPropertyName("designLayers")]
     public List<DesignLayerDto> DesignLayers { get; set; } = new();
+
+    [JsonPropertyName("currentPrintArea")]
+    public string CurrentPrintArea { get; set; } = "front";
+
+    [JsonPropertyName("createdAt")]
+    public string CreatedAt { get; set; } = string.Empty;
+
+    [JsonPropertyName("updatedAt")]
+    public string UpdatedAt { get; set; } = string.Empty;
 }
 
 public class DesignLayerDto

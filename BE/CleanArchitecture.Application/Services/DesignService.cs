@@ -100,6 +100,23 @@ public class DesignService : IDesignService
             // Update design ID in processed session and save again
             var finalDesignSession = await ProcessDesignSessionAsync(userId, createdDesign.Id, createDesignDto.DesignSession);
             createdDesign.DesignData = JsonSerializer.Serialize(finalDesignSession);
+
+            // Generate and save preview image
+            try
+            {
+                var previewImageUrl = await GenerateDesignPreviewAsync(userId, createdDesign.Id, finalDesignSession);
+                if (!string.IsNullOrEmpty(previewImageUrl))
+                {
+                    createdDesign.PreviewImageUrl = previewImageUrl;
+                    _logger.LogInformation("Generated preview image for design {DesignId}: {PreviewUrl}", createdDesign.Id, previewImageUrl);
+                }
+            }
+            catch (Exception previewEx)
+            {
+                _logger.LogWarning(previewEx, "Failed to generate preview image for design {DesignId}", createdDesign.Id);
+                // Continue without preview image - not critical
+            }
+
             await _designRepository.UpdateAsync(createdDesign);
 
             _logger.LogInformation("Created design {DesignId} for user {UserId}", createdDesign.Id, userId);
@@ -127,6 +144,22 @@ public class DesignService : IDesignService
             design.Description = updateDesignDto.Description;
             design.DesignData = JsonSerializer.Serialize(processedDesignSession);
             design.UpdatedAt = DateTime.UtcNow;
+
+            // Generate and save updated preview image
+            try
+            {
+                var previewImageUrl = await GenerateDesignPreviewAsync(userId, id, processedDesignSession);
+                if (!string.IsNullOrEmpty(previewImageUrl))
+                {
+                    design.PreviewImageUrl = previewImageUrl;
+                    _logger.LogInformation("Updated preview image for design {DesignId}: {PreviewUrl}", id, previewImageUrl);
+                }
+            }
+            catch (Exception previewEx)
+            {
+                _logger.LogWarning(previewEx, "Failed to update preview image for design {DesignId}", id);
+                // Continue without preview image - not critical
+            }
 
             await _designRepository.UpdateAsync(design);
             _logger.LogInformation("Updated design {DesignId} for user {UserId}", id, userId);
@@ -200,10 +233,30 @@ public class DesignService : IDesignService
             try
             {
                 designSession = JsonSerializer.Deserialize<TShirtDesignSessionDto>(design.DesignData);
+
+                // Ensure required fields are populated if missing
+                if (designSession != null)
+                {
+                    if (string.IsNullOrEmpty(designSession.Id))
+                        designSession.Id = $"session-{design.Id}";
+
+                    if (designSession.TshirtId == 0)
+                        designSession.TshirtId = 1; // Default T-shirt ID
+
+                    if (string.IsNullOrEmpty(designSession.CurrentPrintArea))
+                        designSession.CurrentPrintArea = "front";
+
+                    if (string.IsNullOrEmpty(designSession.CreatedAt))
+                        designSession.CreatedAt = design.CreatedAt.ToString("O");
+
+                    if (string.IsNullOrEmpty(designSession.UpdatedAt))
+                        designSession.UpdatedAt = (design.UpdatedAt ?? design.CreatedAt).ToString("O");
+                }
             }
-            catch (JsonException)
+            catch (JsonException ex)
             {
                 // Log error but don't fail the mapping
+                Console.WriteLine($"Error deserializing design session for design {design.Id}: {ex.Message}");
                 designSession = null;
             }
         }
@@ -231,8 +284,13 @@ public class DesignService : IDesignService
         {
             var processedSession = new TShirtDesignSessionDto
             {
+                Id = designSession.Id ?? $"session-{DateTime.UtcNow.Ticks}",
+                TshirtId = designSession.TshirtId,
                 SelectedSize = designSession.SelectedSize,
                 SelectedColor = designSession.SelectedColor,
+                CurrentPrintArea = designSession.CurrentPrintArea ?? "front",
+                CreatedAt = designSession.CreatedAt ?? DateTime.UtcNow.ToString("O"),
+                UpdatedAt = DateTime.UtcNow.ToString("O"),
                 DesignLayers = new List<DesignLayerDto>()
             };
 
@@ -417,6 +475,57 @@ public class DesignService : IDesignService
         catch
         {
             return false;
+        }
+    }
+
+    /// <summary>
+    /// Generate preview image for design session
+    /// This is a simplified implementation - in production you might want to use a more sophisticated image generation service
+    /// </summary>
+    private async Task<string?> GenerateDesignPreviewAsync(int userId, int designId, TShirtDesignSessionDto designSession)
+    {
+        try
+        {
+            _logger.LogInformation("Generating preview image for design {DesignId}", designId);
+
+            // For now, we'll create a simple placeholder preview
+            // In a real implementation, you would:
+            // 1. Load the T-shirt template image
+            // 2. Render all design layers on top
+            // 3. Save the composite image
+
+            // Create a simple preview metadata JSON that frontend can use
+            var previewData = new
+            {
+                designId = designId,
+                selectedSize = designSession.SelectedSize,
+                selectedColor = designSession.SelectedColor,
+                layerCount = designSession.DesignLayers?.Count ?? 0,
+                frontLayers = designSession.DesignLayers?.Count(l => l.PrintArea == "front") ?? 0,
+                backLayers = designSession.DesignLayers?.Count(l => l.PrintArea == "back") ?? 0,
+                generatedAt = DateTime.UtcNow
+            };
+
+            var previewJson = JsonSerializer.Serialize(previewData);
+            var previewBytes = System.Text.Encoding.UTF8.GetBytes(previewJson);
+
+            // Save preview metadata as a file (this will be replaced by actual image generation)
+            var previewPath = await _fileStorageService.SaveDesignImageAsync(
+                userId,
+                designId,
+                "preview",
+                previewBytes,
+                "preview.json",
+                "application/json"
+            );
+
+            _logger.LogInformation("Generated preview metadata for design {DesignId}: {PreviewPath}", designId, previewPath);
+            return previewPath;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to generate preview for design {DesignId}", designId);
+            return null;
         }
     }
 }

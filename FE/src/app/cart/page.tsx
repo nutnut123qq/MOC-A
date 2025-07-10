@@ -5,6 +5,9 @@ import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { ProductType } from '@/types/product';
+import CartDesignPreview from '@/components/cart/CartDesignPreview';
+import { useCartItemsWithDesign } from '@/services/cartDesignService';
+import { CartPreviewErrorBoundary } from '@/components/cart/CartPreviewErrorBoundary';
 
 const productInfo: Record<ProductType, { name: string; emoji: string }> = {
   [ProductType.Shirt]: { name: 'Áo Thun', emoji: '👕' },
@@ -16,6 +19,9 @@ export default function CartPage() {
   const { cartItems, cartTotal, loading, error, updateCartItem, removeFromCart, clearCart } = useCart();
   const { isAuthenticated } = useAuth();
   const [updating, setUpdating] = useState<number | null>(null);
+
+  // Get cart items with design session data
+  const { itemsWithDesign, loading: designLoading } = useCartItemsWithDesign(cartItems);
 
   const handleUpdateQuantity = async (cartItemId: number, newQuantity: number) => {
     if (newQuantity < 1) return;
@@ -131,26 +137,35 @@ export default function CartPage() {
           <div className="grid lg:grid-cols-3 gap-8">
             {/* Items List */}
             <div className="lg:col-span-2 space-y-4">
-              {cartItems.map((item) => {
+              {itemsWithDesign.map((item) => {
                 const product = productInfo[item.productType];
                 const isUpdatingThis = updating === item.id;
-                
+
                 return (
                   <div key={item.id} className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                     <div className="flex items-start space-x-4">
                       {/* Design Preview */}
                       <div className="flex-shrink-0">
-                        <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
-                          {item.designPreviewUrl ? (
-                            <img 
-                              src={item.designPreviewUrl} 
-                              alt={item.designName}
-                              className="w-full h-full object-cover rounded-lg"
-                            />
+                        <CartPreviewErrorBoundary
+                          fallback={
+                            <div className="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center">
+                              <span className="text-2xl">{product.emoji}</span>
+                            </div>
+                          }
+                        >
+                          {item.designSessionLoading ? (
+                            <div className="w-20 h-20 flex items-center justify-center">
+                              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-600"></div>
+                            </div>
                           ) : (
-                            <span className="text-2xl">{product.emoji}</span>
+                            <CartDesignPreview
+                              designSession={item.designSession}
+                              previewImageUrl={item.designPreviewUrl}
+                              designName={item.designName}
+                              size="small"
+                            />
                           )}
-                        </div>
+                        </CartPreviewErrorBoundary>
                       </div>
 
                       {/* Item Details */}
