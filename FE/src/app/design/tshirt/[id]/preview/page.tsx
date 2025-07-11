@@ -213,7 +213,7 @@ export default function TShirtPreviewPage() {
   const handleColorChange = async (color: string) => {
     setUpdating(true);
     try {
-      const updatedSession = { ...designSession!, selectedColor: color };
+      const updatedSession = { ...designSession!, selectedColor: color as any };
       setDesignSession(updatedSession);
       storageManager.setItem(`design-session-${tshirt!.id}`, updatedSession);
     } finally {
@@ -224,7 +224,7 @@ export default function TShirtPreviewPage() {
   const handleSizeChange = async (size: string) => {
     setUpdating(true);
     try {
-      const updatedSession = { ...designSession!, selectedSize: size };
+      const updatedSession = { ...designSession!, selectedSize: size as any };
       setDesignSession(updatedSession);
       storageManager.setItem(`design-session-${tshirt!.id}`, updatedSession);
     } finally {

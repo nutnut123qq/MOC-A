@@ -5,15 +5,20 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useWallet } from '@/contexts/WalletContext';
 import { apiClient } from '@/lib/api';
 import { CreateOrderDto } from '@/types/order';
+import PaymentOptions from '@/components/payment/PaymentOptions';
+import toast from 'react-hot-toast';
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { cartItems, cartTotal, clearCart } = useCart();
   const { isAuthenticated, user } = useAuth();
+  const { payFromWallet } = useWallet();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [step, setStep] = useState<'info' | 'payment'>('info');
 
   const [formData, setFormData] = useState({
     customerName: user?.firstName + ' ' + user?.lastName || '',
@@ -31,9 +36,9 @@ export default function CheckoutPage() {
     }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleInfoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!isAuthenticated) {
       setError('Vui lòng đăng nhập để đặt hàng');
       return;
@@ -44,10 +49,21 @@ export default function CheckoutPage() {
       return;
     }
 
+    // Validate form
+    if (!formData.customerName || !formData.customerPhone || !formData.deliveryAddress) {
+      setError('Vui lòng điền đầy đủ thông tin bắt buộc');
+      return;
+    }
+
+    setStep('payment');
+  };
+
+  const handlePaymentMethodSelect = async (method: 'wallet' | 'payos') => {
     try {
       setLoading(true);
       setError(null);
 
+      // Create order first
       const orderData: CreateOrderDto = {
         customerName: formData.customerName,
         customerPhone: formData.customerPhone,
@@ -58,16 +74,51 @@ export default function CheckoutPage() {
       };
 
       const order = await apiClient.createOrderFromCart(orderData);
-      
-      // Clear cart after successful order
-      await clearCart();
-      
-      // Redirect to order confirmation
-      router.push(`/orders/${order.id}`);
-      
+
+      if (method === 'wallet') {
+        // Pay from wallet
+        const success = await payFromWallet(
+          order.id,
+          cartTotal,
+          `Thanh toán đơn hàng #${order.orderNumber}`
+        );
+
+        if (success) {
+          await clearCart();
+          toast.success('Thanh toán thành công!');
+          router.push(`/orders/${order.id}?success=true`);
+        } else {
+          setError('Thanh toán từ ví thất bại');
+        }
+      } else {
+        // Pay via PayOS
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payment/create-order-payment`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+          body: JSON.stringify({
+            orderId: order.id,
+            amount: cartTotal,
+            description: `Thanh toán đơn hàng #${order.orderNumber}`,
+            returnUrl: `${window.location.origin}/payment/return`,
+            cancelUrl: `${window.location.origin}/payment/cancel`
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create payment');
+        }
+
+        const paymentResponse = await response.json();
+        // Redirect to PayOS checkout
+        window.location.href = paymentResponse.checkoutUrl;
+      }
+
     } catch (err: any) {
-      console.error('Error creating order:', err);
-      setError(err.message || 'Không thể tạo đơn hàng. Vui lòng thử lại.');
+      console.error('Error processing payment:', err);
+      setError(err.message || 'Không thể xử lý thanh toán. Vui lòng thử lại.');
     } finally {
       setLoading(false);
     }
@@ -118,13 +169,37 @@ export default function CheckoutPage() {
       <div className="max-w-7xl mx-auto px-6 lg:px-8 py-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">Thanh toán</h1>
-          <p className="text-gray-600 mt-1">Hoàn tất thông tin để đặt hàng</p>
+          <p className="text-gray-600 mt-1">
+            {step === 'info' ? 'Hoàn tất thông tin để đặt hàng' : 'Chọn phương thức thanh toán'}
+          </p>
+
+          {/* Progress Steps */}
+          <div className="flex items-center mt-6">
+            <div className={`flex items-center ${step === 'info' ? 'text-amber-600' : 'text-green-600'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                step === 'info' ? 'bg-amber-600 text-white' : 'bg-green-600 text-white'
+              }`}>
+                1
+              </div>
+              <span className="ml-2 font-medium">Thông tin đặt hàng</span>
+            </div>
+            <div className="flex-1 h-px bg-gray-300 mx-4"></div>
+            <div className={`flex items-center ${step === 'payment' ? 'text-amber-600' : 'text-gray-400'}`}>
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
+                step === 'payment' ? 'bg-amber-600 text-white' : 'bg-gray-300 text-gray-600'
+              }`}>
+                2
+              </div>
+              <span className="ml-2 font-medium">Thanh toán</span>
+            </div>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Order Form */}
           <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            {step === 'info' ? (
+              <form onSubmit={handleInfoSubmit} className="space-y-6">
               <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4">Thông tin khách hàng</h2>
                 
@@ -232,11 +307,38 @@ export default function CheckoutPage() {
                       <span>Đang xử lý...</span>
                     </span>
                   ) : (
-                    'Đặt hàng'
+                    'Tiếp tục thanh toán →'
                   )}
                 </button>
               </div>
             </form>
+            ) : (
+              /* Payment Step */
+              <div className="space-y-6">
+                <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                  <PaymentOptions
+                    orderTotal={cartTotal}
+                    onPaymentMethodSelect={handlePaymentMethodSelect}
+                    disabled={loading}
+                  />
+                </div>
+
+                {error && (
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p className="text-red-600">{error}</p>
+                  </div>
+                )}
+
+                <div className="flex space-x-4">
+                  <button
+                    onClick={() => setStep('info')}
+                    className="flex-1 border border-gray-300 text-gray-700 py-3 px-4 rounded-xl font-medium hover:bg-gray-50 transition-colors text-center"
+                  >
+                    ← Quay lại thông tin
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Order Summary */}

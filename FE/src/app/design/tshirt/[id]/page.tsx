@@ -204,17 +204,18 @@ export default function TShirtDesignStudioPage() {
           const designPromise = getDesignById(parseInt(loadDesignId));
           const savedDesign = await Promise.race([designPromise, timeoutPromise]);
 
-          if (savedDesign && savedDesign.designSession) {
+          if (savedDesign && (savedDesign as any).designSession) {
             // Load the saved design session
+            const designSession = (savedDesign as any).designSession;
             const loadedSession: TShirtDesignSession = {
-              ...savedDesign.designSession,
+              ...designSession,
               id: `session-${Date.now()}`,
               tshirtId: foundTShirt.id,
               updatedAt: new Date().toISOString(),
               // Đảm bảo có các giá trị mặc định
-              currentPrintArea: savedDesign.designSession.currentPrintArea || 'front',
-              selectedSize: savedDesign.designSession.selectedSize || DEFAULT_TSHIRT_SIZE,
-              selectedColor: savedDesign.designSession.selectedColor || DEFAULT_TSHIRT_COLOR,
+              currentPrintArea: designSession.currentPrintArea || 'front',
+              selectedSize: designSession.selectedSize || DEFAULT_TSHIRT_SIZE,
+              selectedColor: designSession.selectedColor || DEFAULT_TSHIRT_COLOR,
             };
 
             console.log('🔄 Loading saved design:', {

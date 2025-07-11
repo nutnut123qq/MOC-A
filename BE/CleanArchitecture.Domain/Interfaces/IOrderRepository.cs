@@ -12,4 +12,9 @@ public interface IOrderRepository : IRepository<Order>
     Task<string> GenerateOrderNumberAsync();
     Task<IEnumerable<Order>> GetUserOrdersAsync(int userId);
     Task<Order?> GetOrderWithItemsAsync(int id);
+
+    // PayOS integration methods
+    Task<Order?> GetByPayOSOrderCodeAsync(string payOSOrderCode);
+    Task UpdatePayOSOrderCodeAsync(int orderId, string payOSOrderCode);
+    Task UpdatePaymentStatusAsync(int orderId, PaymentStatus paymentStatus);
 }

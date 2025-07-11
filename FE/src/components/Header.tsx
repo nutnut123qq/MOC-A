@@ -5,10 +5,14 @@ import { useState } from 'react';
 import { usePrefetch } from '@/hooks/usePrefetch';
 import UserMenu from '@/components/layout/UserMenu';
 import { useCart } from '@/contexts/CartContext';
+import { useWallet } from '@/contexts/WalletContext';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { cartCount } = useCart();
+  const { balance } = useWallet();
+  const { user } = useAuth();
   const { handleLinkHover } = usePrefetch();
 
   return (
@@ -54,6 +58,20 @@ export default function Header() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center space-x-3">
+            {user && (
+              <Link
+                href="/wallet"
+                className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg transition-colors duration-200"
+              >
+                <div className="flex items-center space-x-1">
+                  <span>💰</span>
+                  <span className="hidden lg:inline">Ví:</span>
+                  <span className="font-semibold text-amber-600">
+                    {balance.toLocaleString()}đ
+                  </span>
+                </div>
+              </Link>
+            )}
             <Link
               href="/cart"
               className="relative px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg transition-colors duration-200"

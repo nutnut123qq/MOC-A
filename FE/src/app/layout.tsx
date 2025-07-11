@@ -5,6 +5,8 @@ import Header from "@/components/Header";
 import { googleFontsUrl } from "@/data/fonts";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
+import { WalletProvider } from "@/contexts/WalletContext";
+import { Toaster } from 'react-hot-toast';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,12 +37,24 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white`}
       >
         <AuthProvider>
-          <CartProvider>
-            <Header />
-            <main>
-              {children}
-            </main>
-          </CartProvider>
+          <WalletProvider>
+            <CartProvider>
+              <Header />
+              <main>
+                {children}
+              </main>
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                  },
+                }}
+              />
+            </CartProvider>
+          </WalletProvider>
         </AuthProvider>
       </body>
     </html>

@@ -72,6 +72,20 @@ BE/**/Migrations/*.Designer.cs
 BE/**/Migrations/*.cs
 !BE/**/Migrations/ApplicationDbContextModelSnapshot.cs
 
+# ===== SECURITY - SENSITIVE FILES =====
+# PayOS credentials and sensitive configuration
+BE/**/appsettings.Development.json
+BE/**/appsettings.Production.json
+BE/**/appsettings.Staging.json
+BE/**/*.secrets.json
+BE/**/*secrets*
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+
 # ===== GENERAL =====
 # OS generated files
 .DS_Store

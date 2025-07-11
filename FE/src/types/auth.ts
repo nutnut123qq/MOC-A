@@ -73,6 +73,7 @@ export interface ResetPasswordRequest {
 
 export interface AuthContextType {
   user: User | null;
+  token: string | null;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   register: (userData: RegisterRequest) => Promise<void>;
   logout: () => void;

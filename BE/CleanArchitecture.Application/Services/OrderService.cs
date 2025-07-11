@@ -302,4 +302,25 @@ public class OrderService : IOrderService
             }).ToList()
         };
     }
+
+    // PayOS integration methods
+    public async Task<Order?> GetByIdAsync(int id)
+    {
+        return await _orderRepository.GetByIdAsync(id);
+    }
+
+    public async Task<Order?> GetByPayOSOrderCodeAsync(string payOSOrderCode)
+    {
+        return await _orderRepository.GetByPayOSOrderCodeAsync(payOSOrderCode);
+    }
+
+    public async Task UpdatePayOSOrderCodeAsync(int orderId, string payOSOrderCode)
+    {
+        await _orderRepository.UpdatePayOSOrderCodeAsync(orderId, payOSOrderCode);
+    }
+
+    public async Task UpdatePaymentStatusAsync(int orderId, PaymentStatus paymentStatus)
+    {
+        await _orderRepository.UpdatePaymentStatusAsync(orderId, paymentStatus);
+    }
 }

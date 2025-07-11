@@ -49,7 +49,7 @@ export default function UsersPage() {
         </button>
       </div>
 
-      {users.length === 0 ? (
+      {users && users.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-gray-500 text-lg">Không tìm thấy người dùng</p>
           <p className="text-gray-400 mt-2">Tạo người dùng đầu tiên để bắt đầu</p>
@@ -77,7 +77,7 @@ export default function UsersPage() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {users.map((user) => (
+              {users && users.map((user) => (
                 <tr key={user.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm font-medium text-gray-900">

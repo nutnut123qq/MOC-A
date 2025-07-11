@@ -44,6 +44,7 @@ public class User : BaseEntity
     public virtual ICollection<Design> Designs { get; set; } = new List<Design>();
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
     public virtual ICollection<RefreshToken> RefreshTokens { get; set; } = new List<RefreshToken>();
+    public virtual Wallet? Wallet { get; set; }
 
     // Helper properties
     public string FullName => $"{FirstName} {LastName}";

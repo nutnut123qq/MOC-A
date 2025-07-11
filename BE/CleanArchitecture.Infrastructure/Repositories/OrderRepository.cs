@@ -109,4 +109,45 @@ public class OrderRepository : Repository<Order>, IOrderRepository
                 .ThenInclude(oi => oi.Product)
             .FirstOrDefaultAsync(o => o.Id == id);
     }
+
+    // PayOS integration methods
+    public async Task<Order?> GetByPayOSOrderCodeAsync(string payOSOrderCode)
+    {
+        return await _dbSet
+            .Include(o => o.User)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Design)
+            .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+            .FirstOrDefaultAsync(o => o.PayOSOrderCode == payOSOrderCode);
+    }
+
+    public async Task UpdatePayOSOrderCodeAsync(int orderId, string payOSOrderCode)
+    {
+        var order = await _dbSet.FindAsync(orderId);
+        if (order != null)
+        {
+            order.PayOSOrderCode = payOSOrderCode;
+            order.UpdatedAt = DateTime.UtcNow;
+            await _context.SaveChangesAsync();
+        }
+    }
+
+    public async Task UpdatePaymentStatusAsync(int orderId, PaymentStatus paymentStatus)
+    {
+        var order = await _dbSet.FindAsync(orderId);
+        if (order != null)
+        {
+            order.PaymentStatus = paymentStatus;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            // If payment is successful, update order status to Confirmed
+            if (paymentStatus == PaymentStatus.Paid && order.Status == OrderStatus.Pending)
+            {
+                order.Status = OrderStatus.Confirmed;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+    }
 }

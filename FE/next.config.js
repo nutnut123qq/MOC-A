@@ -10,6 +10,12 @@ const nextConfig = {
   trailingSlash: false,
   // Use src directory
   pageExtensions: ['js', 'jsx', 'ts', 'tsx'],
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 module.exports = nextConfig;

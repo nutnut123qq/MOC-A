@@ -13,6 +13,7 @@ interface AuthProviderProps {
 
 export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   // Initialize auth state on mount
@@ -23,6 +24,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const initializeAuth = async () => {
     try {
       if (TokenManager.hasValidToken()) {
+        setToken(TokenManager.getAccessToken());
         await getCurrentUser();
       } else {
         // Try to refresh token if we have a refresh token
@@ -35,6 +37,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
             // This is normal when refresh token is expired
             TokenManager.clearTokens();
             setUser(null);
+            setToken(null);
           }
         }
       }
@@ -42,6 +45,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.error('Auth initialization failed:', error);
       TokenManager.clearTokens();
       setUser(null);
+      setToken(null);
     } finally {
       setIsLoading(false);
     }
@@ -67,8 +71,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       if (response.success && response.data) {
         const { accessToken, refreshToken, expiresIn, user: userData } = response.data;
-        
+
         TokenManager.setTokens(accessToken, refreshToken, expiresIn);
+        setToken(accessToken);
         setUser(userData);
       } else {
         throw new Error(response.message || 'Đăng nhập thất bại');
@@ -113,6 +118,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     } finally {
       TokenManager.clearTokens();
       setUser(null);
+      setToken(null);
     }
   };
 
@@ -127,8 +133,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
       
       if (response.success && response.data) {
         const { accessToken, refreshToken: newRefreshToken, expiresIn, user: userData } = response.data;
-        
+
         TokenManager.setTokens(accessToken, newRefreshToken, expiresIn);
+        setToken(accessToken);
         setUser(userData);
       } else {
         throw new Error('Token refresh failed');
@@ -137,12 +144,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
       console.error('Token refresh failed:', error);
       TokenManager.clearTokens();
       setUser(null);
+      setToken(null);
       throw error;
     }
   };
 
   const value: AuthContextType = {
     user,
+    token,
     login,
     register,
     logout,

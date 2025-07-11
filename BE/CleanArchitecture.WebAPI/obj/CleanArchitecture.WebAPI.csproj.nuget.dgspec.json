@@ -202,6 +202,10 @@
               "suppressParent": "All",
               "target": "Package",
               "version": "[9.0.6, )"
+            },
+            "payOS": {
+              "target": "Package",
+              "version": "[1.0.9, )"
             }
           },
           "imports": [
@@ -290,6 +294,10 @@
             "Swashbuckle.AspNetCore": {
               "target": "Package",
               "version": "[6.4.0, )"
+            },
+            "payOS.Net5": {
+              "target": "Package",
+              "version": "[1.0.7, )"
             }
           },
           "imports": [

@@ -19,6 +19,10 @@ public class ApplicationDbContext : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
 
+    // Wallet entities
+    public DbSet<Wallet> Wallets { get; set; }
+    public DbSet<WalletTransaction> WalletTransactions { get; set; }
+
     // Asset entities
     public DbSet<Sticker> Stickers { get; set; }
     public DbSet<Font> Fonts { get; set; }
