@@ -7,6 +7,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
 import { Order, OrderStatus } from '@/types/order';
 import CartDesignPreview from '@/components/cart/CartDesignPreview';
+import OrderProgressIndicator from '@/components/orders/OrderProgressIndicator';
 
 const statusInfo = {
   [OrderStatus.Pending]: { name: 'Chờ xác nhận', color: 'bg-yellow-100 text-yellow-800', icon: '⏳' },
@@ -159,6 +160,11 @@ export default function OrderDetailPage() {
               )}
             </div>
           </div>
+        </div>
+
+        {/* Order Progress */}
+        <div className="mb-8">
+          <OrderProgressIndicator currentStatus={order.status} size="lg" />
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">

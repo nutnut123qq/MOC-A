@@ -6,17 +6,27 @@ import { useAuth } from '@/contexts/AuthContext';
 import LoginForm from '@/components/auth/LoginForm';
 
 function LoginPageContent() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, isAdmin } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!isLoading && isAuthenticated) {
-      // Redirect to returnUrl if provided, otherwise to home
-      const returnUrl = searchParams.get('returnUrl') || '/';
-      router.push(returnUrl);
+      // Check if user is admin and redirect accordingly
+      const returnUrl = searchParams.get('returnUrl');
+
+      if (returnUrl) {
+        // If there's a specific return URL, use it
+        router.push(returnUrl);
+      } else if (isAdmin) {
+        // If user is admin and no specific return URL, go to admin dashboard
+        router.push('/admin');
+      } else {
+        // Regular user goes to home page
+        router.push('/');
+      }
     }
-  }, [isAuthenticated, isLoading, router, searchParams]);
+  }, [isAuthenticated, isLoading, isAdmin, router, searchParams]);
 
   if (isLoading) {
     return (

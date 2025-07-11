@@ -253,10 +253,8 @@ export default function TShirtPreviewPage() {
   const handleAddToCart = async () => {
     try {
       // TODO: Implement add to cart
-      console.log('Adding to cart:', { tshirt, designSession });
       alert('Đã thêm vào giỏ hàng thành công!');
     } catch (error) {
-      console.error('Error adding to cart:', error);
       alert('Không thể thêm vào giỏ hàng. Vui lòng thử lại.');
     }
   };

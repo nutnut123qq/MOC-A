@@ -55,9 +55,8 @@ export default function LoginForm() {
     setIsSubmitting(true);
     try {
       await login(formData.email, formData.password, formData.rememberMe);
-      // Redirect to returnUrl if provided, otherwise to home
-      const returnUrl = searchParams.get('returnUrl') || '/';
-      router.push(returnUrl);
+      // Redirect logic is handled in LoginPageContent component
+      // No need to redirect here as useEffect in parent will handle it
     } catch (error: any) {
       setApiError(error.message || 'Đăng nhập thất bại');
     } finally {

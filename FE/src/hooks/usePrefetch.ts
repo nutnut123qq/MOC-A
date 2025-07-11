@@ -13,19 +13,17 @@ export function usePrefetch() {
     try {
       // Prefetch products if not already cached
       if (!apiCache.has('products')) {
-        console.log('🚀 Prefetching products...');
         const products = await apiClient.getProducts();
         apiCache.set('products', products, 10 * 60 * 1000); // 10 minutes
       }
 
       // Prefetch users if not already cached
       if (!apiCache.has('users')) {
-        console.log('🚀 Prefetching users...');
         const users = await apiClient.getUsers();
         apiCache.set('users', users, 5 * 60 * 1000); // 5 minutes
       }
     } catch (error) {
-      console.warn('Prefetch failed:', error);
+      // Prefetch failed silently
     }
   }, []);
 

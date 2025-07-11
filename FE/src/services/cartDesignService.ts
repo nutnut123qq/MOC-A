@@ -39,21 +39,11 @@ export class CartDesignService {
 
         // Validate normalized session
         if (validateDesignSession(normalizedSession)) {
-          console.log(`✅ Design session normalized and validated for ${cartItem.designId}:`, {
-            layersCount: normalizedSession.designLayers?.length || 0,
-            currentPrintArea: normalizedSession.currentPrintArea,
-            selectedSize: normalizedSession.selectedSize,
-            selectedColor: normalizedSession.selectedColor
-          });
-
           // Cache the result
           this.setCachedDesignSession(cartItem.designId, normalizedSession);
           return normalizedSession;
-        } else {
-          console.warn(`❌ Design session validation failed for ${cartItem.designId}`);
         }
-      } else {
-        console.warn(`❌ No design session found for ${cartItem.designId}. Design:`, design);
+      }
       }
 
       return null;

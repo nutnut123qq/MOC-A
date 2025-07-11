@@ -33,29 +33,8 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
 
   // Force re-render khi designSession thay đổi để đảm bảo print area hiển thị
   useEffect(() => {
-    console.log('🔄 TShirtCanvas: designSession changed', {
-      currentPrintArea: designSession.currentPrintArea,
-      selectedSize: designSession.selectedSize,
-      selectedColor: designSession.selectedColor,
-      layersCount: designSession.designLayers.length,
-      currentPrintAreaFound: !!currentPrintArea,
-      currentLayersCount: currentLayers.length
-    });
     setForceRender(prev => prev + 1);
   }, [designSession.currentPrintArea, designSession.selectedSize, designSession.selectedColor, designSession.designLayers.length]);
-
-  // Debug log khi component mount
-  useEffect(() => {
-    console.log('🎯 TShirtCanvas mounted with:', {
-      tshirtId: tshirt.id,
-      printAreas: tshirt.printAreas.map(pa => ({ id: pa.id, name: pa.name })),
-      designSession: {
-        currentPrintArea: designSession.currentPrintArea,
-        selectedSize: designSession.selectedSize,
-        layersCount: designSession.designLayers.length
-      }
-    });
-  }, []);
 
   const handleLayerClick = (layerId: string, e: React.MouseEvent) => {
     e.stopPropagation();

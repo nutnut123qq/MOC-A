@@ -15,7 +15,7 @@ public class TempFileService : ITempFileService
         _logger = logger;
     }
 
-    public async Task<string> MoveTempFileToPermanentAsync(string tempPath, int designId, string layerId, int userId)
+    public async Task<string> CopyTempFileToPermanentAsync(string tempPath, int designId, string layerId, int userId)
     {
         try
         {
@@ -44,13 +44,13 @@ public class TempFileService : ITempFileService
             var permanentFileName = $"layer-{layerId}-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}{fileExtension}";
             var permanentFullPath = Path.Combine(permanentDir, permanentFileName);
 
-            // Move file from temp to permanent location
-            File.Move(tempFullPath, permanentFullPath);
+            // Copy file from temp to permanent location (keep temp file for cart display)
+            File.Copy(tempFullPath, permanentFullPath);
 
             // Return relative path for database storage
             var relativePath = $"/uploads/designs/images/user-{userId}/design-{designId}/{permanentFileName}";
 
-            _logger.LogInformation($"✅ Moved temp file to permanent: {tempPath} → {relativePath}");
+            _logger.LogInformation($"✅ Copied temp file to permanent: {tempPath} → {relativePath}");
 
             return relativePath;
         }

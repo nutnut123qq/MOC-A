@@ -52,7 +52,6 @@ export class DesignPreviewGenerator {
   ): Promise<string | null> {
     try {
       if (typeof window === 'undefined') {
-        console.warn('generatePreviewImage can only be called on client side');
         return null;
       }
 

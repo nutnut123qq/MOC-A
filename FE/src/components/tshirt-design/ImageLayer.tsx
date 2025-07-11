@@ -25,7 +25,7 @@ export default function ImageLayer({
   const [imageError, setImageError] = useState(false);
   const [imageLoading, setImageLoading] = useState(true);
 
-  console.log('🖼️ ImageLayer: Rendering with content:', content);
+
 
   // Handle loading state
   if (isImageLoading(content)) {
@@ -68,7 +68,7 @@ export default function ImageLayer({
     setImageLoading(false);
     setImageError(true);
     onError?.();
-    console.error('❌ Failed to load image:', imageSource);
+
   };
 
   // Show error state

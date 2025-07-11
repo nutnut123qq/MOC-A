@@ -101,17 +101,12 @@ export default function RealisticTShirtMockup({
 
   // Fallback to main 3D mockup if specific view not found
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    console.error('❌ Image failed to load:', getImagePath());
-    console.error('❌ Error event:', e);
     const img = e.target as HTMLImageElement;
-    console.log('🔄 Trying fallback image...');
 
     // If specific view image fails, fallback to main 3D mockup
     if (!img.src.includes('tshirt_mockup.jpeg')) {
-      console.log('🔄 Using main 3D mockup as fallback');
       img.src = '/mockups/tshirt_mockup.jpeg';
     } else {
-      console.log('🔄 Main mockup also failed, using placeholder');
       img.src = '/mockups/placeholder-tshirt.png';
     }
     setImageError(true);
@@ -139,12 +134,10 @@ export default function RealisticTShirtMockup({
               quality={85}
               onLoad={() => {
                 setImageLoading(false);
-                console.log('✅ Image loaded successfully:', getImagePath());
               }}
               onError={() => {
                 setImageError(true);
                 setImageLoading(false);
-                console.error('❌ Image failed to load:', getImagePath());
               }}
               style={{
                 filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.15))'

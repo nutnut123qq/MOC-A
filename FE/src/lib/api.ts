@@ -25,7 +25,42 @@ class ApiClient {
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
+      let errorMessage = `HTTP error! status: ${response.status}`;
+
+      // Try to get error details from response
+      try {
+        const errorData = await response.json();
+        if (errorData.message) {
+          errorMessage = errorData.message;
+        } else if (errorData.error) {
+          errorMessage = errorData.error;
+        }
+      } catch (e) {
+        // If response is not JSON, use status text
+        errorMessage = response.statusText || errorMessage;
+      }
+
+      // Add specific error messages for common status codes
+      switch (response.status) {
+        case 401:
+          errorMessage = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+          // Clear token and redirect to login
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('refreshToken');
+          window.location.href = '/auth/login';
+          break;
+        case 403:
+          errorMessage = 'Bạn không có quyền truy cập chức năng này.';
+          break;
+        case 404:
+          errorMessage = 'Không tìm thấy dữ liệu yêu cầu.';
+          break;
+        case 500:
+          errorMessage = 'Lỗi server. Vui lòng thử lại sau.';
+          break;
+      }
+
+      throw new Error(errorMessage);
     }
 
     // Handle empty responses (like 204 No Content)
@@ -188,6 +223,37 @@ class ApiClient {
   // Order endpoints (updated)
   async getMyOrders(): Promise<Order[]> {
     return this.request<Order[]>('/api/orders/my');
+  }
+
+  async getOrderById(orderId: number): Promise<Order> {
+    return this.request<Order>(`/api/orders/${orderId}`);
+  }
+
+  // Admin-only endpoint to get all orders
+  async getAllOrders(): Promise<Order[]> {
+    return this.request<Order[]>('/api/orders');
+  }
+
+  // Admin-only endpoint to update order status
+  async updateOrderStatus(orderId: number, status: OrderStatus): Promise<void> {
+    return this.request<void>(`/api/orders/${orderId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  // User management endpoints (Admin only)
+  async updateUser(userId: number, updateData: Partial<User>): Promise<User> {
+    return this.request<User>(`/api/users/${userId}`, {
+      method: 'PUT',
+      body: JSON.stringify(updateData),
+    });
+  }
+
+  async deleteUser(userId: number): Promise<void> {
+    return this.request<void>(`/api/users/${userId}`, {
+      method: 'DELETE',
+    });
   }
 
   async createOrderFromCart(orderData: CreateOrderDto): Promise<Order> {

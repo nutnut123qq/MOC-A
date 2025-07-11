@@ -31,32 +31,7 @@ const CartDesignPreview = memo(function CartDesignPreview({
   // Scale factor để scale down từ design editor (400x500) xuống cart size
   const scaleFactor = canvasSize.width / 400;
 
-  // Nếu có preview image URL, sử dụng nó trước
-  if (previewImageUrl) {
-    return (
-      <div className={`relative ${className}`}>
-        <div
-          className="relative bg-white border border-gray-200 overflow-hidden rounded-lg"
-          style={{
-            width: canvasSize.width,
-            height: canvasSize.height
-          }}
-        >
-          <img
-            src={previewImageUrl}
-            alt={designName}
-            className="w-full h-full object-cover"
-            onError={(e) => {
-              const img = e.target as HTMLImageElement;
-              img.style.display = 'none';
-            }}
-          />
-        </div>
-      </div>
-    );
-  }
-
-
+  // Render full design với áo vector + layers
 
   // Nếu không có design session, return placeholder
   if (!designSession) {

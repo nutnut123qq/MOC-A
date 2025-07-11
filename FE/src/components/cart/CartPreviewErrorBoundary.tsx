@@ -26,7 +26,7 @@ export class CartPreviewErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('Cart preview error:', error, errorInfo);
+    // Error logged for debugging
   }
 
   render() {

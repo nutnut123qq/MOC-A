@@ -16,7 +16,9 @@ export default function AdminGuard({ children, fallback }: AdminGuardProps) {
   useEffect(() => {
     if (!isLoading) {
       if (!isAuthenticated) {
-        router.push('/auth/login');
+        // Redirect to login with current path as returnUrl
+        const currentPath = window.location.pathname;
+        router.push(`/auth/login?returnUrl=${encodeURIComponent(currentPath)}`);
       } else if (!isAdmin) {
         router.push('/'); // Redirect to home if not admin
       }

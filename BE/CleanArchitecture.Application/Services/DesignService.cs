@@ -101,19 +101,23 @@ public class DesignService : IDesignService
             var finalDesignSession = await ProcessDesignSessionAsync(userId, createdDesign.Id, createDesignDto.DesignSession);
             createdDesign.DesignData = JsonSerializer.Serialize(finalDesignSession);
 
-            // Generate and save preview image
+            // Generate preview image URL from design layers
             try
             {
-                var previewImageUrl = await GenerateDesignPreviewAsync(userId, createdDesign.Id, finalDesignSession);
+                var previewImageUrl = GetPreviewImageFromLayers(finalDesignSession);
                 if (!string.IsNullOrEmpty(previewImageUrl))
                 {
                     createdDesign.PreviewImageUrl = previewImageUrl;
-                    _logger.LogInformation("Generated preview image for design {DesignId}: {PreviewUrl}", createdDesign.Id, previewImageUrl);
+                    _logger.LogInformation("Set preview image for design {DesignId}: {PreviewUrl}", createdDesign.Id, previewImageUrl);
+                }
+                else
+                {
+                    _logger.LogInformation("No temp file found for design {DesignId}, skipping preview", createdDesign.Id);
                 }
             }
             catch (Exception previewEx)
             {
-                _logger.LogWarning(previewEx, "Failed to generate preview image for design {DesignId}", createdDesign.Id);
+                _logger.LogWarning(previewEx, "Failed to set preview image for design {DesignId}", createdDesign.Id);
                 // Continue without preview image - not critical
             }
 
@@ -145,10 +149,10 @@ public class DesignService : IDesignService
             design.DesignData = JsonSerializer.Serialize(processedDesignSession);
             design.UpdatedAt = DateTime.UtcNow;
 
-            // Generate and save updated preview image
+            // Update preview image URL from design layers
             try
             {
-                var previewImageUrl = await GenerateDesignPreviewAsync(userId, id, processedDesignSession);
+                var previewImageUrl = GetPreviewImageFromLayers(processedDesignSession);
                 if (!string.IsNullOrEmpty(previewImageUrl))
                 {
                     design.PreviewImageUrl = previewImageUrl;
@@ -326,10 +330,10 @@ public class DesignService : IDesignService
                             {
                                 // Parse temp file data and move to permanent storage
                                 var tempFileInfo = System.Text.Json.JsonSerializer.Deserialize<TempFileInfo>(contentString);
-                                if (tempFileInfo != null && !string.IsNullOrEmpty(tempFileInfo.TempPath))
+                                if (tempFileInfo != null && !string.IsNullOrEmpty(tempFileInfo.tempPath))
                                 {
-                                    var permanentPath = await _tempFileService.MoveTempFileToPermanentAsync(
-                                        tempFileInfo.TempPath,
+                                    var permanentPath = await _tempFileService.CopyTempFileToPermanentAsync(
+                                        tempFileInfo.tempPath,
                                         designId,
                                         layer.Id,
                                         userId
@@ -340,11 +344,11 @@ public class DesignService : IDesignService
                                     {
                                         filePath = permanentPath,
                                         type = "file",
-                                        originalFile = tempFileInfo.OriginalFile,
-                                        fileSize = tempFileInfo.FileSize
+                                        originalFile = tempFileInfo.originalFile,
+                                        fileSize = tempFileInfo.fileSize
                                     };
 
-                                    _logger.LogInformation($"✅ Moved temp file to permanent storage: {permanentPath}");
+                                    _logger.LogInformation($"✅ Copied temp file to permanent storage: {permanentPath}");
                                 }
                             }
                             catch (Exception ex)
@@ -451,7 +455,7 @@ public class DesignService : IDesignService
         try
         {
             var tempFileInfo = System.Text.Json.JsonSerializer.Deserialize<TempFileInfo>(data);
-            return tempFileInfo != null && !string.IsNullOrEmpty(tempFileInfo.TempPath);
+            return tempFileInfo != null && !string.IsNullOrEmpty(tempFileInfo.tempPath);
         }
         catch
         {
@@ -479,8 +483,77 @@ public class DesignService : IDesignService
     }
 
     /// <summary>
-    /// Generate preview image for design session
-    /// This is a simplified implementation - in production you might want to use a more sophisticated image generation service
+    /// Get preview image URL from design layers (use temp files if available)
+    /// </summary>
+    private string? GetPreviewImageFromLayers(TShirtDesignSessionDto designSession)
+    {
+        try
+        {
+            _logger.LogInformation("🔍 GetPreviewImageFromLayers: Starting preview search");
+
+            // Debug: Log all layers
+            if (designSession.DesignLayers != null)
+            {
+                foreach (var layer in designSession.DesignLayers)
+                {
+                    _logger.LogInformation("🔍 Layer {Id}: Type={Type}, Content={Content}",
+                        layer.Id, layer.Type, layer.Content?.ToString()?.Substring(0, Math.Min(100, layer.Content?.ToString()?.Length ?? 0)));
+                }
+            }
+
+            // Look for image layers with temp file paths
+            var imageLayers = designSession.DesignLayers?
+                .Where(layer => layer.Type == "image" && layer.Content != null)
+                .ToList();
+
+            _logger.LogInformation("🔍 Found {Count} total layers, {ImageCount} image layers",
+                designSession.DesignLayers?.Count ?? 0, imageLayers?.Count ?? 0);
+
+            if (imageLayers?.Any() == true)
+            {
+                _logger.LogInformation("Found {Count} image layers for preview", imageLayers.Count);
+
+                foreach (var layer in imageLayers)
+                {
+                    var contentString = layer.Content.ToString();
+                    _logger.LogInformation("Layer {LayerId} content: {Content}", layer.Id, contentString?.Substring(0, Math.Min(200, contentString?.Length ?? 0)));
+
+                    // Check if it's temp file data
+                    if (IsTempFileData(contentString))
+                    {
+                        _logger.LogInformation("Layer {LayerId} is temp file data", layer.Id);
+                        try
+                        {
+                            var tempFileInfo = System.Text.Json.JsonSerializer.Deserialize<TempFileInfo>(contentString);
+                            if (tempFileInfo != null && !string.IsNullOrEmpty(tempFileInfo.tempPath))
+                            {
+                                // Convert temp path to full URL
+                                var fullUrl = $"http://localhost:5168{tempFileInfo.tempPath}";
+                                _logger.LogInformation("Found temp file for preview: {TempPath}", fullUrl);
+                                return fullUrl;
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogWarning(ex, "Failed to parse temp file data for layer {LayerId}", layer.Id);
+                        }
+                    }
+                }
+            }
+
+            _logger.LogInformation("No suitable image layers found for preview");
+            return null;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting preview image from layers");
+            return null;
+        }
+    }
+
+    /// <summary>
+    /// Generate preview image for design session (fallback method)
+    /// Creates a simple PNG preview image for the design
     /// </summary>
     private async Task<string?> GenerateDesignPreviewAsync(int userId, int designId, TShirtDesignSessionDto designSession)
     {
@@ -488,38 +561,20 @@ public class DesignService : IDesignService
         {
             _logger.LogInformation("Generating preview image for design {DesignId}", designId);
 
-            // For now, we'll create a simple placeholder preview
-            // In a real implementation, you would:
-            // 1. Load the T-shirt template image
-            // 2. Render all design layers on top
-            // 3. Save the composite image
+            // Create a simple preview PNG image
+            var previewImageBytes = await CreatePreviewImageAsync(designSession);
 
-            // Create a simple preview metadata JSON that frontend can use
-            var previewData = new
-            {
-                designId = designId,
-                selectedSize = designSession.SelectedSize,
-                selectedColor = designSession.SelectedColor,
-                layerCount = designSession.DesignLayers?.Count ?? 0,
-                frontLayers = designSession.DesignLayers?.Count(l => l.PrintArea == "front") ?? 0,
-                backLayers = designSession.DesignLayers?.Count(l => l.PrintArea == "back") ?? 0,
-                generatedAt = DateTime.UtcNow
-            };
-
-            var previewJson = JsonSerializer.Serialize(previewData);
-            var previewBytes = System.Text.Encoding.UTF8.GetBytes(previewJson);
-
-            // Save preview metadata as a file (this will be replaced by actual image generation)
+            // Save preview image as PNG
             var previewPath = await _fileStorageService.SaveDesignImageAsync(
                 userId,
                 designId,
                 "preview",
-                previewBytes,
-                "preview.json",
-                "application/json"
+                previewImageBytes,
+                $"layer-preview-{DateTimeOffset.UtcNow.ToUnixTimeSeconds()}-{designId}.png",
+                "image/png"
             );
 
-            _logger.LogInformation("Generated preview metadata for design {DesignId}: {PreviewPath}", designId, previewPath);
+            _logger.LogInformation("Generated preview image for design {DesignId}: {PreviewPath}", designId, previewPath);
             return previewPath;
         }
         catch (Exception ex)
@@ -528,16 +583,192 @@ public class DesignService : IDesignService
             return null;
         }
     }
+
+    /// <summary>
+    /// Create a simple preview image as PNG bytes
+    /// </summary>
+    private async Task<byte[]> CreatePreviewImageAsync(TShirtDesignSessionDto designSession)
+    {
+        try
+        {
+            // Create a simple but valid PNG image
+            // Use a known working PNG format similar to the working designs
+
+            // Create a 200x200 simple PNG (smaller size, easier to generate correctly)
+            const int width = 200;
+            const int height = 200;
+
+            // Get color for the design
+            var colorBytes = GetColorBytes(designSession.SelectedColor);
+
+            // Create a simple valid PNG using BMP-to-PNG conversion
+            return CreateValidPngImage(width, height, colorBytes);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error creating preview image");
+            // Return a simple fallback PNG
+            return CreateFallbackPng();
+        }
+    }
+
+    private byte[] CreateValidPngImage(int width, int height, (byte R, byte G, byte B) color)
+    {
+        // Create a simple solid color PNG
+        // This creates a minimal but valid PNG that browsers can display
+
+        var pngData = new List<byte>();
+
+        // PNG signature
+        pngData.AddRange(new byte[] { 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A });
+
+        // IHDR chunk
+        pngData.AddRange(BitConverter.GetBytes((uint)13).Reverse()); // Length
+        pngData.AddRange(System.Text.Encoding.ASCII.GetBytes("IHDR"));
+        pngData.AddRange(BitConverter.GetBytes((uint)width).Reverse());
+        pngData.AddRange(BitConverter.GetBytes((uint)height).Reverse());
+        pngData.Add(8); // Bit depth
+        pngData.Add(2); // Color type (RGB)
+        pngData.Add(0); // Compression
+        pngData.Add(0); // Filter
+        pngData.Add(0); // Interlace
+
+        // Calculate and add CRC for IHDR
+        var ihdrData = pngData.Skip(12).Take(17).ToArray();
+        var ihdrCrc = CalculateCrc(ihdrData);
+        pngData.AddRange(BitConverter.GetBytes(ihdrCrc).Reverse());
+
+        // Create simple IDAT chunk with solid color
+        var imageData = new List<byte>();
+        for (int y = 0; y < height; y++)
+        {
+            imageData.Add(0); // Filter type for each row
+            for (int x = 0; x < width; x++)
+            {
+                imageData.Add(color.R);
+                imageData.Add(color.G);
+                imageData.Add(color.B);
+            }
+        }
+
+        // Compress the image data (very simple compression)
+        var compressedData = SimpleCompress(imageData.ToArray());
+
+        // IDAT chunk
+        pngData.AddRange(BitConverter.GetBytes((uint)compressedData.Length).Reverse());
+        pngData.AddRange(System.Text.Encoding.ASCII.GetBytes("IDAT"));
+        pngData.AddRange(compressedData);
+
+        // Calculate and add CRC for IDAT
+        var idatData = System.Text.Encoding.ASCII.GetBytes("IDAT").Concat(compressedData).ToArray();
+        var idatCrc = CalculateCrc(idatData);
+        pngData.AddRange(BitConverter.GetBytes(idatCrc).Reverse());
+
+        // IEND chunk
+        pngData.AddRange(BitConverter.GetBytes((uint)0).Reverse()); // Length
+        pngData.AddRange(System.Text.Encoding.ASCII.GetBytes("IEND"));
+        pngData.AddRange(BitConverter.GetBytes(0xAE426082u).Reverse()); // CRC
+
+        return pngData.ToArray();
+    }
+
+    private byte[] SimpleCompress(byte[] data)
+    {
+        // Very simple compression - just add deflate headers
+        var compressed = new List<byte>();
+        compressed.Add(0x78); // CMF
+        compressed.Add(0x9C); // FLG
+
+        // Add uncompressed blocks
+        var blockSize = Math.Min(data.Length, 65535);
+        compressed.Add(0x01); // Final block, uncompressed
+        compressed.AddRange(BitConverter.GetBytes((ushort)blockSize));
+        compressed.AddRange(BitConverter.GetBytes((ushort)~blockSize));
+        compressed.AddRange(data.Take(blockSize));
+
+        // Add Adler-32 checksum
+        var adler = CalculateAdler32(data);
+        compressed.AddRange(BitConverter.GetBytes(adler).Reverse());
+
+        return compressed.ToArray();
+    }
+
+    private uint CalculateCrc(byte[] data)
+    {
+        // Simple CRC-32 calculation
+        uint crc = 0xFFFFFFFF;
+        foreach (byte b in data)
+        {
+            crc ^= b;
+            for (int i = 0; i < 8; i++)
+            {
+                if ((crc & 1) != 0)
+                    crc = (crc >> 1) ^ 0xEDB88320;
+                else
+                    crc >>= 1;
+            }
+        }
+        return crc ^ 0xFFFFFFFF;
+    }
+
+    private uint CalculateAdler32(byte[] data)
+    {
+        uint a = 1, b = 0;
+        foreach (byte c in data)
+        {
+            a = (a + c) % 65521;
+            b = (b + a) % 65521;
+        }
+        return (b << 16) | a;
+    }
+
+    private byte[] CreateFallbackPng()
+    {
+        // Return a minimal valid 1x1 PNG as fallback
+        return new byte[]
+        {
+            0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG signature
+            0x00, 0x00, 0x00, 0x0D, 0x49, 0x48, 0x44, 0x52, // IHDR chunk header
+            0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, // 1x1 dimensions
+            0x08, 0x02, 0x00, 0x00, 0x00, 0x90, 0x77, 0x53, 0xDE, // IHDR data + CRC
+            0x00, 0x00, 0x00, 0x0C, 0x49, 0x44, 0x41, 0x54, // IDAT chunk header
+            0x08, 0x99, 0x01, 0x01, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0x00, 0x00, 0x00, // IDAT data
+            0x02, 0x00, 0x01, 0xE2, 0x21, 0xBC, 0x33, // IDAT CRC
+            0x00, 0x00, 0x00, 0x00, 0x49, 0x45, 0x4E, 0x44, 0xAE, 0x42, 0x60, 0x82 // IEND
+        };
+    }
+
+    private (byte R, byte G, byte B) GetColorBytes(string? color)
+    {
+        return color?.ToLower() switch
+        {
+            "red" => (220, 53, 69),
+            "blue" => (13, 110, 253),
+            "green" => (25, 135, 84),
+            "yellow" => (255, 193, 7),
+            "purple" => (111, 66, 193),
+            "pink" => (214, 51, 132),
+            "orange" => (253, 126, 20),
+            "black" => (33, 37, 41),
+            "white" => (248, 249, 250),
+            "gray" => (108, 117, 125),
+            _ => (108, 117, 125) // Default gray
+        };
+    }
+
+
 }
 
 /// <summary>
-/// Temp file information structure
+/// Represents temp file information from design layers
 /// </summary>
 public class TempFileInfo
 {
-    public string Type { get; set; } = string.Empty;
-    public string TempPath { get; set; } = string.Empty;
-    public string SessionId { get; set; } = string.Empty;
-    public string OriginalFile { get; set; } = string.Empty;
-    public long FileSize { get; set; }
+    public string type { get; set; } = string.Empty;
+    public string tempPath { get; set; } = string.Empty;
+    public string sessionId { get; set; } = string.Empty;
+    public string originalFile { get; set; } = string.Empty;
+    public long fileSize { get; set; }
 }
+
+
