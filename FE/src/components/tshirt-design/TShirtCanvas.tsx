@@ -454,13 +454,7 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
               // Lấy bounds động dựa trên size và view
               const dynamicBounds = getPrintAreaBounds(currentSize, currentView);
 
-              console.log('🎯 Print Area Boundary:', {
-                currentView,
-                currentSize,
-                bounds: dynamicBounds,
-                forceRender,
-                hasCurrentPrintArea: !!currentPrintArea
-              });
+
 
               return (
                 <div
@@ -482,12 +476,7 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
               const currentSize = designSession.selectedSize || 'M';
               const dynamicBounds = getPrintAreaBounds(currentSize, currentView);
 
-              console.log('🎨 Clipping Container:', {
-                currentView,
-                currentSize,
-                bounds: dynamicBounds,
-                layersCount: currentLayers.length
-              });
+
 
               return (
                 <div

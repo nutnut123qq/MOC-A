@@ -15,6 +15,7 @@ public class OrderDto
     public decimal TotalAmount { get; set; }
     public OrderStatus Status { get; set; }
     public string StatusName { get; set; } = string.Empty;
+    public PaymentStatus PaymentStatus { get; set; }
     public DateTime CreatedAt { get; set; }
     public DateTime? CompletedAt { get; set; }
     
@@ -37,6 +38,7 @@ public class OrderItemDto
     // Related data
     public string DesignName { get; set; } = string.Empty;
     public string DesignPreviewUrl { get; set; } = string.Empty;
+    public string DesignData { get; set; } = string.Empty; // JSON design session
     public string ProductName { get; set; } = string.Empty;
     public ProductType ProductType { get; set; }
 }
@@ -66,6 +68,15 @@ public class UpdateOrderStatusDto
 {
     public OrderStatus Status { get; set; }
     public string Notes { get; set; } = string.Empty;
+}
+
+public class OrderStatusHistoryDto
+{
+    public OrderStatus Status { get; set; }
+    public string StatusName { get; set; } = string.Empty;
+    public DateTime Timestamp { get; set; }
+    public bool IsCompleted { get; set; }
+    public string Description { get; set; } = string.Empty;
 }
 
 public class OrderSummaryDto

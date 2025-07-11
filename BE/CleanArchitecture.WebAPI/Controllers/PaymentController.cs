@@ -1,5 +1,6 @@
 using CleanArchitecture.Application.DTOs.Payment;
 using CleanArchitecture.Application.Interfaces;
+using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.WebAPI.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -90,21 +91,49 @@ public class PaymentController : ControllerBase
     {
         try
         {
+            _logger.LogInformation("🔄 Payment return received: code={Code}, orderCode={OrderCode}", code, orderCode);
+
+            // Get order by PayOS order code to get the actual order ID
+            var order = await _payOSService.GetOrderByPayOSOrderCodeAsync(orderCode);
+            var orderId = order?.Id.ToString() ?? "";
+
+            _logger.LogInformation("📦 Found order: ID={OrderId}, PaymentStatus={PaymentStatus}", order?.Id, order?.PaymentStatus);
+
             if (code == "00") // Success
             {
-                // Redirect to success page
-                return Redirect($"/payment/success?orderCode={orderCode}");
+                // Handle payment success if not already handled by webhook
+                if (order != null && order.PaymentStatus != PaymentStatus.Paid)
+                {
+                    _logger.LogInformation("💳 Processing payment success for order {OrderId}", order.Id);
+                    await _payOSService.HandlePaymentSuccessAsync(orderCode, new PaymentWebhookData
+                    {
+                        OrderCode = orderCode,
+                        Success = true,
+                        Reference = id ?? "",
+                        Desc = "Payment completed via return URL"
+                    });
+                    _logger.LogInformation("✅ Payment success processed for order {OrderId}", order.Id);
+                }
+                else if (order != null)
+                {
+                    _logger.LogInformation("⚠️ Order {OrderId} already has PaymentStatus: {PaymentStatus}", order.Id, order.PaymentStatus);
+                }
+
+                // Redirect to frontend success page with order info
+                var returnUrl = $"{Request.Scheme}://{Request.Host}/payment/return?code={code}&orderCode={orderCode}&orderId={orderId}";
+                return Redirect(returnUrl);
             }
             else
             {
-                // Redirect to failure page
-                return Redirect($"/payment/failed?code={code}&orderCode={orderCode}");
+                // Redirect to frontend failure page
+                var returnUrl = $"{Request.Scheme}://{Request.Host}/payment/return?code={code}&orderCode={orderCode}&orderId={orderId}";
+                return Redirect(returnUrl);
             }
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error processing payment return");
-            return Redirect("/payment/failed");
+            return Redirect($"{Request.Scheme}://{Request.Host}/payment/return?code=99");
         }
     }
 

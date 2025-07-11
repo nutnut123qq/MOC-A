@@ -53,7 +53,7 @@ public class PayOSService : IPayOSService
         try
         {
             var orderCode = await GenerateOrderCodeAsync();
-            var returnUrl = request.ReturnUrl ?? _configuration["PayOS:ReturnUrl"] ?? "http://localhost:3000/payment/return";
+            var returnUrl = request.ReturnUrl ?? _configuration["PayOS:ReturnUrl"] ?? "http://localhost:5168/api/payment/return";
             var cancelUrl = request.CancelUrl ?? _configuration["PayOS:CancelUrl"] ?? "http://localhost:3000/payment/cancel";
 
             // Create wallet transaction first
@@ -128,7 +128,7 @@ public class PayOSService : IPayOSService
             }
 
             var orderCode = await GenerateOrderCodeAsync();
-            var returnUrl = request.ReturnUrl ?? _configuration["PayOS:ReturnUrl"] ?? "http://localhost:3000/payment/return";
+            var returnUrl = request.ReturnUrl ?? _configuration["PayOS:ReturnUrl"] ?? "http://localhost:5168/api/payment/return";
             var cancelUrl = request.CancelUrl ?? _configuration["PayOS:CancelUrl"] ?? "http://localhost:3000/payment/cancel";
 
             // Update order với PayOS order code
@@ -170,7 +170,7 @@ public class PayOSService : IPayOSService
                 // Fallback to mock for development if PayOS fails
                 return new PaymentResponse
                 {
-                    CheckoutUrl = $"http://localhost:3000/payment/return?code=00&orderCode={orderCode}",
+                    CheckoutUrl = $"http://localhost:3000/payment/return?code=00&orderCode={orderCode}&orderId={request.OrderId}",
                     OrderCode = orderCode,
                     QrCode = "data:image/png;base64,mock-qr-code",
                     AccountNumber = "19036035704",
@@ -224,8 +224,13 @@ public class PayOSService : IPayOSService
             var order = await _orderService.GetByPayOSOrderCodeAsync(orderCode);
             if (order != null)
             {
+                // Update payment status to Paid
                 await _orderService.UpdatePaymentStatusAsync(order.Id, PaymentStatus.Paid);
-                _logger.LogInformation("Order payment completed for order code: {OrderCode}", orderCode);
+
+                // Update order status to Confirmed after successful payment
+                await _orderService.UpdateOrderStatusAsync(order.Id, OrderStatus.Confirmed);
+
+                _logger.LogInformation("Order payment completed and status updated to Confirmed for order code: {OrderCode}", orderCode);
             }
         }
         catch (Exception ex)
@@ -269,5 +274,18 @@ public class PayOSService : IPayOSService
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
         var random = new Random().Next(1000, 9999);
         return Task.FromResult($"{timestamp}{random}");
+    }
+
+    public async Task<Order?> GetOrderByPayOSOrderCodeAsync(string orderCode)
+    {
+        try
+        {
+            return await _orderService.GetByPayOSOrderCodeAsync(orderCode);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting order by PayOS order code: {OrderCode}", orderCode);
+            return null;
+        }
     }
 }

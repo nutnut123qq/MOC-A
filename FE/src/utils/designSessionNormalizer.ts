@@ -35,18 +35,4 @@ export function validateDesignSession(session: TShirtDesignSession): boolean {
   );
 }
 
-/**
- * Debug log design session structure
- */
-export function debugDesignSession(session: any, context: string = ''): void {
-  console.log(`🔍 Design Session Debug ${context}:`, {
-    hasId: !!session?.id,
-    hasTshirtId: !!session?.tshirtId,
-    hasSelectedColor: !!session?.selectedColor,
-    hasSelectedSize: !!session?.selectedSize,
-    hasCurrentPrintArea: !!session?.currentPrintArea,
-    hasDesignLayers: Array.isArray(session?.designLayers),
-    layersCount: session?.designLayers?.length || 0,
-    rawSession: session
-  });
-}
+

@@ -58,19 +58,12 @@ export function getPrintAreaBounds(size: string, view: 'front' | 'back'): Rectan
   // Sử dụng SIZE_ALIASES để map size name
   const mappedSize = SIZE_ALIASES[size] || SIZE_ALIASES[size.toUpperCase()] || 'M';
 
-  console.log('🎯 getPrintAreaBounds called:', {
-    originalSize: size,
-    mappedSize,
-    view,
-    availableSizes: Object.keys(SIZE_ALIASES)
-  });
+
 
   // Lấy size data
   const sizeData = PRINT_AREA_BOUNDS_BY_SIZE[mappedSize];
 
   const result = sizeData[view];
-  console.log('🎯 getPrintAreaBounds result:', result);
-
   return result;
 }
 

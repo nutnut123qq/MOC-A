@@ -9,6 +9,13 @@ export enum OrderStatus {
   Cancelled = 6
 }
 
+export enum PaymentStatus {
+  Pending = 1,
+  Paid = 2,
+  Failed = 3,
+  Refunded = 4
+}
+
 export interface Order {
   id: number;
   userId: number;
@@ -21,6 +28,7 @@ export interface Order {
   totalAmount: number;
   status: OrderStatus;
   statusName: string;
+  paymentStatus: PaymentStatus;
   createdAt: string;
   completedAt?: string;
   orderItems: OrderItem[];
@@ -39,6 +47,7 @@ export interface OrderItem {
   specialInstructions: string;
   designName: string;
   designPreviewUrl: string;
+  designData: string; // JSON design session
   productName: string;
   productType: ProductType;
 }
@@ -61,11 +70,24 @@ export interface CreateOrderItemDto {
   specialInstructions: string;
 }
 
+export interface UpdateOrderStatusDto {
+  status: OrderStatus;
+}
+
+export interface OrderStatusHistory {
+  status: OrderStatus;
+  statusName: string;
+  timestamp: string;
+  isCompleted: boolean;
+  description: string;
+}
+
 export interface CartItem {
   id: number;
   designId: number;
   designName: string;
   designPreviewUrl: string;
+  designData: string; // JSON design session
   productId: number;
   productName: string;
   productType: ProductType;

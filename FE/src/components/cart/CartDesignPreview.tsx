@@ -21,11 +21,11 @@ const CartDesignPreview = memo(function CartDesignPreview({
   className = '',
   size = 'small'
 }: CartDesignPreviewProps) {
-  // Kích thước canvas dựa trên size prop
+  // Kích thước canvas dựa trên size prop (tỷ lệ 4:5 như áo thun)
   const canvasSize = {
-    small: { width: 80, height: 100 },
-    medium: { width: 120, height: 150 },
-    large: { width: 160, height: 200 }
+    small: { width: 60, height: 75 },
+    medium: { width: 90, height: 112 },
+    large: { width: 120, height: 150 }
   }[size];
 
   // Scale factor để scale down từ design editor (400x500) xuống cart size
@@ -56,6 +56,8 @@ const CartDesignPreview = memo(function CartDesignPreview({
     );
   }
 
+
+
   // Nếu không có design session, return placeholder
   if (!designSession) {
     return (
@@ -73,14 +75,19 @@ const CartDesignPreview = memo(function CartDesignPreview({
     );
   }
 
+  // Set default print area nếu undefined
+  const currentPrintArea = designSession.currentPrintArea || 'front';
+
   // Lấy layers cho print area hiện tại
   const currentLayers = designSession.designLayers.filter(
-    layer => layer.printArea === designSession.currentPrintArea
+    layer => layer.printArea === currentPrintArea || (!layer.printArea && currentPrintArea === 'front')
   );
+
+
 
   // Lấy hình ảnh T-shirt
   const getTShirtImage = () => {
-    const view = designSession.currentPrintArea === 'back' ? 'back' : 'front';
+    const view = currentPrintArea === 'back' ? 'back' : 'front';
     return getTShirtImagePath(
       designSession.selectedSize,
       designSession.selectedColor,
@@ -89,7 +96,7 @@ const CartDesignPreview = memo(function CartDesignPreview({
   };
 
   // Lấy print area bounds và scale xuống
-  const currentView = designSession.currentPrintArea || 'front';
+  const currentView = currentPrintArea;
   const currentSize = designSession.selectedSize || 'M';
   const originalBounds = getPrintAreaBounds(currentSize, currentView);
   

@@ -70,7 +70,7 @@ export default function CheckoutPage() {
         customerEmail: formData.customerEmail,
         deliveryAddress: formData.deliveryAddress,
         notes: formData.notes,
-        orderItems: [] // Will be populated from cart on backend
+        orderItems: [] // Empty for from-cart endpoint - backend will use cart items
       };
 
       const order = await apiClient.createOrderFromCart(orderData);
@@ -118,7 +118,21 @@ export default function CheckoutPage() {
 
     } catch (err: any) {
       console.error('Error processing payment:', err);
-      setError(err.message || 'Không thể xử lý thanh toán. Vui lòng thử lại.');
+
+      // More detailed error handling
+      let errorMessage = 'Không thể xử lý thanh toán. Vui lòng thử lại.';
+
+      if (err.message?.includes('400')) {
+        errorMessage = 'Thông tin đơn hàng không hợp lệ. Vui lòng kiểm tra lại giỏ hàng.';
+      } else if (err.message?.includes('401')) {
+        errorMessage = 'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.';
+      } else if (err.message?.includes('Cart is empty')) {
+        errorMessage = 'Giỏ hàng trống. Vui lòng thêm sản phẩm trước khi thanh toán.';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

@@ -143,20 +143,28 @@ export function CartProvider({ children }: CartProviderProps) {
   };
 
   const clearCart = async () => {
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      console.log('❌ Cannot clear cart: User not authenticated');
+      return;
+    }
 
     try {
+      console.log('🔄 Starting cart clear process...');
       setLoading(true);
       setError(null);
 
+      console.log('📡 Calling API to clear cart...');
       await apiClient.clearCart();
+
+      console.log('🧹 Clearing local cart state...');
       setCartItems([]);
       setCartCount(0);
       setCartTotal(0);
-      
+
       localStorage.removeItem('cart');
+      console.log('✅ Cart cleared successfully');
     } catch (err: any) {
-      console.error('Error clearing cart:', err);
+      console.error('❌ Error clearing cart:', err);
       setError(err.message || 'Không thể xóa giỏ hàng');
     } finally {
       setLoading(false);

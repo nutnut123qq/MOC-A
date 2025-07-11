@@ -10,15 +10,11 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
  */
 export function getImageSource(layerContent: any): string | null {
   if (!layerContent) {
-    console.log('🔍 getImageSource: No content provided');
     return null;
   }
 
-  console.log('🔍 getImageSource: Processing content:', layerContent);
-
   // Handle loading state
   if (layerContent.loading) {
-    console.log('🔍 getImageSource: Content is loading');
     return null; // Return null for loading state, component can show placeholder
   }
 

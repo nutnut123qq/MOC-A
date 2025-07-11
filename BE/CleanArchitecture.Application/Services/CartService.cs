@@ -177,6 +177,7 @@ public class CartService : ICartService
             CreatedAt = cart.CreatedAt,
             DesignName = cart.Design?.Name ?? "",
             DesignPreviewUrl = cart.Design?.PreviewImageUrl ?? "",
+            DesignData = cart.Design?.DesignData ?? "",
             ProductName = cart.Product?.Name ?? "",
             ProductType = cart.Product?.Type ?? ProductType.Shirt
         };

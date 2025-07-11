@@ -103,23 +103,7 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/temp"
 });
 
-// Add request logging middleware
-app.Use(async (context, next) =>
-{
-    Console.WriteLine($"Request: {context.Request.Method} {context.Request.Path}");
-    Console.WriteLine($"Headers: {string.Join(", ", context.Request.Headers.Select(h => $"{h.Key}={h.Value}"))}");
 
-    // Log request body for POST requests
-    if (context.Request.Method == "POST" && context.Request.Path.StartsWithSegments("/api/designs"))
-    {
-        context.Request.EnableBuffering();
-        var body = await new StreamReader(context.Request.Body).ReadToEndAsync();
-        context.Request.Body.Position = 0;
-        Console.WriteLine($"Request Body: {body}");
-    }
-
-    await next();
-});
 
 // Use CORS
 app.UseCors("AllowFrontend");

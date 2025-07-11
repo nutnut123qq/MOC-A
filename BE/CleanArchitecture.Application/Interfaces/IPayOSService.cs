@@ -1,4 +1,5 @@
 using CleanArchitecture.Application.DTOs.Payment;
+using CleanArchitecture.Domain.Entities;
 
 namespace CleanArchitecture.Application.Interfaces;
 
@@ -10,4 +11,5 @@ public interface IPayOSService
     Task HandlePaymentSuccessAsync(string orderCode, PaymentWebhookData webhookData);
     Task HandlePaymentFailureAsync(string orderCode, string reason);
     Task<string> GenerateOrderCodeAsync();
+    Task<Order?> GetOrderByPayOSOrderCodeAsync(string orderCode);
 }

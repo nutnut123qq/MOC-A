@@ -112,7 +112,6 @@ class StorageManager {
       }
       
       // Try to make space by cleaning old sessions
-      console.log('🧹 Storage quota exceeded, cleaning old sessions...');
       this.cleanOldSessions(2); // Keep only 2 most recent sessions
       
       // Try again after cleaning
@@ -123,7 +122,6 @@ class StorageManager {
       
       // If still can't store, try compression for design sessions
       if (key.startsWith('design-session-')) {
-        console.log('🗜️ Compressing design session data...');
         const compressed = this.compressDesignData(value);
         const compressedString = JSON.stringify(compressed);
         
@@ -134,7 +132,6 @@ class StorageManager {
       }
       
       // Last resort: clean more aggressively
-      console.log('🚨 Aggressive cleaning: removing all old sessions...');
       this.cleanOldSessions(1); // Keep only 1 session
       
       // Final attempt

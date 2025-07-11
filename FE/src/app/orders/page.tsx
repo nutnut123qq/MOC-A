@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { apiClient } from '@/lib/api';
 import { Order, OrderStatus } from '@/types/order';
+import CartDesignPreview from '@/components/cart/CartDesignPreview';
 
 const statusInfo = {
   [OrderStatus.Pending]: { name: 'Chờ xác nhận', color: 'bg-yellow-100 text-yellow-800', icon: '⏳' },
@@ -139,16 +140,14 @@ export default function OrdersPage() {
                     {order.orderItems.slice(0, 3).map((item) => (
                       <div key={item.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
                         <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center">
-                            {item.designPreviewUrl ? (
-                              <img 
-                                src={item.designPreviewUrl} 
-                                alt={item.designName}
-                                className="w-full h-full object-cover rounded-lg"
-                              />
-                            ) : (
-                              <span className="text-lg">🎨</span>
-                            )}
+                          <div className="w-12 h-15 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                            <CartDesignPreview
+                              previewImageUrl={item.designPreviewUrl}
+                              designSession={item.designData ? JSON.parse(item.designData) : undefined}
+                              designName={item.designName}
+                              size="small"
+                              className="w-full h-full"
+                            />
                           </div>
                         </div>
                         

@@ -155,26 +155,7 @@ public class OrdersController : ControllerBase
         }
     }
 
-    [HttpPut("{id}/status")]
-    [Authorize(Roles = "Admin")]
-    public async Task<ActionResult<OrderDto>> UpdateOrderStatus(int id, [FromBody] OrderStatusUpdateDto statusUpdateDto)
-    {
-        try
-        {
-            var order = await _orderService.UpdateOrderStatusAsync(id, statusUpdateDto.Status);
-            if (order == null)
-            {
-                return NotFound("Order not found");
-            }
 
-            return Ok(order);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error updating order status {OrderId}", id);
-            return StatusCode(500, "Internal server error");
-        }
-    }
 
     [HttpPost("{id}/cancel")]
     public async Task<ActionResult> CancelOrder(int id)
@@ -201,9 +182,175 @@ public class OrdersController : ControllerBase
             return StatusCode(500, "Internal server error");
         }
     }
-}
 
-public class OrderStatusUpdateDto
-{
-    public OrderStatus Status { get; set; }
+    [HttpPut("{id}/payment-status")]
+    public async Task<ActionResult> UpdatePaymentStatus(int id, [FromBody] UpdatePaymentStatusDto dto)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            if (userId == 0)
+            {
+                return Unauthorized("Invalid user");
+            }
+
+            // Get order to verify ownership
+            var order = await _orderService.GetByIdAsync(id);
+            if (order == null || order.UserId != userId)
+            {
+                return NotFound("Order not found");
+            }
+
+            await _orderService.UpdatePaymentStatusAsync(id, dto.PaymentStatus);
+            _logger.LogInformation("Payment status updated for order {OrderId} to {PaymentStatus}", id, dto.PaymentStatus);
+
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating payment status for order {OrderId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpPut("{id}/status")]
+    [Authorize(Roles = "Admin")]
+    public async Task<ActionResult<OrderDto>> UpdateOrderStatus(int id, [FromBody] UpdateOrderStatusDto updateStatusDto)
+    {
+        try
+        {
+            var order = await _orderService.UpdateOrderStatusAsync(id, updateStatusDto.Status);
+            if (order == null)
+            {
+                return NotFound("Order not found");
+            }
+
+            return Ok(order);
+        }
+        catch (ArgumentException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating order status for order {OrderId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    [HttpGet("{id}/status-history")]
+    public async Task<ActionResult<IEnumerable<OrderStatusHistoryDto>>> GetOrderStatusHistory(int id)
+    {
+        try
+        {
+            var userId = GetCurrentUserId();
+            if (userId == 0)
+            {
+                return Unauthorized("Invalid user");
+            }
+
+            // Check if user owns the order or is admin
+            OrderDto? order;
+            if (IsAdmin())
+            {
+                order = await _orderService.GetOrderByIdAsync(id);
+            }
+            else
+            {
+                order = await _orderService.GetOrderByIdAsync(id, userId);
+            }
+
+            if (order == null)
+            {
+                return NotFound("Order not found");
+            }
+
+            // For now, return simple status history based on current status
+            var statusHistory = GetStatusHistoryFromCurrentStatus(order.Status, order.CreatedAt, order.CompletedAt);
+            return Ok(statusHistory);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error getting order status history for order {OrderId}", id);
+            return StatusCode(500, "Internal server error");
+        }
+    }
+
+    private List<OrderStatusHistoryDto> GetStatusHistoryFromCurrentStatus(OrderStatus currentStatus, DateTime createdAt, DateTime? completedAt)
+    {
+        var history = new List<OrderStatusHistoryDto>();
+        var currentTime = DateTime.UtcNow;
+
+        // Always add Pending status
+        history.Add(new OrderStatusHistoryDto
+        {
+            Status = OrderStatus.Pending,
+            StatusName = "Chờ xử lý",
+            Timestamp = createdAt,
+            IsCompleted = true,
+            Description = "Đơn hàng đã được tạo và đang chờ xử lý"
+        });
+
+        if (currentStatus >= OrderStatus.Confirmed)
+        {
+            history.Add(new OrderStatusHistoryDto
+            {
+                Status = OrderStatus.Confirmed,
+                StatusName = "Đã xác nhận",
+                Timestamp = createdAt.AddMinutes(5), // Estimate
+                IsCompleted = true,
+                Description = "Đơn hàng đã được xác nhận và chuẩn bị in"
+            });
+        }
+
+        if (currentStatus >= OrderStatus.Printing)
+        {
+            history.Add(new OrderStatusHistoryDto
+            {
+                Status = OrderStatus.Printing,
+                StatusName = "Đang in",
+                Timestamp = createdAt.AddHours(1), // Estimate
+                IsCompleted = currentStatus > OrderStatus.Printing,
+                Description = "Decal đang được in với chất lượng cao"
+            });
+        }
+
+        if (currentStatus >= OrderStatus.Shipping)
+        {
+            history.Add(new OrderStatusHistoryDto
+            {
+                Status = OrderStatus.Shipping,
+                StatusName = "Đang giao",
+                Timestamp = createdAt.AddHours(24), // Estimate
+                IsCompleted = currentStatus > OrderStatus.Shipping,
+                Description = "Đơn hàng đang được giao đến địa chỉ của bạn"
+            });
+        }
+
+        if (currentStatus == OrderStatus.Completed)
+        {
+            history.Add(new OrderStatusHistoryDto
+            {
+                Status = OrderStatus.Completed,
+                StatusName = "Hoàn thành",
+                Timestamp = completedAt ?? currentTime,
+                IsCompleted = true,
+                Description = "Đơn hàng đã được giao thành công"
+            });
+        }
+
+        if (currentStatus == OrderStatus.Cancelled)
+        {
+            history.Add(new OrderStatusHistoryDto
+            {
+                Status = OrderStatus.Cancelled,
+                StatusName = "Đã hủy",
+                Timestamp = completedAt ?? currentTime,
+                IsCompleted = true,
+                Description = "Đơn hàng đã được hủy"
+            });
+        }
+
+        return history;
+    }
 }

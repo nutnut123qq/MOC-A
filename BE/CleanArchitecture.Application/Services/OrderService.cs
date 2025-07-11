@@ -281,6 +281,7 @@ public class OrderService : IOrderService
             TotalAmount = order.TotalAmount,
             Status = order.Status,
             StatusName = order.Status.ToString(),
+            PaymentStatus = order.PaymentStatus,
             CreatedAt = order.CreatedAt,
             CompletedAt = order.CompletedAt,
             OrderItems = order.OrderItems.Select(item => new OrderItemDto
@@ -297,6 +298,7 @@ public class OrderService : IOrderService
                 SpecialInstructions = item.SpecialInstructions,
                 DesignName = item.Design?.Name ?? "",
                 DesignPreviewUrl = item.Design?.PreviewImageUrl ?? "",
+                DesignData = item.Design?.DesignData ?? "",
                 ProductName = item.Product?.Name ?? "",
                 ProductType = item.Product?.Type ?? ProductType.Shirt
             }).ToList()

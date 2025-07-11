@@ -1,7 +1,7 @@
 import { User, CreateUserDto, UpdateUserDto } from '@/types/user';
 import { Design, DesignListItem, CreateDesignDto, UpdateDesignDto } from '@/types/design';
 import { Product, PriceCalculation } from '@/types/product';
-import { Order, CreateOrderDto } from '@/types/order';
+import { Order, CreateOrderDto, OrderStatus, OrderStatusHistory } from '@/types/order';
 import { Sticker, StickerCategory, Font } from '@/types/sticker';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5168';
@@ -26,6 +26,12 @@ class ApiClient {
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // Handle empty responses (like 204 No Content)
+    const contentType = response.headers.get('content-type');
+    if (response.status === 204 || !contentType?.includes('application/json')) {
+      return null;
     }
 
     return response.json();
@@ -195,6 +201,17 @@ class ApiClient {
     return this.request<void>(`/api/orders/${orderId}/cancel`, {
       method: 'POST',
     });
+  }
+
+  async updateOrderStatus(orderId: number, status: OrderStatus): Promise<Order> {
+    return this.request<Order>(`/api/orders/${orderId}/status`, {
+      method: 'PUT',
+      body: JSON.stringify({ status }),
+    });
+  }
+
+  async getOrderStatusHistory(orderId: number): Promise<OrderStatusHistory[]> {
+    return this.request<OrderStatusHistory[]>(`/api/orders/${orderId}/status-history`);
   }
 
   // Sticker endpoints

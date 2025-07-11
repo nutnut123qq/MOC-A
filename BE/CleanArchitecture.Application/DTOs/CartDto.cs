@@ -20,6 +20,7 @@ public class CartDto
     // Related data
     public string DesignName { get; set; } = string.Empty;
     public string DesignPreviewUrl { get; set; } = string.Empty;
+    public string DesignData { get; set; } = string.Empty; // JSON design session
     public string ProductName { get; set; } = string.Empty;
     public ProductType ProductType { get; set; }
 }
