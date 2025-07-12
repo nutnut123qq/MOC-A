@@ -21,7 +21,6 @@ export function getImageSource(layerContent: any): string | null {
   // Handle temp file path data (temporary storage)
   if (typeof layerContent === 'object' && layerContent.type === 'temp' && layerContent.tempPath) {
     const url = `${API_BASE_URL}${layerContent.tempPath}`;
-    console.log('🔍 getImageSource: Temp file path:', url);
     return url;
   }
 

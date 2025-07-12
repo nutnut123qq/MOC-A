@@ -77,6 +77,9 @@ builder.Services.AddScoped<ITempFileService, TempFileService>();
 builder.Services.AddScoped<IWalletService, WalletService>();
 builder.Services.AddScoped<IPayOSService, PayOSService>();
 
+// Register Analytics service
+builder.Services.AddScoped<IAnalyticsService, AnalyticsService>();
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

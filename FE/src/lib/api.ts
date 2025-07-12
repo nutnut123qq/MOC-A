@@ -3,6 +3,7 @@ import { Design, DesignListItem, CreateDesignDto, UpdateDesignDto } from '@/type
 import { Product, PriceCalculation } from '@/types/product';
 import { Order, CreateOrderDto, OrderStatus, OrderStatusHistory } from '@/types/order';
 import { Sticker, StickerCategory, Font } from '@/types/sticker';
+import { AnalyticsOverview, RevenueAnalytics, UserAnalytics, OrderAnalytics, DesignAnalytics, PaymentAnalytics, AnalyticsFilter } from '@/types/analytics';
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5168';
 
@@ -308,6 +309,67 @@ class ApiClient {
 
   async getFontsByCategory(category: string): Promise<Font[]> {
     return this.request<Font[]>(`/api/fonts/category/${category}`);
+  }
+
+  // Analytics endpoints (Admin only)
+  async getAnalyticsOverview(filter?: AnalyticsFilter): Promise<AnalyticsOverview> {
+    const params = new URLSearchParams();
+    if (filter?.startDate) params.append('startDate', filter.startDate);
+    if (filter?.endDate) params.append('endDate', filter.endDate);
+    if (filter?.period) params.append('period', filter.period);
+
+    const queryString = params.toString();
+    return this.request<AnalyticsOverview>(`/api/analytics/overview${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getRevenueAnalytics(filter?: AnalyticsFilter): Promise<RevenueAnalytics> {
+    const params = new URLSearchParams();
+    if (filter?.startDate) params.append('startDate', filter.startDate);
+    if (filter?.endDate) params.append('endDate', filter.endDate);
+    if (filter?.period) params.append('period', filter.period);
+
+    const queryString = params.toString();
+    return this.request<RevenueAnalytics>(`/api/analytics/revenue${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getUserAnalytics(filter?: AnalyticsFilter): Promise<UserAnalytics> {
+    const params = new URLSearchParams();
+    if (filter?.startDate) params.append('startDate', filter.startDate);
+    if (filter?.endDate) params.append('endDate', filter.endDate);
+    if (filter?.period) params.append('period', filter.period);
+
+    const queryString = params.toString();
+    return this.request<UserAnalytics>(`/api/analytics/users${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getOrderAnalytics(filter?: AnalyticsFilter): Promise<OrderAnalytics> {
+    const params = new URLSearchParams();
+    if (filter?.startDate) params.append('startDate', filter.startDate);
+    if (filter?.endDate) params.append('endDate', filter.endDate);
+    if (filter?.period) params.append('period', filter.period);
+
+    const queryString = params.toString();
+    return this.request<OrderAnalytics>(`/api/analytics/orders${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getDesignAnalytics(filter?: AnalyticsFilter): Promise<DesignAnalytics> {
+    const params = new URLSearchParams();
+    if (filter?.startDate) params.append('startDate', filter.startDate);
+    if (filter?.endDate) params.append('endDate', filter.endDate);
+    if (filter?.period) params.append('period', filter.period);
+
+    const queryString = params.toString();
+    return this.request<DesignAnalytics>(`/api/analytics/designs${queryString ? `?${queryString}` : ''}`);
+  }
+
+  async getPaymentAnalytics(filter?: AnalyticsFilter): Promise<PaymentAnalytics> {
+    const params = new URLSearchParams();
+    if (filter?.startDate) params.append('startDate', filter.startDate);
+    if (filter?.endDate) params.append('endDate', filter.endDate);
+    if (filter?.period) params.append('period', filter.period);
+
+    const queryString = params.toString();
+    return this.request<PaymentAnalytics>(`/api/analytics/payments${queryString ? `?${queryString}` : ''}`);
   }
 }
 

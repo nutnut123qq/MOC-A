@@ -27,7 +27,7 @@ export interface TShirtDesignSession {
 
 export interface DesignLayer {
   id: string;
-  type: 'image' | 'text' | 'sticker' | 'shape';
+  type: 'image' | 'text' | 'sticker' | 'shape' | 'decal-frame';
   content: any;
   position: Position2D;
   transform: Transform;
@@ -35,6 +35,19 @@ export interface DesignLayer {
   style?: LayerStyle;
   locked?: boolean;
   visible?: boolean;
+  // For decal-frame type
+  decalSize?: {
+    width: number;
+    height: number;
+    range: string;
+  };
+  // For images converted from decal frames
+  decalConstraints?: {
+    maxWidth: number;
+    maxHeight: number;
+    frameX: number;
+    frameY: number;
+  };
 }
 
 export interface Position2D {

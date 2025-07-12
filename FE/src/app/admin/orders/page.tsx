@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import AdminLayout from '@/components/layout/AdminLayout';
 import OrdersTable from '@/components/admin/OrdersTable';
@@ -9,7 +9,7 @@ import OrderDetailsModal from '@/components/admin/OrderDetailsModal';
 import { apiClient } from '@/lib/api';
 import { Order, OrderStatus, PaymentStatus } from '@/types/order';
 
-export default function AdminOrdersPage() {
+function AdminOrdersContent() {
   const searchParams = useSearchParams();
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
@@ -287,5 +287,25 @@ export default function AdminOrdersPage() {
         />
       )}
     </AdminLayout>
+  );
+}
+
+export default function AdminOrdersPage() {
+  return (
+    <Suspense fallback={
+      <AdminLayout
+        title="Quản Lý Đơn Hàng"
+        breadcrumbs={[
+          { label: 'Dashboard', href: '/admin' },
+          { label: 'Đơn hàng' }
+        ]}
+      >
+        <div className="flex items-center justify-center min-h-96">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        </div>
+      </AdminLayout>
+    }>
+      <AdminOrdersContent />
+    </Suspense>
   );
 }

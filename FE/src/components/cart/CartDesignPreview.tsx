@@ -172,6 +172,27 @@ const CartDesignPreview = memo(function CartDesignPreview({
                                undefined,
                     }}
                   />
+                ) : layer.type === 'decal-frame' ? (
+                  <div
+                    className="w-full h-full border-2 border-dashed border-blue-500 bg-blue-50 bg-opacity-10 pointer-events-none relative"
+                    style={{
+                      borderRadius: '4px',
+                    }}
+                  >
+                    {/* Corner Markers */}
+                    <div className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-blue-500"></div>
+                    <div className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-blue-500"></div>
+                    <div className="absolute -bottom-1 -left-1 w-2 h-2 rounded-full bg-blue-500"></div>
+                    <div className="absolute -bottom-1 -right-1 w-2 h-2 rounded-full bg-blue-500"></div>
+
+                    {/* Size indicator */}
+                    <div className="absolute inset-2 border border-dashed border-blue-300 rounded flex items-center justify-center">
+                      <div className="text-center text-blue-500 text-xs">
+                        <div className="text-lg mb-1">📏</div>
+                        <div className="text-xs opacity-75">{layer.decalSize?.range}</div>
+                      </div>
+                    </div>
+                  </div>
                 ) : (
                   <div
                     className="pointer-events-none w-full h-full flex items-center justify-center"
