@@ -3,6 +3,7 @@
 import { Order, OrderStatus } from '@/types/order';
 import OrderStatusBadge from './OrderStatusBadge';
 import StatusUpdateDropdown from './StatusUpdateDropdown';
+import CartDesignPreview from '@/components/cart/CartDesignPreview';
 
 interface OrdersTableProps {
   orders: Order[];
@@ -118,12 +119,37 @@ export default function OrdersTable({
                   </div>
                 </td>
                 
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">
-                    {order.orderItems.length} sản phẩm
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {order.orderItems.map(item => item.designName).join(', ')}
+                <td className="px-6 py-4">
+                  <div className="flex items-center space-x-3">
+                    {/* Hiển thị preview của sản phẩm đầu tiên */}
+                    {order.orderItems.length > 0 && (
+                      <div className="flex-shrink-0">
+                        <div className="bg-gray-50 rounded-lg flex items-center justify-center border border-gray-200 p-1" style={{ width: '64px', height: '79px' }}>
+                          <CartDesignPreview
+                            previewImageUrl={order.orderItems[0].designPreviewUrl}
+                            designSession={order.orderItems[0].designData ? JSON.parse(order.orderItems[0].designData) : undefined}
+                            designName={order.orderItems[0].designName}
+                            size="small"
+                            className="w-full h-full"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-medium text-gray-900">
+                        {order.orderItems.length} sản phẩm
+                        {order.orderItems.length > 1 && (
+                          <span className="ml-1 text-xs text-gray-500">
+                            (+{order.orderItems.length - 1} khác)
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-sm text-gray-500 truncate">
+                        {order.orderItems[0]?.designName}
+                        {order.orderItems.length > 1 && ', ...'}
+                      </div>
+                    </div>
                   </div>
                 </td>
                 
@@ -131,6 +157,18 @@ export default function OrdersTable({
                   <div className="text-sm font-medium text-gray-900">
                     {formatCurrency(order.totalAmount)}
                   </div>
+                  {/* Debug: Log giá trị thực tế */}
+                  {console.log('🔍 Order Debug:', {
+                    orderId: order.id,
+                    orderNumber: order.orderNumber,
+                    totalAmount: order.totalAmount,
+                    orderItems: order.orderItems.map(item => ({
+                      id: item.id,
+                      unitPrice: item.unitPrice,
+                      totalPrice: item.totalPrice,
+                      quantity: item.quantity
+                    }))
+                  })}
                 </td>
                 
                 <td className="px-6 py-4 whitespace-nowrap">

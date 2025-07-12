@@ -216,6 +216,8 @@ export default function TShirtDesignStudioPage() {
               currentPrintArea: designSession.currentPrintArea || 'front',
               selectedSize: designSession.selectedSize || DEFAULT_TSHIRT_SIZE,
               selectedColor: designSession.selectedColor || DEFAULT_TSHIRT_COLOR,
+              // Lưu ID của design đang load
+              savedDesignId: parseInt(loadDesignId),
             };
 
             console.log('🔄 Loading saved design:', {

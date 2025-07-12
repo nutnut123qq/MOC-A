@@ -92,7 +92,12 @@ public class ProductService : IProductService
         if (product == null) return 0;
 
         // Fixed price for all products
-        return 149000m; // 149,000 VND for all t-shirts
+        var price = 149000m; // 149,000 VND for all t-shirts
+
+        // Debug log
+        Console.WriteLine($"🔍 CalculatePriceAsync: ProductId={productId}, Width={width}, Height={height}, Price={price}");
+
+        return price;
     }
 
     private static ProductDto MapToDto(Product product)

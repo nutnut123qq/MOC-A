@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
-import { useAuth } from '@/contexts/AuthContext';
-import AuthPrompt from '@/components/ui/AuthPrompt';
 import { TShirt } from '@/types/tshirt';
 import { TShirtDesignSession } from '@/types/tshirt-design';
 import MockupRenderer from '@/components/tshirt-design/MockupRenderer';
@@ -14,17 +12,15 @@ type MockupView = 'front' | 'back' | 'folded' | 'hanging';
 export default function TShirtPreviewPage() {
   const params = useParams();
   const router = useRouter();
-  const { isAuthenticated } = useAuth();
   const searchParams = useSearchParams();
   const tshirtId = parseInt(params.id as string);
+  const designId = searchParams.get('designId');
 
   const [tshirt, setTShirt] = useState<TShirt | null>(null);
   const [designSession, setDesignSession] = useState<TShirtDesignSession | null>(null);
   const [currentView, setCurrentView] = useState<MockupView>('front');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [updating, setUpdating] = useState(false);
-  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
 
   useEffect(() => {
     loadPreviewData();
@@ -207,57 +203,19 @@ export default function TShirtPreviewPage() {
   };
 
   const handleBackToEditor = () => {
-    router.push(`/design/tshirt/${tshirtId}`);
-  };
+    // Ưu tiên designId từ URL, sau đó từ session
+    const currentDesignId = designId || designSession?.savedDesignId;
 
-  const handleColorChange = async (color: string) => {
-    setUpdating(true);
-    try {
-      const updatedSession = { ...designSession!, selectedColor: color as any };
-      setDesignSession(updatedSession);
-      storageManager.setItem(`design-session-${tshirt!.id}`, updatedSession);
-    } finally {
-      setTimeout(() => setUpdating(false), 300); // Small delay for smooth transition
+    if (currentDesignId) {
+      // Nếu có design ID, quay về edit design đó
+      router.push(`/design/tshirt/${tshirtId}?loadDesign=${currentDesignId}`);
+    } else {
+      // Nếu không có design ID, quay về design session hiện tại
+      router.push(`/design/tshirt/${tshirtId}`);
     }
   };
 
-  const handleSizeChange = async (size: string) => {
-    setUpdating(true);
-    try {
-      const updatedSession = { ...designSession!, selectedSize: size as any };
-      setDesignSession(updatedSession);
-      storageManager.setItem(`design-session-${tshirt!.id}`, updatedSession);
-    } finally {
-      setTimeout(() => setUpdating(false), 300);
-    }
-  };
 
-  const handleSaveProduct = async () => {
-    // Check if user is authenticated before saving product
-    if (!isAuthenticated) {
-      // Show auth prompt instead of redirecting immediately
-      setShowAuthPrompt(true);
-      return;
-    }
-
-    try {
-      // TODO: Implement save to backend
-      console.log('Saving product:', { tshirt, designSession });
-      alert('Sản phẩm đã được lưu thành công!');
-    } catch (error) {
-      console.error('Error saving product:', error);
-      alert('Không thể lưu sản phẩm. Vui lòng thử lại.');
-    }
-  };
-
-  const handleAddToCart = async () => {
-    try {
-      // TODO: Implement add to cart
-      alert('Đã thêm vào giỏ hàng thành công!');
-    } catch (error) {
-      alert('Không thể thêm vào giỏ hàng. Vui lòng thử lại.');
-    }
-  };
 
   if (loading) {
     return (
@@ -305,42 +263,49 @@ export default function TShirtPreviewPage() {
   const currentVariant = tshirt.variants.find(v => v.color === designSession.selectedColor) || tshirt.variants[0];
   const currentSize = currentVariant.sizes.find(s => s.size === designSession.selectedSize) || currentVariant.sizes[0];
 
-  const calculatePrice = () => {
-    return 149000; // Fixed price for all t-shirts
-  };
-
   const mockupViews = [
-    { id: 'front', name: 'Front', icon: '👕' },
-    { id: 'back', name: 'Back', icon: '🔄' },
-    { id: 'folded', name: 'Folded', icon: '📦' },
-    { id: 'hanging', name: 'Hanging', icon: '🪝' },
+    {
+      id: 'front',
+      name: 'Front',
+      icon: (
+        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M8 2h8l2 2v16l-2 2H8l-2-2V4l2-2z"/>
+          <path d="M8 6h8"/>
+          <path d="M8 10h8"/>
+          <path d="M8 14h8"/>
+        </svg>
+      )
+    },
+    {
+      id: 'back',
+      name: 'Back',
+      icon: (
+        <svg className="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+          <path d="M8 2h8l2 2v16l-2 2H8l-2-2V4l2-2z"/>
+          <path d="M12 6v12"/>
+          <path d="M8 10l4-4 4 4"/>
+        </svg>
+      )
+    },
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 pt-20">
       {/* Header */}
-      <div className="bg-white border-b border-gray-200 sticky top-0 z-40 h-16">
+      <div className="bg-white border-b border-gray-200 fixed top-20 left-0 right-0 z-40 h-16">
         <div className="h-full px-6 flex items-center justify-between">
-          {/* Left: Logo and breadcrumb */}
-          <div className="flex items-center space-x-6">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">D</span>
-              </div>
-              <span className="font-semibold text-gray-900">DecalDesign</span>
-            </div>
-            <div className="flex items-center text-sm text-gray-500">
-              <button
-                onClick={handleBackToEditor}
-                className="hover:text-gray-700 transition-colors"
-              >
-                Design
-              </button>
-              <svg className="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-              </svg>
-              <span className="text-gray-900 font-medium">Preview</span>
-            </div>
+          {/* Left: Breadcrumb only */}
+          <div className="flex items-center text-sm text-gray-500">
+            <button
+              onClick={handleBackToEditor}
+              className="hover:text-gray-700 transition-colors"
+            >
+              Design
+            </button>
+            <svg className="w-4 h-4 mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+            <span className="text-gray-900 font-medium">Preview</span>
           </div>
 
           {/* Right: Action buttons */}
@@ -351,25 +316,14 @@ export default function TShirtPreviewPage() {
             >
               Edit
             </button>
-            <button
-              onClick={handleSaveProduct}
-              className="px-4 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-900 transition-colors font-medium text-sm"
-            >
-              Preview
-            </button>
           </div>
         </div>
       </div>
 
-      <div className="flex h-[calc(100vh-64px)]">
+      <div className="flex h-[calc(100vh-144px)] mt-16">
         {/* Left: Mockup Preview */}
         <div className="flex-1 bg-gray-50 flex items-center justify-center p-8">
-          <div className="max-w-lg w-full bg-white rounded-lg shadow-sm border border-gray-200 p-8 relative">
-            {updating && (
-              <div className="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center rounded-lg z-10">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-              </div>
-            )}
+          <div className="max-w-lg w-full bg-white rounded-lg shadow-sm border border-gray-200 p-8">
             <MockupRenderer
               tshirt={tshirt}
               designSession={designSession}
@@ -382,161 +336,33 @@ export default function TShirtPreviewPage() {
         {/* Right: Sidebar */}
         <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
           {/* Mockup view selector */}
-          <div className="p-6 border-b border-gray-200">
+          <div className="p-6">
             <h3 className="text-sm font-semibold text-gray-900 mb-4">Mockup view</h3>
-            <div className="grid grid-cols-4 gap-2 mb-4">
+            <div className="grid grid-cols-2 gap-3">
               {mockupViews.map((view) => (
                 <button
                   key={view.id}
                   onClick={() => setCurrentView(view.id as MockupView)}
-                  className={`aspect-square rounded-lg border-2 transition-all flex items-center justify-center ${
+                  className={`flex flex-col items-center justify-center p-4 rounded-lg border-2 transition-all ${
                     currentView === view.id
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? 'border-blue-500 bg-blue-50 text-blue-600'
+                      : 'border-gray-200 hover:border-gray-300 text-gray-600'
                   }`}
                 >
-                  <div className="text-center">
-                    <div className="text-lg mb-1">{view.icon}</div>
-                  </div>
-                </button>
-              ))}
-            </div>
-            <div className="grid grid-cols-2 gap-2">
-              {mockupViews.slice(0, 4).map((view) => (
-                <div
-                  key={`label-${view.id}`}
-                  className={`text-xs text-center py-1 ${
-                    currentView === view.id ? 'text-blue-600 font-medium' : 'text-gray-500'
-                  }`}
-                >
-                  {view.name}
-                </div>
-              ))}
-            </div>
-            <div className="mt-3">
-              <button className="text-xs text-blue-600 hover:text-blue-700 flex items-center">
-                <span className="mr-1">+</span>
-                Show more
-              </button>
-            </div>
-          </div>
-
-          {/* Mockup color mode */}
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Mockup color mode</h3>
-            <div className="space-y-2">
-              <label className="flex items-center">
-                <input type="radio" name="colorMode" className="mr-2" />
-                <span className="text-sm">Realistic (CMYK)</span>
-              </label>
-              <label className="flex items-center">
-                <input type="radio" name="colorMode" className="mr-2" defaultChecked />
-                <span className="text-sm">Bright/colourful (RGB)</span>
-              </label>
-            </div>
-          </div>
-
-          {/* Colors */}
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Colors</h3>
-            <div className="flex flex-wrap gap-2">
-              {tshirt.variants.map((variant) => (
-                <button
-                  key={variant.id}
-                  onClick={() => handleColorChange(variant.color)}
-                  disabled={updating}
-                  className={`w-8 h-8 rounded border-2 transition-all ${
-                    designSession.selectedColor === variant.color
-                      ? 'border-gray-800 ring-2 ring-gray-300'
-                      : 'border-gray-300 hover:border-gray-400'
-                  } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                  style={{ backgroundColor: variant.colorHex }}
-                  title={variant.colorName}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Size selector */}
-          <div className="p-6 border-b border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900 mb-3">Size</h3>
-            <div className="grid grid-cols-2 gap-2">
-              {currentVariant.sizes.map((size) => (
-                <button
-                  key={size.size}
-                  onClick={() => handleSizeChange(size.size)}
-                  disabled={updating}
-                  className={`px-3 py-2 text-sm rounded border transition-all ${
-                    designSession.selectedSize === size.size
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 hover:border-gray-400 text-gray-700'
-                  } ${updating ? 'opacity-50 cursor-not-allowed' : ''}`}
-                >
-                  {size.size}
+                  <div className="mb-2">{view.icon}</div>
+                  <span className="text-sm font-medium">{view.name}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Product details */}
-          <div className="flex-1 p-6">
-            <div className="space-y-4">
-              <div>
-                <span className="text-sm text-gray-500">Product:</span>
-                <p className="font-medium text-sm">{tshirt.name}</p>
-              </div>
-              <div>
-                <span className="text-sm text-gray-500">Color:</span>
-                <p className="font-medium text-sm">{currentVariant.colorName}</p>
-              </div>
-              <div>
-                <span className="text-sm text-gray-500">Size:</span>
-                <p className="font-medium text-sm">{designSession.selectedSize}</p>
-              </div>
-              <div>
-                <span className="text-sm text-gray-500">Design elements:</span>
-                <p className="font-medium text-sm">{designSession.designLayers.length}</p>
-              </div>
-            </div>
-          </div>
 
-          {/* Download mockup */}
-          <div className="p-6 border-t border-gray-200">
-            <button className="w-full px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors font-medium text-sm flex items-center justify-center">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Download mockup
-            </button>
-          </div>
 
-          {/* Bottom actions */}
-          <div className="p-6 border-t border-gray-200 space-y-3">
-            <div className="text-center">
-              <p className="text-xl font-bold text-gray-900">
-                {calculatePrice().toLocaleString('vi-VN')} ₫
-              </p>
-              <p className="text-sm text-gray-500">
-                {designSession.designLayers.length} design elements
-              </p>
-            </div>
-            <button
-              onClick={handleSaveProduct}
-              className="w-full px-4 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-colors font-medium"
-            >
-              Save product
-            </button>
-          </div>
+
         </div>
       </div>
 
-      <AuthPrompt
-        isOpen={showAuthPrompt}
-        onClose={() => setShowAuthPrompt(false)}
-        title="Đăng nhập để lưu sản phẩm"
-        message="Bạn cần đăng nhập để lưu sản phẩm vào tài khoản của mình. Đăng nhập ngay để hoàn tất đơn hàng!"
-        returnUrl={`/design/tshirt/${params.id}/preview`}
-      />
+
     </div>
   );
 }

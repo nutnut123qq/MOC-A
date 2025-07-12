@@ -92,25 +92,25 @@ export default function MockupRenderer({
   const renderLayer = (layer: DesignLayer) => {
     if (!currentPrintArea) return null;
 
-    // Calculate scale to make mockup larger but maintain proportions
-    // Canvas print area: left: 128px, top: 155px, width: 138px, height: 171px
+    // Calculate scale to match canvas size exactly (1:1 ratio)
+    // Canvas print area Size L: left: 120px, top: 145px, width: 155px, height: 190px
     // Mockup T-shirt size: 500x600px
-    // Mockup overlay area: we want it larger than canvas for better visibility
+    // Mockup overlay area: khớp với print area size L (38.75% x 38%)
 
-    const canvasPrintAreaWidth = currentPrintArea.bounds.width; // 138px
-    const canvasPrintAreaHeight = currentPrintArea.bounds.height; // 171px
+    const canvasPrintAreaWidth = 155; // Size L width
+    const canvasPrintAreaHeight = 190; // Size L height
 
-    // Mockup overlay area (larger than canvas for better visibility)
+    // Mockup overlay area (khớp với size L)
     const mockupTShirtWidth = 500;
     const mockupTShirtHeight = 600;
-    const overlayWidthPercent = 0.35; // 35% of T-shirt width = 175px
-    const overlayHeightPercent = 0.40; // 40% of T-shirt height = 240px
-    const overlayWidth = mockupTShirtWidth * overlayWidthPercent;
-    const overlayHeight = mockupTShirtHeight * overlayHeightPercent;
+    const overlayWidthPercent = 0.3875; // 38.75% khớp với size L
+    const overlayHeightPercent = 0.38; // 38% khớp với size L
+    const overlayWidth = mockupTShirtWidth * overlayWidthPercent; // 193.75px
+    const overlayHeight = mockupTShirtHeight * overlayHeightPercent; // 228px
 
-    // Calculate scale factor (mockup will be larger than canvas)
-    const scaleX = overlayWidth / canvasPrintAreaWidth; // 175/138 ≈ 1.27
-    const scaleY = overlayHeight / canvasPrintAreaHeight; // 240/171 ≈ 1.40
+    // Calculate scale factor (giữ tỷ lệ 1:1 với canvas)
+    const scaleX = overlayWidth / canvasPrintAreaWidth; // 193.75/155 ≈ 1.25
+    const scaleY = overlayHeight / canvasPrintAreaHeight; // 228/190 ≈ 1.2
     const scale = Math.min(scaleX, scaleY); // Use smaller scale to maintain aspect ratio
 
     const layerStyle = {

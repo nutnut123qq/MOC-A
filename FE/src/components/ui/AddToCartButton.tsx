@@ -58,6 +58,15 @@ export default function AddToCartButton({
         specialInstructions: ''
       };
 
+      // Debug log
+      console.log('🔍 AddToCart Debug:', {
+        designId,
+        productId,
+        sizeWidth,
+        sizeHeight,
+        addToCartData
+      });
+
       await addToCart(addToCartData);
       setIsInCart(true);
 

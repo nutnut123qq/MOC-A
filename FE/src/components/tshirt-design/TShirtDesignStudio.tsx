@@ -99,11 +99,31 @@ export default function TShirtDesignStudio({
   };
 
   const handlePreview = () => {
+    // Thêm savedDesignId vào session trước khi lưu
+    const sessionWithDesignId = {
+      ...currentSession,
+      savedDesignId: savedDesignId
+    };
+
     // Save current session using storage manager with quota handling
-    const success = storageManager.setItem(`design-session-${tshirt.id}`, currentSession);
+    const success = storageManager.setItem(`design-session-${tshirt.id}`, sessionWithDesignId);
+
+    // Debug: Log để kiểm tra savedDesignId
+    console.log('🔍 Preview Debug:', {
+      savedDesignId: savedDesignId,
+      initialSavedDesignId: initialSavedDesignId,
+      sessionWithDesignId: sessionWithDesignId
+    });
 
     if (success) {
-      router.push(`/design/tshirt/${tshirt.id}/preview`);
+      // Sử dụng savedDesignId từ component state
+      if (savedDesignId) {
+        console.log('✅ Navigating with designId:', savedDesignId);
+        router.push(`/design/tshirt/${tshirt.id}/preview?designId=${savedDesignId}`);
+      } else {
+        console.log('⚠️ No savedDesignId found, navigating without designId');
+        router.push(`/design/tshirt/${tshirt.id}/preview`);
+      }
     } else {
       // Show error message if storage failed
       alert('⚠️ Không thể lưu thiết kế do bộ nhớ đầy. Vui lòng xóa các thiết kế cũ hoặc làm mới trang.');

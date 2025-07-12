@@ -27,48 +27,48 @@ export default function RealisticTShirtMockup({
   // Get 3D mockup image path based on view
   const getImagePath = () => {
     // Use realistic 3D mockup images for preview (not vector images)
-    // Note: Currently using the same 3D image for all views as placeholders
-    // TODO: Replace with actual back/folded/hanging 3D mockup photos later
+    // Updated to use new white front and back mockup images
     switch (view) {
       case 'front':
-        return '/mockups/tshirt_mockup.jpeg'; // Main 3D front view mockup
+        return '/mockups/white f.png'; // New white front view mockup
       case 'back':
-        return '/mockups/tshirt-back-mockup.jpeg'; // Placeholder (same as front for now)
+        return '/mockups/white b.png'; // New white back view mockup
       case 'folded':
         return '/mockups/tshirt-folded-mockup.jpeg'; // Placeholder (same as front for now)
       case 'hanging':
         return '/mockups/tshirt-hanging-mockup.jpeg'; // Placeholder (same as front for now)
       default:
-        return '/mockups/tshirt_mockup.jpeg'; // Default to main 3D mockup
+        return '/mockups/white f.png'; // Default to new white front mockup
     }
   };
 
   // Get design overlay position based on view
-  // Canvas print area: left: 128px, top: 155px, width: 138px, height: 171px
+  // Canvas print area Size L: left: 120px, top: 145px, width: 155px, height: 190px (canvas 400x500px)
   // T-shirt mockup: 500x600px
-  // Overlay area: larger than canvas for better visibility (35% x 40% = 175px x 240px)
+  // Overlay area: khớp với print area size L
   const getDesignOverlayStyle = () => {
     switch (view) {
       case 'front':
         return {
           position: 'absolute' as const,
-          // Center the larger overlay area on the T-shirt
-          left: '52%',
-          top: '49%',
-          transform: 'translate(-50%, -50%)',
-          width: '39%', // 175px (larger than canvas 138px)
-          height: '42%', // 240px (larger than canvas 171px)
+          // Khớp với print area size L front: x:120, y:145, w:155, h:190
+          left: '30%', // 120/400 = 30% → 30% của mockup 500px
+          top: '29%', // 145/500 = 29% → 29% của mockup 600px
+          transform: 'none',
+          width: '38.75%', // 155/400 = 38.75% → 38.75% của mockup 500px
+          height: '38%', // 190/500 = 38% → 38% của mockup 600px
           zIndex: 10,
           pointerEvents: 'none' as const,
         };
       case 'back':
         return {
           position: 'absolute' as const,
-          left: '50%',
-          top: '45%',
-          transform: 'translate(-50%, -50%)',
-          width: '35%',
-          height: '40%',
+          // Điều chỉnh để khớp với canvas vector back
+          left: '31%', // Điều chỉnh vị trí ngang
+          top: '30%', // Điều chỉnh vị trí dọc để không bị cắt phần trên
+          transform: 'none',
+          width: '34%', // Giảm width để khớp với canvas
+          height: '34%', // Giảm height để khớp với canvas
           zIndex: 10,
           pointerEvents: 'none' as const,
         };
@@ -103,9 +103,9 @@ export default function RealisticTShirtMockup({
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     const img = e.target as HTMLImageElement;
 
-    // If specific view image fails, fallback to main 3D mockup
-    if (!img.src.includes('tshirt_mockup.jpeg')) {
-      img.src = '/mockups/tshirt_mockup.jpeg';
+    // If specific view image fails, fallback to white front mockup
+    if (!img.src.includes('white f.png')) {
+      img.src = '/mockups/white f.png';
     } else {
       img.src = '/mockups/placeholder-tshirt.png';
     }
@@ -140,7 +140,13 @@ export default function RealisticTShirtMockup({
                 setImageLoading(false);
               }}
               style={{
-                filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.15))'
+                filter: 'drop-shadow(0 10px 25px rgba(0,0,0,0.15))',
+                // Cắt phần trên và dưới của ảnh mockup để căn giữa design với decal
+                objectPosition: view === 'front' ? 'center 35%' : 'center 25%',
+                // Điều chỉnh scale và dịch chuyển cho front và back
+                transform: view === 'front'
+                  ? 'scale(1.25) translateY(-10%)'
+                  : 'scale(1.15) translateY(-5%)',
               }}
             />
           ) : (
@@ -177,7 +183,11 @@ export default function RealisticTShirtMockup({
                 maskImage: `url(${getImagePath()})`,
                 maskSize: 'contain',
                 maskRepeat: 'no-repeat',
-                maskPosition: 'center',
+                maskPosition: view === 'front' ? 'center 35%' : 'center 25%',
+                // Đồng bộ transform với ảnh chính cho cả front và back
+                transform: view === 'front'
+                  ? 'scale(1.25) translateY(-10%)'
+                  : 'scale(1.15) translateY(-5%)',
               }}
             />
           )}

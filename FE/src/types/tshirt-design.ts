@@ -23,6 +23,7 @@ export interface TShirtDesignSession {
   currentPrintArea: 'front' | 'back';
   createdAt: string;
   updatedAt: string;
+  savedDesignId?: number; // ID của design đã lưu (nếu có)
 }
 
 export interface DesignLayer {
