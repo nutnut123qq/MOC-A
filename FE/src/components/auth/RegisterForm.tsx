@@ -213,7 +213,15 @@ export default function RegisterForm() {
               <select
                 value={formData.gender}
                 onChange={handleInputChange('gender')}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200"
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg transition-colors duration-200"
+                onFocus={(e) => {
+                  e.target.style.borderColor = '#E21C34';
+                  e.target.style.boxShadow = '0 0 0 2px rgba(226, 28, 52, 0.2)';
+                }}
+                onBlur={(e) => {
+                  e.target.style.borderColor = '#d1d5db';
+                  e.target.style.boxShadow = 'none';
+                }}
               >
                 <option value="">Chọn giới tính</option>
                 <option value="male">Nam</option>
@@ -249,15 +257,30 @@ export default function RegisterForm() {
                 type="checkbox"
                 checked={formData.acceptTerms}
                 onChange={handleInputChange('acceptTerms')}
-                className="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded mt-1"
+                className="h-4 w-4 border-gray-300 rounded mt-1 focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
+                style={{
+                  accentColor: '#E21C34'
+                }}
               />
               <span className="ml-2 text-sm text-gray-600">
                 Tôi đồng ý với{' '}
-                <Link href="/terms" className="text-amber-600 hover:text-amber-500 font-medium">
+                <Link
+                  href="/terms"
+                  className="font-medium transition-colors duration-200"
+                  style={{color: '#E21C34'}}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#dc2626'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#E21C34'}
+                >
                   Điều khoản sử dụng
                 </Link>{' '}
                 và{' '}
-                <Link href="/privacy" className="text-amber-600 hover:text-amber-500 font-medium">
+                <Link
+                  href="/privacy"
+                  className="font-medium transition-colors duration-200"
+                  style={{color: '#E21C34'}}
+                  onMouseEnter={(e) => e.currentTarget.style.color = '#dc2626'}
+                  onMouseLeave={(e) => e.currentTarget.style.color = '#E21C34'}
+                >
                   Chính sách bảo mật
                 </Link>
               </span>
@@ -270,7 +293,17 @@ export default function RegisterForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-3 px-4 rounded-lg font-medium hover:from-amber-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            className="w-full text-white py-3 px-4 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            style={{
+              background: 'linear-gradient(to right, #dc2626, #E21C34)',
+              boxShadow: '0 4px 14px 0 rgba(226, 28, 52, 0.39)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(to right, #b91c1c, #dc2626)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(to right, #dc2626, #E21C34)';
+            }}
           >
             {isSubmitting ? (
               <div className="flex items-center justify-center">
@@ -288,7 +321,10 @@ export default function RegisterForm() {
             Đã có tài khoản?{' '}
             <Link
               href="/auth/login"
-              className="text-amber-600 hover:text-amber-500 font-medium"
+              className="font-medium transition-colors duration-200"
+              style={{color: '#E21C34'}}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#dc2626'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#E21C34'}
             >
               Đăng nhập ngay
             </Link>

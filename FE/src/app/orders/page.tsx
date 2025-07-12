@@ -129,7 +129,10 @@ export default function OrdersPage() {
                       
                       <Link
                         href={`/orders/${order.id}`}
-                        className="text-amber-600 hover:text-amber-700 font-medium text-sm"
+                        className="font-medium text-sm transition-colors duration-200"
+                        style={{color: '#E21C34'}}
+                        onMouseEnter={(e) => e.currentTarget.style.color = '#dc2626'}
+                        onMouseLeave={(e) => e.currentTarget.style.color = '#E21C34'}
                       >
                         Xem chi tiết →
                       </Link>
@@ -189,7 +192,7 @@ export default function OrdersPage() {
                     </div>
                     
                     <div className="text-right">
-                      <p className="text-lg font-semibold text-amber-600">
+                      <p className="text-lg font-semibold" style={{color: '#E21C34'}}>
                         {order.totalAmount.toLocaleString('vi-VN')}₫
                       </p>
                     </div>

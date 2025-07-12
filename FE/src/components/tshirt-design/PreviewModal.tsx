@@ -32,11 +32,7 @@ export default function PreviewModal({
   const currentSize = currentVariant.sizes.find(s => s.size === designSession.selectedSize) || currentVariant.sizes[0];
 
   const calculatePrice = () => {
-    const basePrice = tshirt.basePrice;
-    const sizePrice = currentSize.price || 0;
-    const layerCount = designSession.designLayers.length;
-    const designPrice = layerCount * 10000;
-    return basePrice + sizePrice + designPrice;
+    return 149000; // Fixed price for all t-shirts
   };
 
   const mockupViews = [
@@ -125,7 +121,17 @@ export default function PreviewModal({
               </button>
               <button
                 onClick={onAddToCart}
-                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                className="px-6 py-2 text-white rounded-lg font-medium transition-colors duration-200"
+                style={{
+                  background: 'linear-gradient(to right, #dc2626, #E21C34)',
+                  boxShadow: '0 4px 14px 0 rgba(226, 28, 52, 0.39)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(to right, #b91c1c, #dc2626)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(to right, #dc2626, #E21C34)';
+                }}
               >
                 Thêm Vào Giỏ Hàng
               </button>

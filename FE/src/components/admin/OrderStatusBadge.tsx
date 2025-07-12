@@ -29,9 +29,9 @@ export default function OrderStatusBadge({ status, size = 'md' }: OrderStatusBad
     },
     [OrderStatus.Shipping]: {
       label: 'Đang giao',
-      color: 'bg-orange-100 text-orange-800 border-orange-200',
+      color: 'bg-indigo-100 text-indigo-800 border-indigo-200',
       icon: '🚚',
-      dotColor: 'bg-orange-400'
+      dotColor: 'bg-indigo-400'
     },
     [OrderStatus.Completed]: {
       label: 'Hoàn thành',

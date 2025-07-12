@@ -22,7 +22,7 @@ export default function Logo({
 
   const sizeMap = {
     xs: { width: 20, height: 20 },
-    sm: { width: 28, height: 28 },
+    sm: { width: 28, height: 35 },
     md: { width: 36, height: 36 },
     lg: { width: 48, height: 48 },
     xl: { width: 64, height: 64 },
@@ -50,7 +50,7 @@ export default function Logo({
         {!imageError ? (
           <Image
             src="/assets/logos/logo_moc.png"
-            alt="DecalStudio Logo"
+            alt="Mộc Logo"
             width={width}
             height={height}
             className="object-contain"
@@ -59,7 +59,12 @@ export default function Logo({
           />
         ) : (
           // Fallback logo nếu image không load được
-          <div className={`w-full h-full bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center`}>
+          <div
+            className={`w-full h-full rounded-xl flex items-center justify-center`}
+            style={{
+              background: 'linear-gradient(135deg, #dc2626, #E21C34)'
+            }}
+          >
             <svg className={`${size === 'xs' ? 'w-3 h-3' : size === 'sm' ? 'w-4 h-4' : size === 'hero' ? 'w-16 h-16' : 'w-6 h-6'} text-white`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
             </svg>
@@ -69,7 +74,7 @@ export default function Logo({
       
       {showText && (
         <span className={`font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent ${textSizeMap[size]} ${textClassName}`}>
-          DecalStudio
+          Mộc
         </span>
       )}
     </div>

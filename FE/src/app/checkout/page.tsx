@@ -20,6 +20,11 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<'info' | 'payment'>('info');
 
+  // Calculate total with fixed price
+  const calculateFixedTotal = () => {
+    return cartItems.reduce((total, item) => total + (149000 * item.quantity), 0);
+  };
+
   const [formData, setFormData] = useState({
     customerName: user?.firstName + ' ' + user?.lastName || '',
     customerPhone: user?.phoneNumber || '',
@@ -79,7 +84,7 @@ export default function CheckoutPage() {
         // Pay from wallet
         const success = await payFromWallet(
           order.id,
-          cartTotal,
+          calculateFixedTotal(),
           `Thanh toán đơn hàng #${order.orderNumber}`
         );
 
@@ -100,7 +105,7 @@ export default function CheckoutPage() {
           },
           body: JSON.stringify({
             orderId: order.id,
-            amount: cartTotal,
+            amount: calculateFixedTotal(),
             description: `Thanh toán đơn hàng #${order.orderNumber}`,
             returnUrl: `${window.location.origin}/payment/return`,
             cancelUrl: `${window.location.origin}/payment/cancel`
@@ -331,7 +336,7 @@ export default function CheckoutPage() {
               <div className="space-y-6">
                 <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                   <PaymentOptions
-                    orderTotal={cartTotal}
+                    orderTotal={calculateFixedTotal()}
                     onPaymentMethodSelect={handlePaymentMethodSelect}
                     disabled={loading}
                   />
@@ -370,7 +375,7 @@ export default function CheckoutPage() {
                       </p>
                     </div>
                     <span className="font-medium ml-2">
-                      {item.totalPrice.toLocaleString('vi-VN')}₫
+                      {(149000 * item.quantity).toLocaleString('vi-VN')}₫
                     </span>
                   </div>
                 ))}
@@ -379,7 +384,7 @@ export default function CheckoutPage() {
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Tạm tính:</span>
-                  <span>{cartTotal.toLocaleString('vi-VN')}₫</span>
+                  <span>{calculateFixedTotal().toLocaleString('vi-VN')}₫</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Phí vận chuyển:</span>
@@ -387,7 +392,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between font-semibold text-lg pt-2 border-t">
                   <span>Tổng cộng:</span>
-                  <span className="text-amber-600">{cartTotal.toLocaleString('vi-VN')}₫</span>
+                  <span style={{color: '#E21C34'}}>{calculateFixedTotal().toLocaleString('vi-VN')}₫</span>
                 </div>
               </div>
             </div>

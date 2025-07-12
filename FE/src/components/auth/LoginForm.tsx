@@ -125,7 +125,10 @@ export default function LoginForm() {
                 type="checkbox"
                 checked={formData.rememberMe}
                 onChange={handleInputChange('rememberMe')}
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                className="h-4 w-4 border-gray-300 rounded focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
+                style={{
+                  accentColor: '#E21C34'
+                }}
               />
               <span className="ml-2 text-sm text-gray-600">
                 Ghi nhớ đăng nhập
@@ -134,7 +137,10 @@ export default function LoginForm() {
 
             <Link
               href="/auth/forgot-password"
-              className="text-sm text-blue-600 hover:text-blue-500 font-medium"
+              className="text-sm font-medium transition-colors duration-200"
+              style={{color: '#E21C34'}}
+              onMouseEnter={(e) => e.currentTarget.style.color = '#dc2626'}
+              onMouseLeave={(e) => e.currentTarget.style.color = '#E21C34'}
             >
               Quên mật khẩu?
             </Link>
@@ -143,7 +149,17 @@ export default function LoginForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white py-3 px-4 rounded-lg font-medium hover:from-amber-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            className="w-full text-white py-3 px-4 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            style={{
+              background: 'linear-gradient(to right, #dc2626, #E21C34)',
+              boxShadow: '0 4px 14px 0 rgba(226, 28, 52, 0.39)'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(to right, #b91c1c, #dc2626)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.background = 'linear-gradient(to right, #dc2626, #E21C34)';
+            }}
           >
             {isSubmitting ? (
               <div className="flex items-center justify-center">

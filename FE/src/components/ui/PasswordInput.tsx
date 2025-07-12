@@ -41,9 +41,9 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
 
     const getStrengthColor = (score: number): string => {
       if (score <= 1) return 'bg-red-500';
-      if (score <= 2) return 'bg-orange-500';
+      if (score <= 2) return 'bg-red-400';
       if (score <= 3) return 'bg-yellow-500';
-      if (score <= 4) return 'bg-blue-500';
+      if (score <= 4) return 'bg-green-400';
       return 'bg-green-500';
     };
 

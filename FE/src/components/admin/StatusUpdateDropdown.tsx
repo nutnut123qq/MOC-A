@@ -54,7 +54,7 @@ export default function StatusUpdateDropdown({
       value: OrderStatus.Shipping,
       label: 'Đang giao',
       icon: '🚚',
-      color: 'text-orange-600',
+      color: 'text-indigo-600',
       description: 'Đang giao hàng cho khách'
     },
     {

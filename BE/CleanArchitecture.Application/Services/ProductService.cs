@@ -91,21 +91,8 @@ public class ProductService : IProductService
         var product = await _productRepository.GetByIdAsync(productId);
         if (product == null) return 0;
 
-        // Calculate area in cm²
-        var area = width * height;
-
-        // Price calculation based on size ranges
-        decimal sizeMultiplier = area switch
-        {
-            <= 50 => 1.0m,      // 5-10cm: 15,000 VND
-            <= 150 => 1.67m,    // 11-15cm: 25,000 VND  
-            <= 300 => 2.33m,    // 16-20cm: 35,000 VND
-            <= 500 => 3.0m,     // 21-25cm: 45,000 VND
-            <= 784 => 3.67m,    // 26-28cm: 55,000 VND
-            _ => 4.0m           // Larger sizes
-        };
-
-        return product.BasePrice * sizeMultiplier;
+        // Fixed price for all products
+        return 149000m; // 149,000 VND for all t-shirts
     }
 
     private static ProductDto MapToDto(Product product)

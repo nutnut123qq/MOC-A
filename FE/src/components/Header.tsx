@@ -19,7 +19,7 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-6 lg:px-8">
-        <div className="flex justify-between items-center h-20">
+        <div className="flex items-center h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/" className="group">
@@ -27,8 +27,8 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-1">
+          {/* Desktop Navigation - Centered */}
+          <nav className="hidden md:flex items-center space-x-1 flex-1 justify-center">
             <Link href="/" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
               Trang chủ
             </Link>
@@ -42,16 +42,13 @@ export default function Header() {
             <Link href="/my-designs" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
               Thiết kế của tôi
             </Link>
-            <Link href="/gallery" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
-              Thư viện
-            </Link>
             <Link href="/orders" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
               Đơn hàng
             </Link>
           </nav>
 
           {/* Desktop CTA */}
-          <div className="hidden md:flex items-center space-x-3">
+          <div className="hidden md:flex items-center space-x-3 flex-shrink-0">
             {user && (
               <Link
                 href="/wallet"
@@ -85,9 +82,7 @@ export default function Header() {
                 )}
               </div>
             </Link>
-            <Link href="/design" className="px-6 py-2.5 bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-medium rounded-xl hover:from-red-600 hover:to-rose-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
-              Bắt đầu thiết kế
-            </Link>
+
             <UserMenu />
           </div>
 
@@ -118,9 +113,6 @@ export default function Header() {
               <Link href="/design" className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
                 Thiết kế
               </Link>
-              <Link href="/gallery" className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-                Thư viện
-              </Link>
               <Link href="/orders" className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
                 Đơn hàng
               </Link>
@@ -140,12 +132,7 @@ export default function Header() {
                 </div>
               </Link>
               <div className="pt-4 border-t border-gray-100">
-                <Link href="/design" className="block px-4 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white text-base font-medium rounded-lg hover:from-red-600 hover:to-rose-700 transition-all duration-200">
-                  Bắt đầu thiết kế
-                </Link>
-                <div className="mt-4">
-                  <UserMenu />
-                </div>
+                <UserMenu />
               </div>
             </div>
           </div>

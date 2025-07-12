@@ -24,7 +24,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "DecalStudio - Thiết Kế Decal Chuyên Nghiệp",
+  title: "Mộc - Thiết Kế Decal Chuyên Nghiệp",
   description: "Tạo thiết kế decal độc đáo cho áo, mũ, túi canvas với công cụ thiết kế trực tuyến hiện đại",
 };
 
@@ -38,7 +38,7 @@ export default function RootLayout({
       <head>
         <link href={googleFontsUrl} rel="stylesheet" />
         <link rel="manifest" href="/manifest.json" />
-        <meta name="theme-color" content="#f59e0b" />
+        <meta name="theme-color" content="#E21C34" />
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

@@ -160,8 +160,14 @@ export default function TextStylePanel({
                     key={color}
                     onClick={() => updateStyle({ color })}
                     className={`w-8 h-8 rounded border-2 transition-all ${
-                      style.color === color ? 'border-amber-500 scale-110' : 'border-gray-300'
+                      style.color === color ? 'scale-110' : 'border-gray-300'
                     }`}
+                    style={{
+                      ...(style.color === color ? {
+                        borderColor: '#E21C34',
+                        boxShadow: '0 0 0 2px rgba(226, 28, 52, 0.2)'
+                      } : {})
+                    }}
                     style={{ backgroundColor: color }}
                     title={color}
                   />

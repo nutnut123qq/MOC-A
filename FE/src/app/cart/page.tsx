@@ -33,6 +33,11 @@ export default function CartPage() {
   const [updating, setUpdating] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'unpaid' | 'paid'>('unpaid');
 
+  // Calculate total with fixed price
+  const calculateFixedTotal = () => {
+    return cartItems.reduce((total, item) => total + (149000 * item.quantity), 0);
+  };
+
 
 
   // Filter orders by payment status
@@ -280,7 +285,7 @@ export default function CartPage() {
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-gray-900">
-                                {item.totalPrice.toLocaleString('vi-VN')}₫
+                                {(149000 * item.quantity).toLocaleString('vi-VN')}₫
                               </p>
                               <button
                                 onClick={() => handleRemoveItem(item.id)}
@@ -307,7 +312,7 @@ export default function CartPage() {
                   <div className="space-y-3 mb-6">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Tạm tính</span>
-                      <span className="font-medium">{cartTotal.toLocaleString('vi-VN')}₫</span>
+                      <span className="font-medium">{calculateFixedTotal().toLocaleString('vi-VN')}₫</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Phí vận chuyển</span>
@@ -317,7 +322,7 @@ export default function CartPage() {
                       <div className="flex justify-between">
                         <span className="font-semibold text-gray-900">Tổng cộng</span>
                         <span className="font-bold text-xl" style={{color: '#E21C34'}}>
-                          {cartTotal.toLocaleString('vi-VN')}₫
+                          {calculateFixedTotal().toLocaleString('vi-VN')}₫
                         </span>
                       </div>
                     </div>

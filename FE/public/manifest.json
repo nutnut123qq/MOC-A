@@ -1,11 +1,11 @@
 {
-  "name": "DecalStudio - Thiết Kế Decal Chuyên Nghiệp",
-  "short_name": "DecalStudio",
+  "name": "Mộc - Thiết Kế Decal Chuyên Nghiệp",
+  "short_name": "Mộc",
   "description": "Tạo thiết kế decal độc đáo cho áo, mũ, túi canvas với công cụ thiết kế trực tuyến hiện đại",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#f59e0b",
+  "theme_color": "#E21C34",
   "orientation": "portrait-primary",
   "icons": [
     {

@@ -88,7 +88,21 @@ export default function AddToCartButton({
     <button
       onClick={handleAddToCart}
       disabled={disabled || isAdding}
-      className={`px-6 py-3 bg-amber-600 text-white rounded-xl font-medium hover:bg-amber-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      className={`px-6 py-3 text-white rounded-xl font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      style={{
+        background: 'linear-gradient(to right, #dc2626, #E21C34)',
+        boxShadow: '0 4px 14px 0 rgba(226, 28, 52, 0.39)'
+      }}
+      onMouseEnter={(e) => {
+        if (!disabled && !isAdding) {
+          e.currentTarget.style.background = 'linear-gradient(to right, #b91c1c, #dc2626)';
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!disabled && !isAdding) {
+          e.currentTarget.style.background = 'linear-gradient(to right, #dc2626, #E21C34)';
+        }
+      }}
     >
       {isAdding ? (
         <span className="flex items-center space-x-2">

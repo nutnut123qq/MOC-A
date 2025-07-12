@@ -306,11 +306,7 @@ export default function TShirtPreviewPage() {
   const currentSize = currentVariant.sizes.find(s => s.size === designSession.selectedSize) || currentVariant.sizes[0];
 
   const calculatePrice = () => {
-    const basePrice = tshirt.basePrice;
-    const sizePrice = currentSize.price || 0;
-    const layerCount = designSession.designLayers.length;
-    const designPrice = layerCount * 10000;
-    return basePrice + sizePrice + designPrice;
+    return 149000; // Fixed price for all t-shirts
   };
 
   const mockupViews = [

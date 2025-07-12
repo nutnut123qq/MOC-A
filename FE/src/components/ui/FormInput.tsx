@@ -34,14 +34,33 @@ const FormInput = forwardRef<HTMLInputElement, FormInputProps>(
             ref={ref}
             className={`
               w-full px-4 py-3 border border-gray-300 rounded-lg
-              focus:ring-2 focus:ring-blue-500 focus:border-blue-500
               disabled:bg-gray-50 disabled:text-gray-500
               transition-colors duration-200
               ${leftIcon ? 'pl-10' : ''}
               ${rightIcon ? 'pr-10' : ''}
-              ${error ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : ''}
+              ${error ? 'border-red-500' : ''}
               ${className}
             `}
+            style={{
+              ...(error ? {} : {
+                '--tw-ring-color': '#E21C34',
+                '--tw-border-opacity': '1'
+              })
+            }}
+            onFocus={(e) => {
+              if (!error) {
+                e.target.style.borderColor = '#E21C34';
+                e.target.style.boxShadow = '0 0 0 2px rgba(226, 28, 52, 0.2)';
+              }
+              if (props.onFocus) props.onFocus(e);
+            }}
+            onBlur={(e) => {
+              if (!error) {
+                e.target.style.borderColor = '#d1d5db';
+                e.target.style.boxShadow = 'none';
+              }
+              if (props.onBlur) props.onBlur(e);
+            }}
             {...props}
           />
           

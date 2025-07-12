@@ -63,7 +63,17 @@ export default function ForgotPasswordForm() {
             <div className="space-y-4">
               <Link
                 href="/auth/login"
-                className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all duration-200 inline-block text-center"
+                className="w-full text-white py-3 px-4 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 transition-all duration-200 inline-block text-center"
+                style={{
+                  background: 'linear-gradient(to right, #dc2626, #E21C34)',
+                  boxShadow: '0 4px 14px 0 rgba(226, 28, 52, 0.39)'
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(to right, #b91c1c, #dc2626)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.background = 'linear-gradient(to right, #dc2626, #E21C34)';
+                }}
               >
                 Quay lại đăng nhập
               </Link>
@@ -115,7 +125,21 @@ export default function ForgotPasswordForm() {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-medium hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            className="w-full text-white py-3 px-4 rounded-lg font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+            style={{
+              background: 'linear-gradient(to right, #dc2626, #E21C34)',
+              boxShadow: '0 4px 14px 0 rgba(226, 28, 52, 0.39)'
+            }}
+            onMouseEnter={(e) => {
+              if (!isSubmitting) {
+                e.currentTarget.style.background = 'linear-gradient(to right, #b91c1c, #dc2626)';
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isSubmitting) {
+                e.currentTarget.style.background = 'linear-gradient(to right, #dc2626, #E21C34)';
+              }
+            }}
           >
             {isSubmitting ? (
               <div className="flex items-center justify-center">
@@ -131,7 +155,10 @@ export default function ForgotPasswordForm() {
         <div className="mt-8 text-center">
           <Link
             href="/auth/login"
-            className="inline-flex items-center text-blue-600 hover:text-blue-500 font-medium"
+            className="inline-flex items-center font-medium transition-colors duration-200"
+            style={{color: '#E21C34'}}
+            onMouseEnter={(e) => e.currentTarget.style.color = '#dc2626'}
+            onMouseLeave={(e) => e.currentTarget.style.color = '#E21C34'}
           >
             <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
