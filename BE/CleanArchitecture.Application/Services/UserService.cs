@@ -64,6 +64,23 @@ public class UserService : IUserService
         return MapToUserProfileDto(user);
     }
 
+    public async Task<UserProfileDto?> UpdateUserProfileAsync(int id, UpdateUserProfileDto updateUserProfileDto)
+    {
+        var user = await _userRepository.GetByIdAsync(id);
+        if (user == null) return null;
+
+        user.FirstName = updateUserProfileDto.FirstName;
+        user.LastName = updateUserProfileDto.LastName;
+        user.PhoneNumber = updateUserProfileDto.PhoneNumber;
+        user.DateOfBirth = updateUserProfileDto.DateOfBirth;
+        user.Gender = updateUserProfileDto.Gender;
+        user.AvatarUrl = updateUserProfileDto.AvatarUrl;
+        user.UpdatedAt = DateTime.UtcNow;
+
+        await _userRepository.UpdateAsync(user);
+        return MapToUserProfileDto(user);
+    }
+
     public async Task<UserProfileDto?> UpdateUserRoleAsync(int id, int role)
     {
         var user = await _userRepository.GetByIdAsync(id);

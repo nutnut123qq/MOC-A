@@ -6,7 +6,12 @@ import { googleFontsUrl } from "@/data/fonts";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
 import { WalletProvider } from "@/contexts/WalletContext";
-import { Toaster } from 'react-hot-toast';
+import ToastProvider from "@/components/ui/ToastProvider";
+
+// const Toaster = dynamic(() => import('react-hot-toast').then(mod => ({ default: mod.Toaster })), {
+//   ssr: false
+// });
+// import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,6 +37,13 @@ export default function RootLayout({
     <html lang="vi">
       <head>
         <link href={googleFontsUrl} rel="stylesheet" />
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#f59e0b" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="//fonts.gstatic.com" />
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen bg-white`}
@@ -43,16 +55,8 @@ export default function RootLayout({
               <main>
                 {children}
               </main>
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: '#363636',
-                    color: '#fff',
-                  },
-                }}
-              />
+              <ToastProvider />
+              {/* <ServiceWorkerRegistration /> */}
             </CartProvider>
           </WalletProvider>
         </AuthProvider>

@@ -35,7 +35,11 @@ export function CartProvider({ children }: CartProviderProps) {
   // Load cart when user is authenticated
   useEffect(() => {
     if (isAuthenticated && user) {
-      refreshCart();
+      // Load cart data in background without blocking UI
+      refreshCart().catch(error => {
+        console.error('Background cart load failed:', error);
+        // Don't show error to user, just log it
+      });
     } else {
       // Clear cart when user logs out
       setCartItems([]);

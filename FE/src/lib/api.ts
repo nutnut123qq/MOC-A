@@ -110,6 +110,10 @@ class ApiClient {
     return this.request<DesignListItem[]>(`/api/designs/user/${userId}`);
   }
 
+  async getMyDesigns(): Promise<DesignListItem[]> {
+    return this.request<DesignListItem[]>('/api/designs');
+  }
+
   async getPublicDesigns(): Promise<DesignListItem[]> {
     return this.request<DesignListItem[]>('/api/designs/public');
   }

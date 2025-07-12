@@ -179,7 +179,11 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
 
   useEffect(() => {
     if (user) {
-      refreshBalance();
+      // Load balance in background without blocking UI
+      refreshBalance().catch(error => {
+        console.error('Background balance load failed:', error);
+        // Don't show error to user, just log it
+      });
     }
   }, [user]);
 

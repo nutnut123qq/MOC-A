@@ -1,0 +1,29 @@
+{
+  "name": "DecalStudio - Thiết Kế Decal Chuyên Nghiệp",
+  "short_name": "DecalStudio",
+  "description": "Tạo thiết kế decal độc đáo cho áo, mũ, túi canvas với công cụ thiết kế trực tuyến hiện đại",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#f59e0b",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "categories": ["design", "productivity", "utilities"],
+  "lang": "vi",
+  "dir": "ltr",
+  "scope": "/",
+  "prefer_related_applications": false
+}

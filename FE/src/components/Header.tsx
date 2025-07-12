@@ -7,6 +7,7 @@ import UserMenu from '@/components/layout/UserMenu';
 import { useCart } from '@/contexts/CartContext';
 import { useWallet } from '@/contexts/WalletContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { HeaderLogo } from '@/components/ui/Logo';
 
 export default function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -21,15 +22,8 @@ export default function Header() {
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <Link href="/" className="flex items-center space-x-2 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform duration-200">
-                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z" />
-                </svg>
-              </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
-                DecalStudio
-              </span>
+            <Link href="/" className="group">
+              <HeaderLogo />
             </Link>
           </div>
 
@@ -64,9 +58,11 @@ export default function Header() {
                 className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 rounded-lg transition-colors duration-200"
               >
                 <div className="flex items-center space-x-1">
-                  <span>💰</span>
+                  <svg className="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
                   <span className="hidden lg:inline">Ví:</span>
-                  <span className="font-semibold text-amber-600">
+                  <span className="font-semibold text-red-600">
                     {balance.toLocaleString()}đ
                   </span>
                 </div>
@@ -78,7 +74,9 @@ export default function Header() {
               onMouseEnter={() => handleLinkHover('/cart')}
             >
               <div className="flex items-center space-x-1">
-                <span>🛒</span>
+                <svg className="w-4 h-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h7M9.5 18a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm10 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                </svg>
                 <span>Giỏ hàng</span>
                 {cartCount > 0 && (
                   <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -87,7 +85,7 @@ export default function Header() {
                 )}
               </div>
             </Link>
-            <Link href="/design" className="px-6 py-2.5 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm font-medium rounded-xl hover:from-amber-600 hover:to-orange-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+            <Link href="/design" className="px-6 py-2.5 bg-gradient-to-r from-red-500 to-rose-600 text-white text-sm font-medium rounded-xl hover:from-red-600 hover:to-rose-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
               Bắt đầu thiết kế
             </Link>
             <UserMenu />
@@ -128,7 +126,12 @@ export default function Header() {
               </Link>
               <Link href="/cart" className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
                 <div className="flex items-center justify-between">
-                  <span>🛒 Giỏ hàng</span>
+                  <div className="flex items-center space-x-2">
+                    <svg className="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m0 0h7M9.5 18a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zm10 0a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" />
+                    </svg>
+                    <span>Giỏ hàng</span>
+                  </div>
                   {cartCount > 0 && (
                     <span className="bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {cartCount}
@@ -137,7 +140,7 @@ export default function Header() {
                 </div>
               </Link>
               <div className="pt-4 border-t border-gray-100">
-                <Link href="/design" className="block px-4 py-3 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-base font-medium rounded-lg hover:from-amber-600 hover:to-orange-700 transition-all duration-200">
+                <Link href="/design" className="block px-4 py-3 bg-gradient-to-r from-red-500 to-rose-600 text-white text-base font-medium rounded-lg hover:from-red-600 hover:to-rose-700 transition-all duration-200">
                   Bắt đầu thiết kế
                 </Link>
                 <div className="mt-4">

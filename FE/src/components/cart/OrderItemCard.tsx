@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Order, OrderStatus } from '@/types/order';
 import { ProductType } from '@/types/product';
+import { EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import OrderStatusBadge from './OrderStatusBadge';
 import CartDesignPreview from './CartDesignPreview';
 
@@ -43,7 +44,7 @@ export default function OrderItemCard({ order }: OrderItemCardProps) {
           </p>
         </div>
         <div className="text-right">
-          <p className="text-lg font-bold text-amber-600">
+          <p className="text-lg font-bold" style={{color: '#E21C34'}}>
             {order.totalAmount.toLocaleString('vi-VN')}₫
           </p>
           <p className="text-sm text-gray-600">
@@ -57,8 +58,8 @@ export default function OrderItemCard({ order }: OrderItemCardProps) {
         {order.orderItems.slice(0, 2).map((item) => {
           const product = productInfo[item.productType];
           return (
-            <div key={item.id} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-lg">
-              <div className="w-14 h-18 bg-white rounded-lg flex items-center justify-center border overflow-hidden">
+            <div key={item.id} className="flex items-center space-x-3 p-3 rounded-lg" style={{backgroundColor: '#fcf8ef'}}>
+              <div className="w-14 h-18 bg-white rounded-lg flex items-center justify-center border overflow-hidden shadow-sm">
                 <CartDesignPreview
                   previewImageUrl={item.designPreviewUrl}
                   designSession={item.designData ? JSON.parse(item.designData) : undefined}
@@ -94,20 +95,32 @@ export default function OrderItemCard({ order }: OrderItemCardProps) {
       </div>
 
       {/* Actions */}
-      <div className="flex items-center justify-between pt-4 border-t">
+      <div className="flex items-center justify-between pt-4 border-t border-gray-200">
         <div className="text-sm text-gray-600">
-          <p>Giao đến: {order.deliveryAddress}</p>
+          <p>Giao đến: <span className="font-medium">{order.deliveryAddress}</span></p>
         </div>
         <div className="flex space-x-2">
           <Link
             href={`/orders/${order.id}`}
-            className="px-4 py-2 text-amber-600 border border-amber-600 rounded-lg hover:bg-amber-50 transition-colors text-sm font-medium"
+            className="px-4 py-2 border rounded-lg transition-colors text-sm font-medium flex items-center space-x-2"
+            style={{
+              color: '#E21C34',
+              borderColor: '#E21C34'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = 'rgba(226, 28, 52, 0.05)';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
           >
-            Xem chi tiết
+            <EyeIcon className="w-4 h-4" />
+            <span>Xem chi tiết</span>
           </Link>
           {order.status === OrderStatus.Pending && (
-            <button className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium">
-              Hủy đơn
+            <button className="px-4 py-2 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 transition-colors text-sm font-medium flex items-center space-x-2">
+              <XMarkIcon className="w-4 h-4" />
+              <span>Hủy đơn</span>
             </button>
           )}
         </div>

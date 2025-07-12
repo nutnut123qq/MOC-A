@@ -1,3 +1,4 @@
+using CleanArchitecture.Application.DTOs;
 using CleanArchitecture.Application.DTOs.Auth;
 using CleanArchitecture.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -11,11 +12,13 @@ namespace CleanArchitecture.WebAPI.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthService _authService;
+    private readonly IUserService _userService;
     private readonly ILogger<AuthController> _logger;
 
-    public AuthController(IAuthService authService, ILogger<AuthController> logger)
+    public AuthController(IAuthService authService, IUserService userService, ILogger<AuthController> logger)
     {
         _authService = authService;
+        _userService = userService;
         _logger = logger;
     }
 
@@ -175,13 +178,40 @@ public class AuthController : ControllerBase
             {
                 return NotFound(new { success = false, message = "Người dùng không tồn tại" });
             }
-            
+
             return Ok(new { success = true, data = user });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error getting current user");
             return StatusCode(500, new { success = false, message = "Đã xảy ra lỗi trong quá trình lấy thông tin người dùng" });
+        }
+    }
+
+    [HttpPut("profile")]
+    [Authorize]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileDto updateProfileDto)
+    {
+        try
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (!int.TryParse(userIdClaim, out var userId))
+            {
+                return Unauthorized(new { success = false, message = "Token không hợp lệ" });
+            }
+
+            var updatedUser = await _userService.UpdateUserProfileAsync(userId, updateProfileDto);
+            if (updatedUser == null)
+            {
+                return NotFound(new { success = false, message = "Người dùng không tồn tại" });
+            }
+
+            return Ok(new { success = true, data = updatedUser, message = "Cập nhật thông tin thành công" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating user profile");
+            return StatusCode(500, new { success = false, message = "Đã xảy ra lỗi trong quá trình cập nhật thông tin" });
         }
     }
 

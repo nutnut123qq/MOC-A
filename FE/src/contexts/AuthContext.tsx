@@ -23,9 +23,21 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const initializeAuth = async () => {
     try {
+      setIsLoading(true);
+
       if (TokenManager.hasValidToken()) {
-        setToken(TokenManager.getAccessToken());
-        await getCurrentUser();
+        const accessToken = TokenManager.getAccessToken();
+        setToken(accessToken);
+
+        // Set loading to false immediately if we have a valid token
+        // Load user data in background without blocking UI
+        setIsLoading(false);
+
+        // Load user data asynchronously
+        getCurrentUser().catch(error => {
+          console.error('Background user load failed:', error);
+          // Don't clear tokens here, just log the error
+        });
       } else {
         // Try to refresh token if we have a refresh token
         const refreshToken = TokenManager.getRefreshToken();
@@ -34,19 +46,18 @@ export function AuthProvider({ children }: AuthProviderProps) {
             await refreshTokens();
           } catch (refreshError) {
             // Refresh token failed, clear tokens silently
-            // This is normal when refresh token is expired
             TokenManager.clearTokens();
             setUser(null);
             setToken(null);
           }
         }
+        setIsLoading(false);
       }
     } catch (error) {
       console.error('Auth initialization failed:', error);
       TokenManager.clearTokens();
       setUser(null);
       setToken(null);
-    } finally {
       setIsLoading(false);
     }
   };

@@ -42,18 +42,31 @@ export function usePrefetch() {
     // Prefetch common routes
     const commonRoutes = [
       '/design',
-      '/users',
-      '/cart'
+      '/profile',
+      '/cart',
+      '/orders',
+      '/my-designs',
+      '/wallet',
+      '/admin',
+      '/admin/users',
+      '/admin/orders',
+      '/admin/dashboard'
     ];
 
-    commonRoutes.forEach(route => {
-      prefetchRoute(route);
-    });
+    // Prefetch routes with a small delay to avoid blocking initial render
+    const prefetchTimer = setTimeout(() => {
+      commonRoutes.forEach(route => {
+        prefetchRoute(route);
+      });
+    }, 100);
 
-    // Prefetch data after a short delay
-    const timer = setTimeout(prefetchCommonData, 1000);
+    // Prefetch data after a longer delay
+    const dataTimer = setTimeout(prefetchCommonData, 2000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(prefetchTimer);
+      clearTimeout(dataTimer);
+    };
   }, [prefetchRoute, prefetchCommonData]);
 
   return {

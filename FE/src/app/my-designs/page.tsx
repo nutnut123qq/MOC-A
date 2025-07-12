@@ -72,7 +72,7 @@ export default function MyDesignsPage() {
 
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen pt-20" style={{backgroundColor: '#fcf8ef'}}>
         {/* Header */}
         <div className="bg-white shadow-sm border-b">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -88,7 +88,16 @@ export default function MyDesignsPage() {
                 </div>
                 <button
                   onClick={handleCreateNew}
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
+                  className="text-white px-4 py-2 rounded-md transition-colors font-medium"
+                  style={{
+                    background: `linear-gradient(to right, #dc2626, #E21C34)`
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = `linear-gradient(to right, #b91c1c, #dc2626)`;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = `linear-gradient(to right, #dc2626, #E21C34)`;
+                  }}
                 >
                   + Tạo Thiết Kế Mới
                 </button>
@@ -107,14 +116,20 @@ export default function MyDesignsPage() {
                 placeholder="Tìm kiếm thiết kế..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+                style={{'--tw-ring-color': '#E21C34'} as any}
+                onFocus={(e) => e.currentTarget.style.borderColor = '#E21C34'}
+                onBlur={(e) => e.currentTarget.style.borderColor = '#d1d5db'}
               />
             </div>
             <div>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:border-transparent"
+                style={{'--tw-ring-color': '#E21C34'} as any}
+                onFocus={(e) => e.currentTarget.style.borderColor = '#E21C34'}
+                onBlur={(e) => e.currentTarget.style.borderColor = '#d1d5db'}
               >
                 <option value="newest">Mới nhất</option>
                 <option value="oldest">Cũ nhất</option>
@@ -149,7 +164,17 @@ export default function MyDesignsPage() {
                   <div className="mt-4">
                     <button
                       onClick={loadDesigns}
-                      className="bg-red-100 px-3 py-2 rounded-md text-sm font-medium text-red-800 hover:bg-red-200 transition-colors"
+                      className="px-3 py-2 rounded-md text-sm font-medium transition-colors"
+                      style={{
+                        backgroundColor: 'rgba(226, 28, 52, 0.1)',
+                        color: '#E21C34'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(226, 28, 52, 0.2)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = 'rgba(226, 28, 52, 0.1)';
+                      }}
                     >
                       Thử lại
                     </button>
@@ -178,7 +203,16 @@ export default function MyDesignsPage() {
                 <div className="mt-6">
                   <button
                     onClick={handleCreateNew}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors font-medium"
+                    className="text-white px-4 py-2 rounded-md transition-colors font-medium"
+                    style={{
+                      background: `linear-gradient(to right, #dc2626, #E21C34)`
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = `linear-gradient(to right, #b91c1c, #dc2626)`;
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = `linear-gradient(to right, #dc2626, #E21C34)`;
+                    }}
                   >
                     Tạo Thiết Kế Mới
                   </button>
