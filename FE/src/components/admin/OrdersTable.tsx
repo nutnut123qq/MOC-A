@@ -12,11 +12,11 @@ interface OrdersTableProps {
   loading?: boolean;
 }
 
-export default function OrdersTable({ 
-  orders, 
-  onStatusUpdate, 
-  onViewDetails, 
-  loading = false 
+export default function OrdersTable({
+  orders,
+  onStatusUpdate,
+  onViewDetails,
+  loading = false
 }: OrdersTableProps) {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('vi-VN', {
@@ -33,6 +33,167 @@ export default function OrdersTable({
       hour: '2-digit',
       minute: '2-digit',
     });
+  };
+
+  const downloadUserImages = async (orderItem: any, orderNumber: string) => {
+    try {
+      if (!orderItem.designData) {
+        alert('Không có dữ liệu thiết kế để tải');
+        return;
+      }
+
+      // Parse design data để lấy ảnh user upload
+      let designSession;
+      try {
+        designSession = JSON.parse(orderItem.designData);
+        console.log('🔍 Design session:', designSession);
+      } catch (e) {
+        console.error('Error parsing design data:', e);
+        alert('Không thể đọc dữ liệu thiết kế');
+        return;
+      }
+
+      // Tìm tất cả layers có type 'image' (ảnh user upload)
+      const imageUrls: string[] = [];
+      if (designSession && designSession.designLayers) {
+        console.log('🔍 Design layers:', designSession.designLayers);
+        designSession.designLayers.forEach((layer: any, index: number) => {
+          console.log(`🔍 Layer ${index}:`, {
+            type: layer.type,
+            content: layer.content,
+            visible: layer.visible
+          });
+
+          if (layer.type === 'image' && layer.content && layer.visible) {
+            imageUrls.push(layer.content);
+          }
+        });
+      }
+
+      console.log('🔍 Found image URLs:', imageUrls);
+
+      if (imageUrls.length === 0) {
+        alert('Không có ảnh nào được upload trong thiết kế này');
+        return;
+      }
+
+      // Download từng ảnh
+      for (let i = 0; i < imageUrls.length; i++) {
+        const imageUrl = imageUrls[i];
+        try {
+          console.log('🔍 Downloading image:', imageUrl);
+
+          // Kiểm tra URL có hợp lệ không
+          if (!imageUrl || !imageUrl.startsWith('http')) {
+            console.warn('Invalid image URL:', imageUrl);
+            continue;
+          }
+
+          // Lấy extension từ URL
+          const urlParts = imageUrl.split('.');
+          const extension = urlParts[urlParts.length - 1].split('?')[0] || 'jpg';
+
+          // Tạo tên file với extension đúng
+          const filename = `${orderNumber}_${orderItem.designName || 'design'}_image_${i + 1}.${extension}`;
+
+          // Thử download bằng cách tạo link trực tiếp trước
+          try {
+            const a = document.createElement('a');
+            a.href = imageUrl;
+            a.download = filename;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            console.log('✅ Downloaded via direct link:', filename);
+          } catch (directError) {
+            console.log('Direct download failed, trying fetch method...');
+
+            // Fallback: Fetch và tạo blob
+            const response = await fetch(imageUrl, {
+              mode: 'cors',
+              credentials: 'omit'
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const blob = await response.blob();
+
+            // Kiểm tra blob có hợp lệ không
+            if (blob.size === 0) {
+              throw new Error('Empty blob received');
+            }
+
+            console.log('📦 Blob info:', {
+              size: blob.size,
+              type: blob.type
+            });
+
+            // Tạo link download từ blob
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            console.log('✅ Downloaded via fetch:', filename);
+          }
+
+          // Delay giữa các download
+          if (i < imageUrls.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        } catch (error) {
+          console.error('❌ Could not download image:', imageUrl, error);
+          alert(`Không thể tải ảnh ${i + 1}: ${error.message}`);
+        }
+      }
+
+      alert(`Đã tải ${imageUrls.length} ảnh từ thiết kế "${orderItem.designName}"`);
+    } catch (error) {
+      console.error('Error downloading user images:', error);
+      alert('Không thể tải ảnh. Vui lòng thử lại.');
+    }
+  };
+
+  const downloadAllUserImages = async (order: Order) => {
+    try {
+      let totalImages = 0;
+
+      for (const item of order.orderItems) {
+        // Parse design data để đếm ảnh
+        try {
+          const designSession = JSON.parse(item.designData);
+          const imageCount = designSession.designLayers?.filter((layer: any) =>
+            layer.type === 'image' && layer.content && layer.visible
+          ).length || 0;
+
+          if (imageCount > 0) {
+            await downloadUserImages(item, order.orderNumber);
+            totalImages += imageCount;
+            // Delay giữa các order item
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        } catch (e) {
+          console.warn('Could not process design data for item:', item.id);
+        }
+      }
+
+      if (totalImages === 0) {
+        alert('Không có ảnh nào được upload trong đơn hàng này');
+      } else {
+        alert(`Đã tải tổng cộng ${totalImages} ảnh từ đơn hàng ${order.orderNumber}`);
+      }
+    } catch (error) {
+      console.error('Error downloading all user images:', error);
+      alert('Có lỗi xảy ra khi tải ảnh');
+    }
   };
 
   if (loading) {
@@ -157,18 +318,6 @@ export default function OrdersTable({
                   <div className="text-sm font-medium text-gray-900">
                     {formatCurrency(order.totalAmount)}
                   </div>
-                  {/* Debug: Log giá trị thực tế */}
-                  {console.log('🔍 Order Debug:', {
-                    orderId: order.id,
-                    orderNumber: order.orderNumber,
-                    totalAmount: order.totalAmount,
-                    orderItems: order.orderItems.map(item => ({
-                      id: item.id,
-                      unitPrice: item.unitPrice,
-                      totalPrice: item.totalPrice,
-                      quantity: item.quantity
-                    }))
-                  })}
                 </td>
                 
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -181,6 +330,17 @@ export default function OrdersTable({
                 
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div className="flex items-center justify-end space-x-2">
+                    {/* Download User Images Button */}
+                    <button
+                      onClick={() => downloadAllUserImages(order)}
+                      className="text-green-600 hover:text-green-900 transition-colors"
+                      title="Tải ảnh khách hàng upload"
+                    >
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </button>
+
                     <button
                       onClick={() => onViewDetails(order)}
                       className="text-blue-600 hover:text-blue-900 transition-colors"
@@ -191,7 +351,7 @@ export default function OrdersTable({
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                       </svg>
                     </button>
-                    
+
                     <StatusUpdateDropdown
                       currentStatus={order.status}
                       onStatusUpdate={(newStatus) => onStatusUpdate(order.id, newStatus)}

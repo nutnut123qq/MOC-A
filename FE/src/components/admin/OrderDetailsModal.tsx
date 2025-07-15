@@ -54,6 +54,157 @@ export default function OrderDetailsModal({
     });
   };
 
+  const downloadUserImages = async (orderItem: any) => {
+    try {
+      if (!orderItem.designData) {
+        alert('Không có dữ liệu thiết kế để tải');
+        return;
+      }
+
+      // Parse design data để lấy ảnh user upload
+      let designSession;
+      try {
+        designSession = JSON.parse(orderItem.designData);
+      } catch (e) {
+        console.error('Error parsing design data:', e);
+        alert('Không thể đọc dữ liệu thiết kế');
+        return;
+      }
+
+      // Tìm tất cả layers có type 'image' (ảnh user upload)
+      const imageUrls: string[] = [];
+      if (designSession && designSession.designLayers) {
+        designSession.designLayers.forEach((layer: any) => {
+          if (layer.type === 'image' && layer.content && layer.visible) {
+            imageUrls.push(layer.content);
+          }
+        });
+      }
+
+      if (imageUrls.length === 0) {
+        alert('Không có ảnh nào được upload trong thiết kế này');
+        return;
+      }
+
+      // Download từng ảnh
+      for (let i = 0; i < imageUrls.length; i++) {
+        const imageUrl = imageUrls[i];
+        try {
+          console.log('🔍 Downloading image:', imageUrl);
+
+          // Kiểm tra URL có hợp lệ không
+          if (!imageUrl || !imageUrl.startsWith('http')) {
+            console.warn('Invalid image URL:', imageUrl);
+            continue;
+          }
+
+          // Lấy extension từ URL
+          const urlParts = imageUrl.split('.');
+          const extension = urlParts[urlParts.length - 1].split('?')[0] || 'jpg';
+
+          // Tạo tên file với extension đúng
+          const filename = `${order.orderNumber}_${orderItem.designName || 'design'}_image_${i + 1}.${extension}`;
+
+          // Thử download bằng cách tạo link trực tiếp trước
+          try {
+            const a = document.createElement('a');
+            a.href = imageUrl;
+            a.download = filename;
+            a.target = '_blank';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+
+            console.log('✅ Downloaded via direct link:', filename);
+          } catch (directError) {
+            console.log('Direct download failed, trying fetch method...');
+
+            // Fallback: Fetch và tạo blob
+            const response = await fetch(imageUrl, {
+              mode: 'cors',
+              credentials: 'omit'
+            });
+
+            if (!response.ok) {
+              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+            }
+
+            const blob = await response.blob();
+
+            // Kiểm tra blob có hợp lệ không
+            if (blob.size === 0) {
+              throw new Error('Empty blob received');
+            }
+
+            console.log('📦 Blob info:', {
+              size: blob.size,
+              type: blob.type
+            });
+
+            // Tạo link download từ blob
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            console.log('✅ Downloaded via fetch:', filename);
+          }
+
+          // Delay giữa các download
+          if (i < imageUrls.length - 1) {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        } catch (error) {
+          console.error('❌ Could not download image:', imageUrl, error);
+          alert(`Không thể tải ảnh ${i + 1}: ${error.message}`);
+        }
+      }
+
+      alert(`Đã tải ${imageUrls.length} ảnh từ thiết kế "${orderItem.designName}"`);
+    } catch (error) {
+      console.error('Error downloading user images:', error);
+      alert('Không thể tải ảnh. Vui lòng thử lại.');
+    }
+  };
+
+  const downloadAllUserImages = async () => {
+    try {
+      let totalImages = 0;
+
+      for (const item of order.orderItems) {
+        // Parse design data để đếm ảnh
+        try {
+          const designSession = JSON.parse(item.designData);
+          const imageCount = designSession.designLayers?.filter((layer: any) =>
+            layer.type === 'image' && layer.content && layer.visible
+          ).length || 0;
+
+          if (imageCount > 0) {
+            await downloadUserImages(item);
+            totalImages += imageCount;
+            // Delay giữa các order item
+            await new Promise(resolve => setTimeout(resolve, 1000));
+          }
+        } catch (e) {
+          console.warn('Could not process design data for item:', item.id);
+        }
+      }
+
+      if (totalImages === 0) {
+        alert('Không có ảnh nào được upload trong đơn hàng này');
+      } else {
+        alert(`Đã tải tổng cộng ${totalImages} ảnh từ đơn hàng ${order.orderNumber}`);
+      }
+    } catch (error) {
+      console.error('Error downloading all user images:', error);
+      alert('Có lỗi xảy ra khi tải ảnh');
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
@@ -175,12 +326,28 @@ export default function OrderDetailsModal({
 
                         {/* Item Details */}
                         <div className="flex-1 min-w-0">
-                          <h4 className="text-sm font-medium text-gray-900 truncate">
-                            {item.designName}
-                          </h4>
-                          <p className="text-sm text-gray-600">
-                            {item.productName}
-                          </p>
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1">
+                              <h4 className="text-sm font-medium text-gray-900 truncate">
+                                {item.designName}
+                              </h4>
+                              <p className="text-sm text-gray-600">
+                                {item.productName}
+                              </p>
+                            </div>
+
+                            {/* Download Button */}
+                            <button
+                              onClick={() => downloadUserImages(item)}
+                              className="ml-2 p-2 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-lg transition-colors"
+                              title="Tải ảnh khách hàng upload"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                            </button>
+                          </div>
+
                           <div className="mt-2 flex items-center justify-between">
                             <div className="text-sm text-gray-600">
                               Kích thước: {item.sizeWidth}×{item.sizeHeight}cm
@@ -213,19 +380,31 @@ export default function OrderDetailsModal({
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200 bg-gray-50">
+          <div className="flex items-center justify-between p-6 border-t border-gray-200 bg-gray-50">
             <button
-              onClick={onClose}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              onClick={downloadAllUserImages}
+              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors"
             >
-              Đóng
+              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Tải tất cả ảnh khách hàng
             </button>
-            <button
-              onClick={() => window.print()}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              In đơn hàng
-            </button>
+
+            <div className="flex items-center space-x-3">
+              <button
+                onClick={onClose}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              >
+                Đóng
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                In đơn hàng
+              </button>
+            </div>
           </div>
         </div>
       </div>
