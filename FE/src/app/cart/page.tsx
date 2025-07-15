@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrders } from '@/hooks/useOrders';
-import { ProductType } from '@/types/product';
-import { PaymentStatus } from '@/types/order';
+import { ProductType, ProductMode } from '@/types/product';
+import { PaymentStatus, CartItem } from '@/types/order';
 import {
   ArrowPathIcon,
   TrashIcon,
@@ -29,17 +29,23 @@ const productInfo: Record<ProductType, { name: string; emoji: string }> = {
 // Helper function to format cart item description
 const formatCartItemDescription = (item: CartItem): string => {
   try {
-    // Determine product type based on size
-    const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
-    const isCombo = maxSize >= 150;
-    const productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
-
-    // Parse design session to get color and size
+    // Parse design session to get product mode, color and size
+    let productTypeText = '';
     let colorText = '';
     let sizeText = '';
 
     if (item.designData) {
       const designSession = JSON.parse(item.designData);
+
+      // Determine product type from productMode (new way)
+      if (designSession.productMode) {
+        productTypeText = designSession.productMode === ProductMode.COMBO ? 'Combo Áo + Decal' : 'Decal riêng';
+      } else {
+        // Fallback to old logic for backward compatibility
+        const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
+        const isCombo = maxSize >= 150;
+        productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
+      }
 
       // Format color
       const colorMap: Record<string, string> = {
@@ -65,6 +71,11 @@ const formatCartItemDescription = (item: CartItem): string => {
         'xxl': 'XXL'
       };
       sizeText = sizeMap[designSession.selectedSize] || designSession.selectedSize.toUpperCase();
+    } else {
+      // Fallback when no design data
+      const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
+      const isCombo = maxSize >= 150;
+      productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
     }
 
     // Build description parts

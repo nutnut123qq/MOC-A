@@ -2,7 +2,7 @@ import { CartItem } from '@/types/order';
 import { TShirtDesignSession } from '@/types/tshirt-design';
 import { apiClient } from '@/lib/api';
 import { designAPI } from '@/lib/design-api';
-import { normalizeDesignSession, validateDesignSession, debugDesignSession } from '@/utils/designSessionNormalizer';
+import { normalizeDesignSession, validateDesignSession } from '@/utils/designSessionNormalizer';
 
 /**
  * Service để handle việc fetch design session data cho cart items
@@ -43,7 +43,6 @@ export class CartDesignService {
           this.setCachedDesignSession(cartItem.designId, normalizedSession);
           return normalizedSession;
         }
-      }
       }
 
       return null;

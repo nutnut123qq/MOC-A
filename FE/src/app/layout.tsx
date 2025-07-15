@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 import { googleFontsUrl } from "@/data/fonts";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { CartProvider } from "@/contexts/CartContext";
@@ -55,6 +56,7 @@ export default function RootLayout({
               <main>
                 {children}
               </main>
+              <Footer />
               <ToastProvider />
               {/* <ServiceWorkerRegistration /> */}
             </CartProvider>

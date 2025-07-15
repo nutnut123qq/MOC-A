@@ -265,8 +265,9 @@ export default function RegisterForm() {
               <span className="ml-2 text-sm text-gray-600">
                 Tôi đồng ý với{' '}
                 <Link
-                  href="/terms"
-                  className="font-medium transition-colors duration-200"
+                  href="/terms-of-use"
+                  target="_blank"
+                  className="font-medium transition-colors duration-200 hover:underline"
                   style={{color: '#E21C34'}}
                   onMouseEnter={(e) => e.currentTarget.style.color = '#dc2626'}
                   onMouseLeave={(e) => e.currentTarget.style.color = '#E21C34'}
@@ -275,8 +276,9 @@ export default function RegisterForm() {
                 </Link>{' '}
                 và{' '}
                 <Link
-                  href="/privacy"
-                  className="font-medium transition-colors duration-200"
+                  href="/privacy-policy"
+                  target="_blank"
+                  className="font-medium transition-colors duration-200 hover:underline"
                   style={{color: '#E21C34'}}
                   onMouseEnter={(e) => e.currentTarget.style.color = '#dc2626'}
                   onMouseLeave={(e) => e.currentTarget.style.color = '#E21C34'}

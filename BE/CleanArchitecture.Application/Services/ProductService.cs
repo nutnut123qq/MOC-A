@@ -93,9 +93,10 @@ public class ProductService : IProductService
 
         decimal price;
 
-        // Determine product type based on size
+        // Determine product type based on size (backward compatibility)
         // If size >= 150, it's combo (T-shirt + decal)
         // If size < 150, it's decal-only
+        // NOTE: Frontend now uses ProductMode but backend still uses size for compatibility
         var maxSize = Math.Max(width, height);
 
         if (maxSize >= 150)
@@ -106,38 +107,11 @@ public class ProductService : IProductService
         else
         {
             // Decal only: calculate based on size using formula (size + 5) * 1000
-            // NOTE: This is simplified - frontend should calculate total for multiple elements
-            // and pass the total as a single size value
+            // NOTE: Frontend calculates total for multiple elements and passes as single size
             price = (maxSize + 5) * 1000m;
         }
 
-
-
         return price;
-    }
-
-    // New method to calculate price based on design data
-    public async Task<decimal> CalculatePriceFromDesignAsync(int productId, int designId)
-    {
-        var product = await _productRepository.GetByIdAsync(productId);
-        if (product == null) return 0;
-
-        var design = await _designRepository.GetByIdAsync(designId);
-        if (design == null) return 0;
-
-        // Parse design session to get elements
-        try
-        {
-            var designSession = System.Text.Json.JsonSerializer.Deserialize<dynamic>(design.CanvasData);
-            // TODO: Parse design layers and calculate total price for all elements
-            // For now, fallback to existing logic
-            return await CalculatePriceAsync(productId, design.Width, design.Height);
-        }
-        catch
-        {
-            // Fallback to existing logic
-            return await CalculatePriceAsync(productId, design.Width, design.Height);
-        }
     }
 
     private static ProductDto MapToDto(Product product)

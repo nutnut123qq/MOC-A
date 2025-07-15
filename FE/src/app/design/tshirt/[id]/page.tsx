@@ -8,7 +8,8 @@ import TShirtDesignStudio from '@/components/tshirt-design/TShirtDesignStudio';
 import AuthPrompt from '@/components/ui/AuthPrompt';
 import { TShirt } from '@/types/tshirt';
 import { TShirtDesignSession } from '@/types/tshirt-design';
-import { DEFAULT_TSHIRT_SIZE, DEFAULT_TSHIRT_COLOR } from '@/data/tshirt-options';
+import { DEFAULT_TSHIRT_SIZE, DEFAULT_TSHIRT_COLOR, DEFAULT_PRODUCT_MODE, COMBO_PRICE } from '@/data/tshirt-options';
+import { ProductMode } from '@/types/product';
 
 export default function TShirtDesignStudioPage() {
   const params = useParams();
@@ -38,8 +39,8 @@ export default function TShirtDesignStudioPage() {
       const mockTShirts: TShirt[] = [
         {
           id: 1,
-          name: 'Classic Cotton Tee',
-          description: 'Comfortable 100% cotton t-shirt perfect for everyday wear',
+          name: 'Áo Thun Cotton Cơ Bản',
+          description: 'Áo thun cotton 100% thoải mái, hoàn hảo cho việc mặc hàng ngày',
           style: 'basic_tee' as any,
           brand: 'BasicWear',
           basePrice: 150000,
@@ -47,13 +48,13 @@ export default function TShirtDesignStudioPage() {
             {
               id: 'classic-white',
               color: 'white',
-              colorName: 'White',
+              colorName: 'Trắng',
               colorHex: '#FFFFFF',
               sizes: [
-                { size: 'S', name: 'Small', available: true },
-                { size: 'M', name: 'Medium', available: true },
-                { size: 'L', name: 'Large', available: true },
-                { size: 'XL', name: 'Extra Large', available: true },
+                { size: 'S', name: 'Nhỏ', available: true },
+                { size: 'M', name: 'Vừa', available: true },
+                { size: 'L', name: 'Lớn', available: true },
+                { size: 'XL', name: 'Rất Lớn', available: true },
               ],
               mockupUrls: {
                 front: '',
@@ -64,13 +65,13 @@ export default function TShirtDesignStudioPage() {
             {
               id: 'classic-black',
               color: 'black',
-              colorName: 'Black',
+              colorName: 'Đen',
               colorHex: '#000000',
               sizes: [
-                { size: 'S', name: 'Small', available: true },
-                { size: 'M', name: 'Medium', available: true },
-                { size: 'L', name: 'Large', available: true },
-                { size: 'XL', name: 'Extra Large', available: true },
+                { size: 'S', name: 'Nhỏ', available: true },
+                { size: 'M', name: 'Vừa', available: true },
+                { size: 'L', name: 'Lớn', available: true },
+                { size: 'XL', name: 'Rất Lớn', available: true },
               ],
               mockupUrls: {
                 front: '',
@@ -83,7 +84,7 @@ export default function TShirtDesignStudioPage() {
             {
               id: 'front',
               name: 'front',
-              displayName: 'Front',
+              displayName: 'Mặt Trước',
               bounds: { x: 128, y: 155, width: 138, height: 171 },
               maxDimensions: { width: 138, height: 171 },
               guidelines: {
@@ -98,7 +99,7 @@ export default function TShirtDesignStudioPage() {
             {
               id: 'back',
               name: 'back',
-              displayName: 'Back',
+              displayName: 'Mặt Sau',
               bounds: { x: 129, y: 135, width: 131, height: 165 },
               maxDimensions: { width: 131, height: 165 },
               guidelines: {
@@ -118,8 +119,8 @@ export default function TShirtDesignStudioPage() {
             fit: 'regular',
             neckline: 'crew',
             sleeves: 'short',
-            care: ['Machine wash cold', 'Tumble dry low', 'Do not bleach'],
-            features: ['Pre-shrunk', 'Tear-away label'],
+            care: ['Giặt máy nước lạnh', 'Sấy khô ở nhiệt độ thấp', 'Không tẩy trắng'],
+            features: ['Co rút trước', 'Nhãn có thể xé được'],
           },
           isActive: true,
           createdAt: new Date().toISOString(),
@@ -185,7 +186,7 @@ export default function TShirtDesignStudioPage() {
       const foundTShirt = mockTShirts.find(t => t.id === id);
 
       if (!foundTShirt) {
-        setError('T-shirt not found');
+        setError('Không tìm thấy áo thun');
         return;
       }
 
@@ -216,6 +217,9 @@ export default function TShirtDesignStudioPage() {
               currentPrintArea: designSession.currentPrintArea || 'front',
               selectedSize: designSession.selectedSize || DEFAULT_TSHIRT_SIZE,
               selectedColor: designSession.selectedColor || DEFAULT_TSHIRT_COLOR,
+              // Backward compatibility cho productMode
+              productMode: designSession.productMode || DEFAULT_PRODUCT_MODE,
+              comboPrice: designSession.comboPrice || (designSession.productMode === ProductMode.COMBO ? COMBO_PRICE : undefined),
               // Lưu ID của design đang load
               savedDesignId: parseInt(loadDesignId),
             };
@@ -248,12 +252,14 @@ export default function TShirtDesignStudioPage() {
         currentPrintArea: 'front',
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
+        productMode: DEFAULT_PRODUCT_MODE,
+        comboPrice: DEFAULT_PRODUCT_MODE === ProductMode.COMBO ? COMBO_PRICE : undefined,
       };
 
       setDesignSession(newSession);
 
     } catch (err) {
-      setError('Failed to load T-shirt');
+      setError('Không thể tải áo thun');
       console.error('Error fetching t-shirt:', err);
     } finally {
       setLoading(false);
@@ -300,7 +306,12 @@ export default function TShirtDesignStudioPage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="text-red-500 text-lg mb-4">❌ {error || 'T-shirt not found'}</div>
+          <div className="inline-flex items-center space-x-2 text-red-500 text-lg mb-4">
+            <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            <span>{error || 'Không tìm thấy áo thun'}</span>
+          </div>
           <button
             onClick={handleBackToHome}
             className="px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"

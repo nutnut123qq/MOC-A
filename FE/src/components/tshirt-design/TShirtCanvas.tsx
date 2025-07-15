@@ -475,7 +475,10 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
                 }`}
                 title="Front View"
               >
-                👕 Front
+                <svg className="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-.293.707L15 8.414V17a1 1 0 01-1 1H6a1 1 0 01-1-1V8.414L3.293 6.707A1 1 0 013 6V4z"/>
+                </svg>
+                Mặt Trước
               </button>
               <button
                 onClick={() => handleViewChange('back')}
@@ -486,7 +489,10 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
                 }`}
                 title="Back View"
               >
-                🔄 Back
+                <svg className="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-.293.707L15 8.414V17a1 1 0 01-1 1H6a1 1 0 01-1-1V8.414L3.293 6.707A1 1 0 013 6V4z"/>
+                </svg>
+                Mặt Sau
               </button>
             </div>
 
@@ -518,8 +524,8 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
             {/* Print Area Info */}
             {currentPrintArea && (
               <div className="text-sm text-gray-500">
-                Max: {currentPrintArea.maxDimensions.width} × {currentPrintArea.maxDimensions.height} px
-                <span className="ml-2 text-blue-600">• Elements can extend outside print area</span>
+                Tối đa: {currentPrintArea.maxDimensions.width} × {currentPrintArea.maxDimensions.height} px
+                <span className="ml-2 text-blue-600">• Các phần tử có thể mở rộng ra ngoài vùng in</span>
               </div>
             )}
 
@@ -835,7 +841,11 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
                           {/* Drop zone indicator */}
                           <div className="absolute inset-2 border border-dashed border-blue-300 rounded flex items-center justify-center">
                             <div className="text-center text-blue-500 text-xs pointer-events-none">
-                              <div className="text-lg mb-1">🖼️</div>
+                              <div className="mb-1">
+                                <svg className="w-6 h-6 mx-auto" fill="currentColor" viewBox="0 0 20 20">
+                                  <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd" />
+                                </svg>
+                              </div>
                               <div>Kéo ảnh vào đây hoặc click</div>
                               <div className="text-xs opacity-75">{layer.decalSize?.range}</div>
                             </div>

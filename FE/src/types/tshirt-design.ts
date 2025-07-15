@@ -1,3 +1,5 @@
+import { ProductMode } from './product';
+
 export type TShirtSizeType = 's' | 'm' | 'l' | 'xl' | 'xxl';
 export type TShirtColorType = 'white' | 'black' | 'beige' | 'navi';
 
@@ -24,6 +26,9 @@ export interface TShirtDesignSession {
   createdAt: string;
   updatedAt: string;
   savedDesignId?: number; // ID của design đã lưu (nếu có)
+  // New fields for product mode
+  productMode: ProductMode; // Combo vs Decal riêng
+  comboPrice?: number; // Giá combo nếu chọn combo (149k)
 }
 
 export interface DesignLayer {

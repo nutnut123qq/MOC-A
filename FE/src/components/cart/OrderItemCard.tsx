@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { Order, OrderStatus } from '@/types/order';
+import { ProductMode } from '@/types/product';
 import { ProductType } from '@/types/product';
 import { EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import OrderStatusBadge from './OrderStatusBadge';
@@ -20,10 +21,27 @@ const productInfo: Record<ProductType, { name: string; emoji: string }> = {
 // Helper function to format order item description
 const formatOrderItemDescription = (item: any): string => {
   try {
-    // Determine product type based on size
-    const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
-    const isCombo = maxSize >= 150;
-    const productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
+    // Parse design session to get product mode, color and size
+    let productTypeText = '';
+
+    if (item.designData) {
+      const designSession = JSON.parse(item.designData);
+
+      // Determine product type from productMode (new way)
+      if (designSession.productMode) {
+        productTypeText = designSession.productMode === ProductMode.COMBO ? 'Combo Áo + Decal' : 'Decal riêng';
+      } else {
+        // Fallback to old logic for backward compatibility
+        const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
+        const isCombo = maxSize >= 150;
+        productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
+      }
+    } else {
+      // Fallback when no design data
+      const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
+      const isCombo = maxSize >= 150;
+      productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
+    }
 
     // Parse design session to get color and size
     let colorText = '';

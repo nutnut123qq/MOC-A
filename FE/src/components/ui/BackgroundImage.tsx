@@ -77,18 +77,18 @@ export function HeroBackground({ children }: { children?: ReactNode }) {
 export function PatternWebBackground({ children }: { children?: ReactNode }) {
   return (
     <div className="min-h-screen relative" style={{backgroundColor: '#fcf8ef'}}>
-      {/* Pattern Web Background */}
-      <div className="absolute inset-0">
-        <Image
-          src="/assets/backgrounds/pattern_web.png"
-          alt="Pattern Web Background"
-          fill
-          className="object-cover object-center opacity-20"
-          priority={true}
-          quality={90}
-          sizes="100vw"
-        />
-      </div>
+      {/* Simple CSS Pattern Background */}
+      <div
+        className="absolute inset-0 w-full h-full opacity-3"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 20px 20px, rgba(226, 28, 52, 0.15) 1px, transparent 1px),
+            radial-gradient(circle at 60px 60px, rgba(226, 28, 52, 0.08) 1px, transparent 1px)
+          `,
+          backgroundSize: '80px 80px',
+          backgroundPosition: '0 0, 40px 40px'
+        }}
+      />
 
       {/* Content */}
       {children && (

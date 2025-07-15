@@ -45,6 +45,9 @@ export default function Header() {
             <Link href="/orders" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
               Đơn hàng
             </Link>
+            <Link href="/care-instructions" className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-all duration-200">
+              Hướng dẫn
+            </Link>
           </nav>
 
           {/* Desktop CTA */}
@@ -131,6 +134,23 @@ export default function Header() {
                   )}
                 </div>
               </Link>
+              <Link href="/care-instructions" className="block px-4 py-3 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+                Hướng dẫn chăm sóc
+              </Link>
+
+              {/* Legal Links */}
+              <div className="pt-4 border-t border-gray-100">
+                <div className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2 px-4">
+                  Pháp lý
+                </div>
+                <Link href="/privacy-policy" className="block px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+                  Chính sách bảo mật
+                </Link>
+                <Link href="/terms-of-use" className="block px-4 py-2 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-lg transition-colors duration-200">
+                  Điều khoản sử dụng
+                </Link>
+              </div>
+
               <div className="pt-4 border-t border-gray-100">
                 <UserMenu />
               </div>

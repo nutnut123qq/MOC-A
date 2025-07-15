@@ -4,6 +4,11 @@ export enum ProductType {
   CanvasBag = 3
 }
 
+export enum ProductMode {
+  COMBO = 'combo',      // Áo + Decal (149k)
+  DECAL_ONLY = 'decal'  // Decal riêng (theo size)
+}
+
 export interface Product {
   id: number;
   name: string;
