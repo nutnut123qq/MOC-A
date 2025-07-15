@@ -170,6 +170,8 @@ public class WalletService : IWalletService
 
     public async Task CompleteTopUpTransactionAsync(string payOSOrderCode, string payOSTransactionId)
     {
+        _logger.LogInformation("🔄 Starting CompleteTopUpTransactionAsync for PayOSOrderCode: {PayOSOrderCode}", payOSOrderCode);
+
         using var transaction = await _context.Database.BeginTransactionAsync();
         try
         {
@@ -179,10 +181,24 @@ public class WalletService : IWalletService
 
             if (walletTransaction == null)
             {
+                _logger.LogError("❌ Transaction not found for PayOSOrderCode: {PayOSOrderCode}", payOSOrderCode);
                 throw new ArgumentException("Transaction not found");
             }
 
+            _logger.LogInformation("💰 Found transaction {TransactionId}, Amount: {Amount}, Current Status: {Status}",
+                walletTransaction.Id, walletTransaction.Amount, walletTransaction.Status);
+
+            // Check if transaction is already completed to prevent double processing
+            if (walletTransaction.Status == TransactionStatus.Completed)
+            {
+                _logger.LogWarning("⚠️ Transaction {TransactionId} is already completed. Skipping processing.", walletTransaction.Id);
+                await transaction.CommitAsync();
+                return;
+            }
+
             var wallet = walletTransaction.Wallet;
+            var oldBalance = wallet.Balance;
+
             wallet.Balance += walletTransaction.Amount;
             wallet.LastTransactionAt = DateTime.UtcNow;
             wallet.UpdatedAt = DateTime.UtcNow;
@@ -193,16 +209,19 @@ public class WalletService : IWalletService
             walletTransaction.CompletedAt = DateTime.UtcNow;
             walletTransaction.UpdatedAt = DateTime.UtcNow;
 
+            _logger.LogInformation("💰 Updating wallet balance: {OldBalance} + {Amount} = {NewBalance}",
+                oldBalance, walletTransaction.Amount, wallet.Balance);
+
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
 
-            _logger.LogInformation("Top-up transaction completed. PayOS Order Code: {OrderCode}, Amount: {Amount}", 
-                payOSOrderCode, walletTransaction.Amount);
+            _logger.LogInformation("✅ Top-up transaction completed successfully. PayOS Order Code: {OrderCode}, Amount: {Amount}, New Balance: {Balance}",
+                payOSOrderCode, walletTransaction.Amount, wallet.Balance);
         }
         catch (Exception ex)
         {
             await transaction.RollbackAsync();
-            _logger.LogError(ex, "Error completing top-up transaction for PayOS order code: {OrderCode}", payOSOrderCode);
+            _logger.LogError(ex, "❌ Error completing top-up transaction for PayOS order code: {OrderCode}", payOSOrderCode);
             throw;
         }
     }
@@ -227,9 +246,22 @@ public class WalletService : IWalletService
 
     public async Task<WalletTransaction?> GetTransactionByPayOSOrderCodeAsync(string payOSOrderCode)
     {
-        return await _context.WalletTransactions
+        _logger.LogInformation("🔍 Searching for wallet transaction with PayOSOrderCode: {PayOSOrderCode}", payOSOrderCode);
+
+        var transaction = await _context.WalletTransactions
             .Include(t => t.Wallet)
             .FirstOrDefaultAsync(t => t.PayOSOrderCode == payOSOrderCode);
+
+        if (transaction != null)
+        {
+            _logger.LogInformation("✅ Found wallet transaction {TransactionId} with status {Status}", transaction.Id, transaction.Status);
+        }
+        else
+        {
+            _logger.LogWarning("⚠️ No wallet transaction found with PayOSOrderCode: {PayOSOrderCode}", payOSOrderCode);
+        }
+
+        return transaction;
     }
 
     public async Task<WalletTransaction> CreateTransactionAsync(int walletId, CreateWalletTransactionRequest request)

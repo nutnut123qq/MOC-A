@@ -91,49 +91,56 @@ public class PaymentController : ControllerBase
     {
         try
         {
-            _logger.LogInformation("🔄 Payment return received: code={Code}, orderCode={OrderCode}", code, orderCode);
-
-            // Get order by PayOS order code to get the actual order ID
-            var order = await _payOSService.GetOrderByPayOSOrderCodeAsync(orderCode);
-            var orderId = order?.Id.ToString() ?? "";
-
-            _logger.LogInformation("📦 Found order: ID={OrderId}, PaymentStatus={PaymentStatus}", order?.Id, order?.PaymentStatus);
+            _logger.LogInformation("Payment return received: code={Code}, orderCode={OrderCode}, id={Id}", code, orderCode, id);
 
             if (code == "00") // Success
             {
                 // Handle payment success if not already handled by webhook
-                if (order != null && order.PaymentStatus != PaymentStatus.Paid)
+                _logger.LogInformation("Processing payment success for orderCode {OrderCode}", orderCode);
+                await _payOSService.HandlePaymentSuccessAsync(orderCode, new PaymentWebhookData
                 {
-                    _logger.LogInformation("💳 Processing payment success for order {OrderId}", order.Id);
-                    await _payOSService.HandlePaymentSuccessAsync(orderCode, new PaymentWebhookData
-                    {
-                        OrderCode = orderCode,
-                        Success = true,
-                        Reference = id ?? "",
-                        Desc = "Payment completed via return URL"
-                    });
-                    _logger.LogInformation("✅ Payment success processed for order {OrderId}", order.Id);
-                }
-                else if (order != null)
-                {
-                    _logger.LogInformation("⚠️ Order {OrderId} already has PaymentStatus: {PaymentStatus}", order.Id, order.PaymentStatus);
-                }
+                    OrderCode = orderCode,
+                    Success = true,
+                    Reference = id ?? "",
+                    Desc = "Payment completed via return URL"
+                });
+                _logger.LogInformation("✅ Payment success processed for orderCode {OrderCode}", orderCode);
 
-                // Redirect to frontend success page with order info
-                var returnUrl = $"{Request.Scheme}://{Request.Host}/payment/return?code={code}&orderCode={orderCode}&orderId={orderId}";
-                return Redirect(returnUrl);
+                // Check if this was a wallet top-up or order payment
+                _logger.LogInformation("🔍 Checking if orderCode {OrderCode} is order or wallet top-up", orderCode);
+                var order = await _payOSService.GetOrderByPayOSOrderCodeAsync(orderCode);
+                if (order != null)
+                {
+                    _logger.LogInformation("📦 Found order {OrderId} - redirecting to order success page", order.Id);
+                    // This was an order payment
+                    var returnUrl = $"http://localhost:3000/payment/return?code={code}&orderCode={orderCode}&orderId={order.Id}";
+                    return Redirect(returnUrl);
+                }
+                else
+                {
+                    _logger.LogInformation("💰 No order found - this was a wallet top-up, redirecting to wallet success page");
+                    // This was a wallet top-up
+                    var returnUrl = $"http://localhost:3000/payment/return?code={code}&orderCode={orderCode}&type=topup";
+                    return Redirect(returnUrl);
+                }
             }
             else
             {
+                _logger.LogWarning("❌ Payment failed with code {Code} for orderCode {OrderCode}", code, orderCode);
+                // Payment failed - check if order or wallet top-up
+                var order = await _payOSService.GetOrderByPayOSOrderCodeAsync(orderCode);
+                var orderId = order?.Id.ToString() ?? "";
+                var type = order != null ? "" : "&type=topup";
+
                 // Redirect to frontend failure page
-                var returnUrl = $"{Request.Scheme}://{Request.Host}/payment/return?code={code}&orderCode={orderCode}&orderId={orderId}";
+                var returnUrl = $"http://localhost:3000/payment/return?code={code}&orderCode={orderCode}&orderId={orderId}{type}";
                 return Redirect(returnUrl);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error processing payment return");
-            return Redirect($"{Request.Scheme}://{Request.Host}/payment/return?code=99");
+            _logger.LogError(ex, "❌ Error processing payment return for orderCode {OrderCode}", orderCode);
+            return Redirect($"http://localhost:3000/payment/return?code=99");
         }
     }
 

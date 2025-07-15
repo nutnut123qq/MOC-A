@@ -64,6 +64,7 @@ export default function WalletPage() {
   const handleTopUp = async () => {
     try {
       const paymentData = await topUp(topUpAmount);
+
       // Redirect to PayOS checkout
       window.open(paymentData.checkoutUrl, '_blank');
       setShowTopUpModal(false);
@@ -153,6 +154,7 @@ export default function WalletPage() {
             >
               <span style={{color: 'white', fontWeight: '500'}}>Làm mới</span>
             </button>
+
           </div>
         </div>
 

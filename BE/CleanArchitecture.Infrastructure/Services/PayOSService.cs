@@ -208,34 +208,51 @@ public class PayOSService : IPayOSService
     {
         try
         {
-            _logger.LogInformation("Processing payment success for order code: {OrderCode}", orderCode);
+            _logger.LogInformation("🔄 Processing payment success for order code: {OrderCode}", orderCode);
+            _logger.LogInformation("🔍 Webhook data: {@WebhookData}", webhookData);
 
             // Check if this is a top-up transaction
+            _logger.LogInformation("🔍 Checking for wallet transaction with orderCode: {OrderCode}", orderCode);
             var walletTransaction = await _walletService.GetTransactionByPayOSOrderCodeAsync(orderCode);
+
             if (walletTransaction != null)
             {
+                _logger.LogInformation("💰 Found wallet transaction {TransactionId} for orderCode {OrderCode}", walletTransaction.Id, orderCode);
+                _logger.LogInformation("💰 Transaction status: {Status}, Amount: {Amount}", walletTransaction.Status, walletTransaction.Amount);
+
                 // Handle wallet top-up
                 await _walletService.CompleteTopUpTransactionAsync(orderCode, webhookData.Reference);
-                _logger.LogInformation("Wallet top-up completed for order code: {OrderCode}", orderCode);
+                _logger.LogInformation("✅ Wallet top-up completed for order code: {OrderCode}", orderCode);
                 return;
+            }
+            else
+            {
+                _logger.LogWarning("⚠️ No wallet transaction found for orderCode: {OrderCode}", orderCode);
             }
 
             // Handle order payment
+            _logger.LogInformation("🔍 Checking for order with orderCode: {OrderCode}", orderCode);
             var order = await _orderService.GetByPayOSOrderCodeAsync(orderCode);
             if (order != null)
             {
+                _logger.LogInformation("📦 Found order {OrderId} for orderCode {OrderCode}", order.Id, orderCode);
+
                 // Update payment status to Paid
                 await _orderService.UpdatePaymentStatusAsync(order.Id, PaymentStatus.Paid);
 
                 // Update order status to Confirmed after successful payment
                 await _orderService.UpdateOrderStatusAsync(order.Id, OrderStatus.Confirmed);
 
-                _logger.LogInformation("Order payment completed and status updated to Confirmed for order code: {OrderCode}", orderCode);
+                _logger.LogInformation("✅ Order payment completed and status updated to Confirmed for order code: {OrderCode}", orderCode);
+            }
+            else
+            {
+                _logger.LogWarning("⚠️ No order found for orderCode: {OrderCode}", orderCode);
             }
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Error handling payment success for order code: {OrderCode}", orderCode);
+            _logger.LogError(ex, "❌ Error handling payment success for order code: {OrderCode}", orderCode);
             throw;
         }
     }
