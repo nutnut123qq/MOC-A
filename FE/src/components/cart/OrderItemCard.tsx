@@ -17,6 +17,61 @@ const productInfo: Record<ProductType, { name: string; emoji: string }> = {
   [ProductType.CanvasBag]: { name: 'Túi Canvas', emoji: '👜' }
 };
 
+// Helper function to format order item description
+const formatOrderItemDescription = (item: any): string => {
+  try {
+    // Determine product type based on size
+    const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
+    const isCombo = maxSize >= 150;
+    const productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
+
+    // Parse design session to get color and size
+    let colorText = '';
+    let sizeText = '';
+
+    if (item.designData) {
+      const designSession = JSON.parse(item.designData);
+
+      // Format color
+      const colorMap: Record<string, string> = {
+        'white': 'Trắng',
+        'black': 'Đen',
+        'red': 'Đỏ',
+        'blue': 'Xanh dương',
+        'green': 'Xanh lá',
+        'yellow': 'Vàng',
+        'purple': 'Tím',
+        'pink': 'Hồng',
+        'orange': 'Cam',
+        'gray': 'Xám'
+      };
+      colorText = colorMap[designSession.selectedColor] || designSession.selectedColor;
+
+      // Format size
+      const sizeMap: Record<string, string> = {
+        's': 'S',
+        'm': 'M',
+        'l': 'L',
+        'xl': 'XL',
+        'xxl': 'XXL'
+      };
+      sizeText = sizeMap[designSession.selectedSize] || designSession.selectedSize.toUpperCase();
+    }
+
+    // Build description parts
+    const parts = [productTypeText];
+    if (colorText) parts.push(colorText);
+    if (sizeText) parts.push(sizeText);
+
+    return parts.join(' • ');
+  } catch (error) {
+    console.error('Error formatting order item description:', error);
+    // Fallback to old format
+    const product = productInfo[item.productType];
+    return `${product.name} • ${item.sizeWidth}×${item.sizeHeight}cm`;
+  }
+};
+
 export default function OrderItemCard({ order }: OrderItemCardProps) {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('vi-VN', {
@@ -73,7 +128,7 @@ export default function OrderItemCard({ order }: OrderItemCardProps) {
                   {item.designName}
                 </p>
                 <p className="text-sm text-gray-600">
-                  {product.name} • {item.sizeWidth}×{item.sizeHeight}cm × {item.quantity}
+                  {formatOrderItemDescription(item)} × {item.quantity}
                 </p>
               </div>
               <div className="text-right">

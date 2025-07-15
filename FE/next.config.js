@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  devIndicators: false, // Disable dev tools indicator
   experimental: {
     optimizeCss: true,
     optimizePackageImports: ['react-hot-toast', '@heroicons/react'],

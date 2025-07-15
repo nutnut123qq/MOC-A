@@ -26,6 +26,61 @@ const productInfo: Record<ProductType, { name: string; emoji: string }> = {
   [ProductType.CanvasBag]: { name: 'Túi Canvas', emoji: '👜' }
 };
 
+// Helper function to format cart item description
+const formatCartItemDescription = (item: CartItem): string => {
+  try {
+    // Determine product type based on size
+    const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
+    const isCombo = maxSize >= 150;
+    const productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
+
+    // Parse design session to get color and size
+    let colorText = '';
+    let sizeText = '';
+
+    if (item.designData) {
+      const designSession = JSON.parse(item.designData);
+
+      // Format color
+      const colorMap: Record<string, string> = {
+        'white': 'Trắng',
+        'black': 'Đen',
+        'red': 'Đỏ',
+        'blue': 'Xanh dương',
+        'green': 'Xanh lá',
+        'yellow': 'Vàng',
+        'purple': 'Tím',
+        'pink': 'Hồng',
+        'orange': 'Cam',
+        'gray': 'Xám'
+      };
+      colorText = colorMap[designSession.selectedColor] || designSession.selectedColor;
+
+      // Format size
+      const sizeMap: Record<string, string> = {
+        's': 'S',
+        'm': 'M',
+        'l': 'L',
+        'xl': 'XL',
+        'xxl': 'XXL'
+      };
+      sizeText = sizeMap[designSession.selectedSize] || designSession.selectedSize.toUpperCase();
+    }
+
+    // Build description parts
+    const parts = [productTypeText];
+    if (colorText) parts.push(colorText);
+    if (sizeText) parts.push(sizeText);
+
+    return parts.join(' • ');
+  } catch (error) {
+    console.error('Error formatting cart item description:', error);
+    // Fallback to old format
+    const product = productInfo[item.productType];
+    return `${product.name} • ${item.sizeWidth}×${item.sizeHeight}cm`;
+  }
+};
+
 export default function CartPage() {
   const { cartItems, cartTotal, loading, error, updateCartItem, removeFromCart, clearCart, refreshCart } = useCart();
   const { isAuthenticated } = useAuth();
@@ -33,9 +88,9 @@ export default function CartPage() {
   const [updating, setUpdating] = useState<number | null>(null);
   const [activeTab, setActiveTab] = useState<'unpaid' | 'paid'>('unpaid');
 
-  // Calculate total with fixed price
-  const calculateFixedTotal = () => {
-    return cartItems.reduce((total, item) => total + (149000 * item.quantity), 0);
+  // Use cart total from API (not fixed price)
+  const getCartTotal = () => {
+    return cartTotal; // Use cartTotal from CartContext which comes from API
   };
 
 
@@ -253,7 +308,7 @@ export default function CartPage() {
                               {item.designName}
                             </h3>
                             <p className="text-sm text-gray-600 mt-1">
-                              {product.name} • {item.sizeWidth}×{item.sizeHeight}cm
+                              {formatCartItemDescription(item)}
                             </p>
                             {item.specialInstructions && (
                               <p className="text-sm text-gray-500 mt-1">
@@ -285,7 +340,7 @@ export default function CartPage() {
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-gray-900">
-                                {(149000 * item.quantity).toLocaleString('vi-VN')}₫
+                                {item.totalPrice.toLocaleString('vi-VN')}₫
                               </p>
                               <button
                                 onClick={() => handleRemoveItem(item.id)}
@@ -312,7 +367,7 @@ export default function CartPage() {
                   <div className="space-y-3 mb-6">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Tạm tính</span>
-                      <span className="font-medium">{calculateFixedTotal().toLocaleString('vi-VN')}₫</span>
+                      <span className="font-medium">{getCartTotal().toLocaleString('vi-VN')}₫</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-600">Phí vận chuyển</span>
@@ -322,7 +377,7 @@ export default function CartPage() {
                       <div className="flex justify-between">
                         <span className="font-semibold text-gray-900">Tổng cộng</span>
                         <span className="font-bold text-xl" style={{color: '#E21C34'}}>
-                          {calculateFixedTotal().toLocaleString('vi-VN')}₫
+                          {getCartTotal().toLocaleString('vi-VN')}₫
                         </span>
                       </div>
                     </div>

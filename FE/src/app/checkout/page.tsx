@@ -11,6 +11,60 @@ import { CreateOrderDto } from '@/types/order';
 import PaymentOptions from '@/components/payment/PaymentOptions';
 import toast from 'react-hot-toast';
 
+// Helper function to format checkout item description
+const formatCheckoutItemDescription = (item: CartItem): string => {
+  try {
+    // Determine product type based on size
+    const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
+    const isCombo = maxSize >= 150;
+    const productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
+
+    // Parse design session to get color and size
+    let colorText = '';
+    let sizeText = '';
+
+    if (item.designData) {
+      const designSession = JSON.parse(item.designData);
+
+      // Format color
+      const colorMap: Record<string, string> = {
+        'white': 'Trắng',
+        'black': 'Đen',
+        'red': 'Đỏ',
+        'blue': 'Xanh dương',
+        'green': 'Xanh lá',
+        'yellow': 'Vàng',
+        'purple': 'Tím',
+        'pink': 'Hồng',
+        'orange': 'Cam',
+        'gray': 'Xám'
+      };
+      colorText = colorMap[designSession.selectedColor] || designSession.selectedColor;
+
+      // Format size
+      const sizeMap: Record<string, string> = {
+        's': 'S',
+        'm': 'M',
+        'l': 'L',
+        'xl': 'XL',
+        'xxl': 'XXL'
+      };
+      sizeText = sizeMap[designSession.selectedSize] || designSession.selectedSize.toUpperCase();
+    }
+
+    // Build description parts
+    const parts = [productTypeText];
+    if (colorText) parts.push(colorText);
+    if (sizeText) parts.push(sizeText);
+
+    return parts.join(' • ');
+  } catch (error) {
+    console.error('Error formatting checkout item description:', error);
+    // Fallback to old format
+    return `${item.productName} • ${item.sizeWidth}×${item.sizeHeight}cm`;
+  }
+};
+
 export default function CheckoutPage() {
   const router = useRouter();
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -20,9 +74,9 @@ export default function CheckoutPage() {
   const [error, setError] = useState<string | null>(null);
   const [step, setStep] = useState<'info' | 'payment'>('info');
 
-  // Calculate total with fixed price
-  const calculateFixedTotal = () => {
-    return cartItems.reduce((total, item) => total + (149000 * item.quantity), 0);
+  // Use cart total from API (not fixed price)
+  const getOrderTotal = () => {
+    return cartTotal; // Use cartTotal from CartContext which comes from API
   };
 
   const [formData, setFormData] = useState({
@@ -84,7 +138,7 @@ export default function CheckoutPage() {
         // Pay from wallet
         const success = await payFromWallet(
           order.id,
-          calculateFixedTotal(),
+          getOrderTotal(),
           `Thanh toán đơn hàng #${order.orderNumber}`
         );
 
@@ -105,7 +159,7 @@ export default function CheckoutPage() {
           },
           body: JSON.stringify({
             orderId: order.id,
-            amount: calculateFixedTotal(),
+            amount: getOrderTotal(),
             description: `Thanh toán đơn hàng #${order.orderNumber}`,
             returnUrl: `${window.location.origin}/payment/return`,
             cancelUrl: `${window.location.origin}/payment/cancel`
@@ -336,7 +390,7 @@ export default function CheckoutPage() {
               <div className="space-y-6">
                 <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
                   <PaymentOptions
-                    orderTotal={calculateFixedTotal()}
+                    orderTotal={getOrderTotal()}
                     onPaymentMethodSelect={handlePaymentMethodSelect}
                     disabled={loading}
                   />
@@ -371,11 +425,11 @@ export default function CheckoutPage() {
                     <div className="flex-1">
                       <p className="font-medium truncate">{item.designName}</p>
                       <p className="text-gray-600">
-                        {item.productName} • {item.sizeWidth}×{item.sizeHeight}cm × {item.quantity}
+                        {formatCheckoutItemDescription(item)} × {item.quantity}
                       </p>
                     </div>
                     <span className="font-medium ml-2">
-                      {(149000 * item.quantity).toLocaleString('vi-VN')}₫
+                      {item.totalPrice.toLocaleString('vi-VN')}₫
                     </span>
                   </div>
                 ))}
@@ -384,7 +438,7 @@ export default function CheckoutPage() {
               <div className="border-t pt-4 space-y-2">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Tạm tính:</span>
-                  <span>{calculateFixedTotal().toLocaleString('vi-VN')}₫</span>
+                  <span>{getOrderTotal().toLocaleString('vi-VN')}₫</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-600">Phí vận chuyển:</span>
@@ -392,7 +446,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex justify-between font-semibold text-lg pt-2 border-t">
                   <span>Tổng cộng:</span>
-                  <span style={{color: '#E21C34'}}>{calculateFixedTotal().toLocaleString('vi-VN')}₫</span>
+                  <span style={{color: '#E21C34'}}>{getOrderTotal().toLocaleString('vi-VN')}₫</span>
                 </div>
               </div>
             </div>

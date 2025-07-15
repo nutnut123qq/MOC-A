@@ -32,7 +32,7 @@ export default function PreviewModal({
   const currentSize = currentVariant.sizes.find(s => s.size === designSession.selectedSize) || currentVariant.sizes[0];
 
   const calculatePrice = () => {
-    return 149000; // Fixed price for all t-shirts
+    return 149000; // Fixed price for T-shirts (this is correct for T-shirt base price)
   };
 
   const mockupViews = [

@@ -6,6 +6,60 @@ import OrderStatusBadge from './OrderStatusBadge';
 import StatusUpdateDropdown from './StatusUpdateDropdown';
 import CartDesignPreview from '@/components/cart/CartDesignPreview';
 
+// Helper function to format admin order item description
+const formatAdminOrderItemDescription = (item: any): string => {
+  try {
+    // Determine product type based on size
+    const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
+    const isCombo = maxSize >= 150;
+    const productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
+
+    // Parse design session to get color and size
+    let colorText = '';
+    let sizeText = '';
+
+    if (item.designData) {
+      const designSession = JSON.parse(item.designData);
+
+      // Format color
+      const colorMap: Record<string, string> = {
+        'white': 'Trắng',
+        'black': 'Đen',
+        'red': 'Đỏ',
+        'blue': 'Xanh dương',
+        'green': 'Xanh lá',
+        'yellow': 'Vàng',
+        'purple': 'Tím',
+        'pink': 'Hồng',
+        'orange': 'Cam',
+        'gray': 'Xám'
+      };
+      colorText = colorMap[designSession.selectedColor] || designSession.selectedColor;
+
+      // Format size
+      const sizeMap: Record<string, string> = {
+        's': 'S',
+        'm': 'M',
+        'l': 'L',
+        'xl': 'XL',
+        'xxl': 'XXL'
+      };
+      sizeText = sizeMap[designSession.selectedSize] || designSession.selectedSize.toUpperCase();
+    }
+
+    // Build description parts
+    const parts = [productTypeText];
+    if (colorText) parts.push(colorText);
+    if (sizeText) parts.push(sizeText);
+
+    return parts.join(' • ');
+  } catch (error) {
+    console.error('Error formatting admin order item description:', error);
+    // Fallback to old format
+    return `${item.productName} • ${item.sizeWidth}×${item.sizeHeight}cm`;
+  }
+};
+
 interface OrderDetailsModalProps {
   order: Order;
   onClose: () => void;
@@ -90,7 +144,7 @@ export default function OrderDetailsModal({
       for (let i = 0; i < imageUrls.length; i++) {
         const imageUrl = imageUrls[i];
         try {
-          console.log('🔍 Downloading image:', imageUrl);
+
 
           // Kiểm tra URL có hợp lệ không
           if (!imageUrl || !imageUrl.startsWith('http')) {
@@ -115,9 +169,9 @@ export default function OrderDetailsModal({
             a.click();
             document.body.removeChild(a);
 
-            console.log('✅ Downloaded via direct link:', filename);
+
           } catch (directError) {
-            console.log('Direct download failed, trying fetch method...');
+
 
             // Fallback: Fetch và tạo blob
             const response = await fetch(imageUrl, {
@@ -136,10 +190,7 @@ export default function OrderDetailsModal({
               throw new Error('Empty blob received');
             }
 
-            console.log('📦 Blob info:', {
-              size: blob.size,
-              type: blob.type
-            });
+
 
             // Tạo link download từ blob
             const url = URL.createObjectURL(blob);
@@ -151,7 +202,7 @@ export default function OrderDetailsModal({
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            console.log('✅ Downloaded via fetch:', filename);
+
           }
 
           // Delay giữa các download
@@ -350,7 +401,7 @@ export default function OrderDetailsModal({
 
                           <div className="mt-2 flex items-center justify-between">
                             <div className="text-sm text-gray-600">
-                              Kích thước: {item.sizeWidth}×{item.sizeHeight}cm
+                              {formatAdminOrderItemDescription(item)}
                             </div>
                             <div className="text-sm text-gray-600">
                               SL: {item.quantity}

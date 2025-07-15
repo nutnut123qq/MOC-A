@@ -9,6 +9,60 @@ import { Order, OrderStatus } from '@/types/order';
 import CartDesignPreview from '@/components/cart/CartDesignPreview';
 import OrderProgressIndicator from '@/components/orders/OrderProgressIndicator';
 
+// Helper function to format user order item description
+const formatUserOrderItemDescription = (item: any): string => {
+  try {
+    // Determine product type based on size
+    const maxSize = Math.max(item.sizeWidth, item.sizeHeight);
+    const isCombo = maxSize >= 150;
+    const productTypeText = isCombo ? 'Combo Áo + Decal' : 'Decal riêng';
+
+    // Parse design session to get color and size
+    let colorText = '';
+    let sizeText = '';
+
+    if (item.designData) {
+      const designSession = JSON.parse(item.designData);
+
+      // Format color
+      const colorMap: Record<string, string> = {
+        'white': 'Trắng',
+        'black': 'Đen',
+        'red': 'Đỏ',
+        'blue': 'Xanh dương',
+        'green': 'Xanh lá',
+        'yellow': 'Vàng',
+        'purple': 'Tím',
+        'pink': 'Hồng',
+        'orange': 'Cam',
+        'gray': 'Xám'
+      };
+      colorText = colorMap[designSession.selectedColor] || designSession.selectedColor;
+
+      // Format size
+      const sizeMap: Record<string, string> = {
+        's': 'S',
+        'm': 'M',
+        'l': 'L',
+        'xl': 'XL',
+        'xxl': 'XXL'
+      };
+      sizeText = sizeMap[designSession.selectedSize] || designSession.selectedSize.toUpperCase();
+    }
+
+    // Build description parts
+    const parts = [productTypeText];
+    if (colorText) parts.push(colorText);
+    if (sizeText) parts.push(sizeText);
+
+    return parts.join(' • ');
+  } catch (error) {
+    console.error('Error formatting user order item description:', error);
+    // Fallback to old format
+    return `${item.productName} • ${item.sizeWidth}×${item.sizeHeight}cm`;
+  }
+};
+
 const statusInfo = {
   [OrderStatus.Pending]: { name: 'Chờ xác nhận', color: 'bg-yellow-100 text-yellow-800', icon: '⏳' },
   [OrderStatus.Confirmed]: { name: 'Đã xác nhận', color: 'bg-blue-100 text-blue-800', icon: '✅' },
@@ -191,7 +245,7 @@ export default function OrderDetailPage() {
                     <div className="flex-1">
                       <h3 className="font-semibold text-gray-900">{item.designName}</h3>
                       <p className="text-sm text-gray-600">
-                        {item.productName} • {item.sizeWidth}×{item.sizeHeight}cm
+                        {formatUserOrderItemDescription(item)}
                       </p>
                       <p className="text-sm text-gray-600">Số lượng: {item.quantity}</p>
                       {item.specialInstructions && (

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { HeroLogo } from "@/components/ui/Logo";
 import { PatternWebBackground } from "@/components/ui/BackgroundImage";
+import InteractivePricing from "@/components/ui/InteractivePricing";
 
 export default function Home() {
   return (
@@ -203,44 +204,11 @@ export default function Home() {
               💰 Bảng Giá Decal Siêu Hợp Lý
             </h2>
             <p className="text-xl text-gray-600">
-              Size decal từ 5cm - 28cm - Giá cả minh bạch, chất lượng đảm bảo 💕
+              Tùy chỉnh size decal từ 5cm - 28cm - Giá cả minh bạch, chất lượng đảm bảo 💕
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6">
-            <div className="rounded-3xl p-6 text-center border border-red-200 hover:shadow-lg hover:border-red-300 transition-all duration-300" style={{backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
-              <div className="text-lg font-bold text-red-600 mb-2">5-10cm</div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">15,000₫</div>
-              <div className="text-sm text-red-600 bg-red-100 px-3 py-1 rounded-full">Mini cute</div>
-            </div>
-
-            <div className="rounded-3xl p-6 text-center border border-red-200 hover:shadow-lg hover:border-red-300 transition-all duration-300" style={{backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
-              <div className="text-lg font-bold text-red-600 mb-2">11-15cm</div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">25,000₫</div>
-              <div className="text-sm text-red-600 bg-red-100 px-3 py-1 rounded-full">Vừa xinh</div>
-            </div>
-
-            <div className="rounded-3xl p-6 text-center text-white transform scale-105 shadow-xl relative" style={{background: `linear-gradient(to bottom right, #dc2626, #E21C34)`}}>
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 text-white px-3 py-1 rounded-full text-xs font-bold" style={{backgroundColor: '#ec4899'}}>
-                ✨ YÊU THÍCH NHẤT
-              </div>
-              <div className="text-lg font-bold mb-2">16-20cm</div>
-              <div className="text-3xl font-bold mb-2">35,000₫</div>
-              <div className="text-sm bg-white/20 px-3 py-1 rounded-full">Perfect size</div>
-            </div>
-
-            <div className="rounded-3xl p-6 text-center border border-red-200 hover:shadow-lg hover:border-red-300 transition-all duration-300" style={{backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
-              <div className="text-lg font-bold text-red-600 mb-2">21-25cm</div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">45,000₫</div>
-              <div className="text-sm text-red-600 bg-red-100 px-3 py-1 rounded-full">Lớn đẹp</div>
-            </div>
-
-            <div className="rounded-3xl p-6 text-center border border-red-200 hover:shadow-lg hover:border-red-300 transition-all duration-300" style={{backgroundColor: 'rgba(255, 255, 255, 0.8)'}}>
-              <div className="text-lg font-bold text-red-600 mb-2">26-28cm</div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">55,000₫</div>
-              <div className="text-sm text-red-600 bg-red-100 px-3 py-1 rounded-full">Siêu to</div>
-            </div>
-          </div>
+          <InteractivePricing />
 
           <div className="text-center mt-12">
             <div className="inline-flex items-center space-x-2 px-6 py-3 rounded-full border border-red-200" style={{backgroundColor: 'rgba(226, 28, 52, 0.1)'}}>
