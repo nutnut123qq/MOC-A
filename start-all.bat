@@ -16,6 +16,6 @@ start "Frontend" cmd /k "cd FE && npm run dev"
 echo.
 echo Both services are starting...
 echo Backend: http://localhost:5168
-echo Frontend: http://localhost:3001
+echo Frontend: http://localhost:3000
 echo.
 pause

@@ -2,10 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
-import { 
-  CreditCardIcon, 
+import {
   WalletIcon,
-  QrCodeIcon,
   BanknotesIcon
 } from '@heroicons/react/24/outline';
 
@@ -86,45 +84,50 @@ export default function PaymentOptions({
         </div>
       </div>
       
-      {/* PayOS Payment */}
+      {/* Cash on Delivery Payment */}
       <div className={`border rounded-lg p-4 transition-all ${
-        disabled 
+        disabled
           ? 'border-gray-300 bg-gray-50 opacity-60'
-          : 'border-blue-500 bg-blue-50 hover:bg-blue-100'
+          : 'border-orange-500 bg-orange-50 hover:bg-orange-100'
       }`}>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-white rounded-lg">
-              <CreditCardIcon className="w-6 h-6 text-blue-600" />
+              <BanknotesIcon className="w-6 h-6 text-orange-600" />
             </div>
             <div>
-              <h4 className="font-medium text-gray-900">Thanh toán qua PayOS</h4>
+              <h4 className="font-medium text-gray-900">Thanh toán sau khi nhận hàng</h4>
               <p className="text-sm text-gray-600">
-                Chuyển khoản ngân hàng, QR Code
+                Thanh toán bằng tiền mặt khi nhận hàng
               </p>
               <div className="flex items-center gap-4 mt-1">
                 <div className="flex items-center gap-1">
-                  <QrCodeIcon className="w-4 h-4 text-gray-500" />
-                  <span className="text-xs text-gray-500">QR Code</span>
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
+                  </svg>
+                  <span className="text-xs text-gray-500">Tiền mặt</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <BanknotesIcon className="w-4 h-4 text-gray-500" />
-                  <span className="text-xs text-gray-500">Chuyển khoản</span>
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z" />
+                  </svg>
+                  <span className="text-xs text-gray-500">Khi nhận hàng</span>
                 </div>
               </div>
             </div>
           </div>
-          
+
           <button
             disabled={disabled || loading}
             onClick={() => onPaymentMethodSelect('payos')}
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
               disabled || loading
                 ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                : 'bg-blue-600 text-white hover:bg-blue-700'
+                : 'bg-orange-600 text-white hover:bg-orange-700'
             }`}
           >
-            {loading ? 'Đang xử lý...' : 'Thanh toán'}
+            {loading ? 'Đang xử lý...' : 'Đặt hàng'}
           </button>
         </div>
       </div>
@@ -142,8 +145,8 @@ export default function PaymentOptions({
       {/* Payment Notes */}
       <div className="text-sm text-gray-600 space-y-1">
         <p>• Thanh toán từ ví: Tức thời, không phí giao dịch</p>
-        <p>• Thanh toán qua PayOS: Hỗ trợ tất cả ngân hàng, có phí theo quy định</p>
-        <p>• Đơn hàng sẽ được xử lý sau khi thanh toán thành công</p>
+        <p>• Thanh toán sau khi nhận hàng: Thanh toán bằng tiền mặt khi shipper giao hàng</p>
+        <p>• Đơn hàng sẽ được xử lý sau khi xác nhận đặt hàng thành công</p>
       </div>
     </div>
   );

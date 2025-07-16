@@ -1,0 +1,27 @@
+<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Main star -->
+  <polygon points="50,10 60,35 85,35 67,52 75,77 50,62 25,77 33,52 15,35 40,35" 
+           fill="#FFD700" 
+           stroke="#FFA500" 
+           stroke-width="2"/>
+  
+  <!-- Star highlight -->
+  <polygon points="50,15 55,30 65,30 57,38 60,50 50,45 40,50 43,38 35,30 45,30" 
+           fill="#FFFF99" 
+           opacity="0.8"/>
+  
+  <!-- Sparkle effects -->
+  <g fill="#FFFFFF" opacity="0.9">
+    <circle cx="45" cy="25" r="2"/>
+    <circle cx="55" cy="30" r="1.5"/>
+    <circle cx="50" cy="40" r="1"/>
+  </g>
+  
+  <!-- Small decorative stars -->
+  <g fill="#FFD700" stroke="#FFA500" stroke-width="1">
+    <polygon points="20,20 22,25 27,25 23,28 25,33 20,30 15,33 17,28 13,25 18,25"/>
+    <polygon points="80,25 82,30 87,30 83,33 85,38 80,35 75,38 77,33 73,30 78,30"/>
+    <polygon points="25,75 27,80 32,80 28,83 30,88 25,85 20,88 22,83 18,80 23,80"/>
+    <polygon points="75,80 77,85 82,85 78,88 80,93 75,90 70,93 72,88 68,85 73,85"/>
+  </g>
+</svg>

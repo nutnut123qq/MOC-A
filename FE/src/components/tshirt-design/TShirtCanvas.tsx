@@ -462,8 +462,9 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
 
       {/* Header Controls */}
       <div className="bg-white border-b border-gray-200 p-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
+        <div className="flex items-center justify-between min-h-[40px]">
+          {/* Left side - Main controls */}
+          <div className="flex items-center space-x-4 flex-1">
             {/* View Toggle */}
             <div className="flex items-center space-x-1 bg-gray-100 rounded-lg p-1">
               <button
@@ -521,25 +522,33 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
               </button>
             </div>
 
-            {/* Print Area Info */}
+            {/* Print Area Info - Flexible */}
             {currentPrintArea && (
-              <div className="text-sm text-gray-500">
-                Tối đa: {currentPrintArea.maxDimensions.width} × {currentPrintArea.maxDimensions.height} px
-                <span className="ml-2 text-blue-600">• Các phần tử có thể mở rộng ra ngoài vùng in</span>
+              <div className="text-sm text-gray-500 flex-shrink min-w-0">
+                <span className="whitespace-nowrap">
+                  Tối đa: {currentPrintArea.maxDimensions.width} × {currentPrintArea.maxDimensions.height} px
+                </span>
+                <span className="ml-2 text-blue-600 hidden lg:inline">
+                  • Các phần tử có thể mở rộng ra ngoài vùng in
+                </span>
               </div>
             )}
 
-            {/* Layer Actions */}
-            {selectedLayerId && (
-              <div className="flex items-center space-x-2">
+          </div>
+
+          {/* Right side - Action buttons with fixed position */}
+          <div className="flex items-center space-x-2 ml-4">
+            {/* Layer Actions - Always reserve space */}
+            <div className="w-16 flex justify-end">
+              {selectedLayerId && (
                 <button
                   onClick={deleteSelectedLayer}
-                  className="px-3 py-1 text-red-600 hover:bg-red-50 rounded transition-colors text-sm"
+                  className="px-3 py-1 text-red-600 hover:bg-red-50 rounded transition-colors text-sm whitespace-nowrap"
                 >
                   Delete
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -851,6 +860,25 @@ export default function TShirtCanvas({ tshirt, designSession, onSessionUpdate }:
                             </div>
                           </div>
                         </div>
+                      ) : layer.type === 'sticker' ? (
+                        // Check if it's an image URL or emoji
+                        layer.content.startsWith('/assets/') || layer.content.startsWith('http') ? (
+                          <img
+                            src={layer.content}
+                            alt="Sticker"
+                            className="w-full h-full object-contain pointer-events-none"
+                            draggable={false}
+                          />
+                        ) : (
+                          <div
+                            className="pointer-events-none w-full h-full flex items-center justify-center"
+                            style={{
+                              fontSize: layer.style?.fontSize,
+                            }}
+                          >
+                            {layer.content}
+                          </div>
+                        )
                       ) : (
                         <div
                           className="pointer-events-none w-full h-full flex items-center justify-center"

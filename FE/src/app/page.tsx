@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HeroLogo } from "@/components/ui/Logo";
 import { PatternWebBackground } from "@/components/ui/BackgroundImage";
 import InteractivePricing from "@/components/ui/InteractivePricing";
+import ChatBox from "@/components/chat/ChatBox";
 
 export default function Home() {
   return (
@@ -167,17 +168,21 @@ export default function Home() {
       <section className="py-20 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
-            <h2 className="inline-flex items-center justify-center space-x-3 text-4xl font-bold text-gray-900 mb-4">
-              <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
-              </svg>
-              <span>4 Bước Đơn Giản Là Có Đồ Chất</span>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <span className="inline-flex items-center justify-center space-x-3">
+                <svg className="w-8 h-8" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd" />
+                </svg>
+                <span>4 Bước Đơn Giản Là Có Đồ Chất</span>
+              </span>
             </h2>
-            <p className="inline-flex items-center justify-center space-x-2 text-xl text-gray-600">
-              <span>Chỉ 4 bước dễ dàng để có sản phẩm xinh xắn hoàn hảo</span>
-              <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-              </svg>
+            <p className="text-xl text-gray-600">
+              <span className="inline-flex items-center justify-center space-x-2">
+                <span>Chỉ 4 bước dễ dàng để có sản phẩm xinh xắn hoàn hảo</span>
+                <svg className="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                </svg>
+              </span>
             </p>
           </div>
 
@@ -223,7 +228,7 @@ export default function Home() {
               </div>
               <h4 className="inline-flex items-center justify-center space-x-2 text-lg font-semibold text-gray-900 mb-3">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17M17 13v4a2 2 0 01-2 2H9a2 2 0 01-2-2v-4m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M8 11v6a2 2 0 002 2h4a2 2 0 002-2v-6M8 11H6a2 2 0 00-2 2v6a2 2 0 002 2h12a2 2 0 002-2v-6a2 2 0 00-2-2h-2" />
                 </svg>
                 <span>Đặt hàng</span>
               </h4>
@@ -296,7 +301,7 @@ export default function Home() {
                       </div>
                       <h4 className="text-2xl font-bold text-gray-900 mb-2">Combo Áo + Decal</h4>
                       <p className="text-gray-600 mb-6">Áo thun + decal không giới hạn số lượng</p>
-                      <div className="text-4xl font-bold text-red-600 mb-4">149,000₫</div>
+                      <div className="text-4xl font-bold text-red-600 mb-4">149,000</div>
                       <div className="space-y-2 text-sm text-gray-600">
                         <div className="flex items-center justify-center space-x-2">
                           <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -333,7 +338,7 @@ export default function Home() {
                       </div>
                       <h4 className="text-2xl font-bold text-gray-900 mb-2">Combo Túi + Decal</h4>
                       <p className="text-gray-600 mb-6">Túi canvas + decal không giới hạn số lượng</p>
-                      <div className="text-4xl font-bold text-red-600 mb-4">149,000₫</div>
+                      <div className="text-4xl font-bold text-red-600 mb-4">79,000</div>
                       <div className="space-y-2 text-sm text-gray-600">
                         <div className="flex items-center justify-center space-x-2">
                           <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -359,36 +364,11 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Comparison Note */}
-              <div className="mt-8 text-center">
-                <div className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-gradient-to-r from-amber-50 to-amber-100 border border-amber-200">
-                  <svg className="w-5 h-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  <p className="inline-flex items-center space-x-2 text-amber-800 font-medium">
-                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                      <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <span>Combo tiết kiệm hơn khi bạn muốn nhiều decal trên cùng một sản phẩm</span>
-                  </p>
-                </div>
-              </div>
+
             </div>
           </div>
 
-          <div className="text-center mt-12">
-            <div className="inline-flex items-center space-x-2 px-6 py-3 rounded-full border border-red-200" style={{backgroundColor: 'rgba(226, 28, 52, 0.1)'}}>
-              <svg className="w-5 h-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <p className="inline-flex items-center space-x-2 text-red-800 font-medium">
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-                </svg>
-                <span>Giá đã bao gồm thiết kế và giao hàng tận nơi tại Bình Định</span>
-              </p>
-            </div>
-          </div>
+
         </div>
       </section>
 
@@ -453,6 +433,9 @@ export default function Home() {
         </div>
       </section>
       </div>
+
+      {/* Chat Box */}
+      <ChatBox />
     </PatternWebBackground>
   );
 }

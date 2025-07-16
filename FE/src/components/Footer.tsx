@@ -38,8 +38,8 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/design/tshirt/1" className="text-gray-300 hover:text-white transition-colors">
-                  Thiết kế áo thun
+                <Link href="/design" className="text-gray-300 hover:text-white transition-colors">
+                  Thiết kế sản phẩm
                 </Link>
               </li>
               <li>

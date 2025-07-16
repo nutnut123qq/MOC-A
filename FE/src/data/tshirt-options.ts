@@ -68,6 +68,11 @@ export const getTShirtImagePath = (
   return `/images/áo vector/${size}/${size} ${viewCode} ${color}.png`;
 };
 
+// Helper function to get Bag image path (single size, color, view)
+export const getBagImagePath = (): string => {
+  return `/images/túi vector/bag.png`;
+};
+
 // Helper function to get size info by id
 export const getSizeInfo = (sizeId: TShirtSizeType): TShirtSizeInfo | undefined => {
   return TSHIRT_SIZES.find(size => size.id === sizeId);
