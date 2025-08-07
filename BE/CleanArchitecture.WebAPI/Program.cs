@@ -106,6 +106,20 @@ app.UseStaticFiles(new StaticFileOptions
     RequestPath = "/temp"
 });
 
+// Serve uploaded files from /uploads path with CORS headers
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads")),
+    RequestPath = "/uploads",
+    OnPrepareResponse = ctx =>
+    {
+        // Add CORS headers for file downloads
+        ctx.Context.Response.Headers["Access-Control-Allow-Origin"] = "*";
+        ctx.Context.Response.Headers["Access-Control-Allow-Methods"] = "GET";
+        ctx.Context.Response.Headers["Access-Control-Allow-Headers"] = "Content-Type";
+    }
+});
+
 
 
 // Use CORS

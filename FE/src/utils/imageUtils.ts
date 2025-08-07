@@ -2,7 +2,7 @@
  * Utility functions for handling design images
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5168';
 
 /**
  * Get image source URL from design layer content
@@ -18,52 +18,44 @@ export function getImageSource(layerContent: any): string | null {
     return null; // Return null for loading state, component can show placeholder
   }
 
-  // Handle temp file path data (temporary storage)
-  if (typeof layerContent === 'object' && layerContent.type === 'temp' && layerContent.tempPath) {
-    const url = `${API_BASE_URL}${layerContent.tempPath}`;
+  // Handle file path data (permanent storage) - PRIORITY
+  if (typeof layerContent === 'object' && layerContent.type === 'file' && layerContent.filePath) {
+    const url = `${API_BASE_URL}${layerContent.filePath}`;
     return url;
   }
 
-  // Handle file path data (permanent storage)
-  if (typeof layerContent === 'object' && layerContent.type === 'file' && layerContent.filePath) {
-    const url = `${API_BASE_URL}${layerContent.filePath}`;
-    console.log('🔍 getImageSource: File path (permanent):', url);
+  // Handle temp file path data (temporary storage) - FALLBACK ONLY
+  if (typeof layerContent === 'object' && layerContent.type === 'temp' && layerContent.tempPath) {
+    const url = `${API_BASE_URL}${layerContent.tempPath}`;
     return url;
   }
 
   // Handle legacy file path data
   if (typeof layerContent === 'object' && layerContent.filePath) {
     const url = `${API_BASE_URL}${layerContent.filePath}`;
-    console.log('🔍 getImageSource: File path (legacy):', url);
     return url;
   }
 
   // Handle direct file path string
   if (typeof layerContent === 'string' && layerContent.startsWith('/uploads/')) {
     const url = `${API_BASE_URL}${layerContent}`;
-    console.log('🔍 getImageSource: Direct file path:', url);
     return url;
   }
 
   // Handle base64 data (legacy system)
   if (typeof layerContent === 'string' && layerContent.startsWith('data:image/')) {
-    console.log('🔍 getImageSource: Base64 data');
     return layerContent;
   }
 
   // Handle compressed base64 data with src property
   if (typeof layerContent === 'object' && layerContent.src) {
-    console.log('🔍 getImageSource: Base64 with src property');
     return layerContent.src;
   }
 
   // Handle direct base64 string (fallback)
   if (typeof layerContent === 'string' && layerContent.length > 100) {
-    console.log('🔍 getImageSource: Direct base64 string (fallback)');
     return layerContent;
   }
-
-  console.warn('❌ Unknown image content format:', layerContent);
   return null;
 }
 

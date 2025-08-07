@@ -4,6 +4,7 @@ import FontSelector from './FontSelector';
 import TextTemplates from './TextTemplates';
 import Icon from '@/components/ui/Icon';
 import { stickerData } from '../../data/stickers';
+import { designAPI } from '@/lib/design-api';
 
 interface DesignToolbarProps {
   designSession: TShirtDesignSession;
@@ -28,6 +29,7 @@ export default function DesignToolbar({
   const [fontSize, setFontSize] = useState(24);
   const [textColor, setTextColor] = useState('#000000');
   const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right'>('center');
+  const [isUploading, setIsUploading] = useState(false);
   const [fontWeight, setFontWeight] = useState<'normal' | 'bold'>('normal');
   const [fontStyle, setFontStyle] = useState<'normal' | 'italic'>('normal');
   const [textDecoration, setTextDecoration] = useState<'none' | 'underline'>('none');
@@ -112,27 +114,47 @@ export default function DesignToolbar({
     });
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const imageUrl = e.target?.result as string;
-      const imageWidth = 150;
-      const imageHeight = 150;
+    try {
+      setIsUploading(true);
+
+      // Create temporary layer ID
+      const layerId = `image-${Date.now()}`;
+
+      // Get or create design ID for permanent storage
+      let designId = designSession.id;
+      if (!designId || designId.startsWith('session-')) {
+        // Create a temporary design for anonymous users
+        designId = 1; // Use default design ID for anonymous uploads
+      }
+
+      // Upload directly to permanent storage
+      const uploadResponse = await designAPI.uploadImageFile(Number(designId), layerId, file);
+
+      // Calculate center position for the image
+      const imageWidth = 150; // Default width
+      const imageHeight = 150; // Default height
       const centerPos = getCenterPosition(imageWidth, imageHeight);
 
+      // Create new image layer with permanent file data
       const newLayer: DesignLayer = {
-        id: `image-${Date.now()}`,
+        id: layerId,
         type: 'image',
-        content: imageUrl,
+        content: {
+          type: 'file',
+          filePath: uploadResponse.filePath,
+          originalFile: file.name,
+          fileSize: file.size,
+        },
         position: centerPos,
         transform: { rotation: 0, scaleX: 1, scaleY: 1 },
         printArea: designSession.currentPrintArea,
         style: {
           width: imageWidth,
-          height: imageHeight
+          height: imageHeight,
         },
         visible: true,
         locked: false,
@@ -143,8 +165,15 @@ export default function DesignToolbar({
         ...designSession,
         designLayers: updatedLayers,
       });
-    };
-    reader.readAsDataURL(file);
+
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('Không thể tải ảnh lên. Vui lòng thử lại.');
+    } finally {
+      setIsUploading(false);
+      // Reset input
+      event.target.value = '';
+    }
   };
 
 

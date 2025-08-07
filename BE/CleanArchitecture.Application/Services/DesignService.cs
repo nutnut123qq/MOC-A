@@ -321,40 +321,10 @@ public class DesignService : IDesignService
                     if (layer.Content != null)
                     {
                         var contentString = layer.Content.ToString();
-                        _logger.LogInformation($"🔍 Processing Content field for layer {layer.Id}: {contentString?.Substring(0, Math.Min(100, contentString?.Length ?? 0))}...");
-
-                        // Check if it's temp file data (JSON format)
-                        if (IsTempFileData(contentString))
+                        // Check if it's already permanent file data
+                        if (IsFilePathData(contentString))
                         {
-                            try
-                            {
-                                // Parse temp file data and move to permanent storage
-                                var tempFileInfo = System.Text.Json.JsonSerializer.Deserialize<TempFileInfo>(contentString);
-                                if (tempFileInfo != null && !string.IsNullOrEmpty(tempFileInfo.tempPath))
-                                {
-                                    var permanentPath = await _tempFileService.CopyTempFileToPermanentAsync(
-                                        tempFileInfo.tempPath,
-                                        designId,
-                                        layer.Id,
-                                        userId
-                                    );
-
-                                    // Update layer data with permanent file path
-                                    processedLayer.Data = new
-                                    {
-                                        filePath = permanentPath,
-                                        type = "file",
-                                        originalFile = tempFileInfo.originalFile,
-                                        fileSize = tempFileInfo.fileSize
-                                    };
-
-                                    _logger.LogInformation($"✅ Copied temp file to permanent storage: {permanentPath}");
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                _logger.LogWarning(ex, $"⚠️ Failed to process temp file for layer {layer.Id}, keeping original content");
-                            }
+                            // Keep the existing file path data
                         }
                         else if (IsBase64ImageData(contentString))
                         {
@@ -416,7 +386,7 @@ public class DesignService : IDesignService
                         }
                         else if (IsFilePathData(dataString))
                         {
-                            _logger.LogInformation($"📁 Layer {layer.Id} already uses file storage");
+                            // Layer already uses file storage
                         }
                     }
                 }

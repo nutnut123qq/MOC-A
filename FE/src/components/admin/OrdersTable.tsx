@@ -56,21 +56,45 @@ export default function OrdersTable({
       // Tìm tất cả layers có type 'image' (ảnh user upload)
       const imageUrls: string[] = [];
       if (designSession && designSession.designLayers) {
-        console.log('🔍 Design layers:', designSession.designLayers);
         designSession.designLayers.forEach((layer: any, index: number) => {
-          console.log(`🔍 Layer ${index}:`, {
-            type: layer.type,
-            content: layer.content,
-            visible: layer.visible
-          });
 
           if (layer.type === 'image' && layer.content && layer.visible) {
-            imageUrls.push(layer.content);
+            // Handle different content formats
+            let imageUrl = '';
+
+            if (typeof layer.content === 'string') {
+              // Legacy format: direct URL or base64
+              if (layer.content.startsWith('http')) {
+                imageUrl = layer.content;
+              } else if (layer.content.startsWith('/uploads/')) {
+                // Remove /uploads/ prefix for API endpoint
+                const pathWithoutUploads = layer.content.replace('/uploads/', '');
+                imageUrl = `http://localhost:5168/api/files/download?path=${encodeURIComponent(pathWithoutUploads)}`;
+              } else if (layer.content.startsWith('data:image/')) {
+                imageUrl = layer.content; // Base64 data
+              }
+            } else if (typeof layer.content === 'object') {
+              // New format: object with file info
+              if (layer.content.type === 'file' && layer.content.filePath) {
+                // Remove /uploads/ prefix for API endpoint
+                const pathWithoutUploads = layer.content.filePath.replace('/uploads/', '');
+                imageUrl = `http://localhost:5168/api/files/download?path=${encodeURIComponent(pathWithoutUploads)}`;
+              } else if (layer.content.type === 'temp' && layer.content.tempPath) {
+                const pathWithoutUploads = layer.content.tempPath.replace('/uploads/', '');
+                imageUrl = `http://localhost:5168/api/files/download?path=${encodeURIComponent(pathWithoutUploads)}`;
+              } else if (layer.content.filePath) {
+                // Legacy object format
+                const pathWithoutUploads = layer.content.filePath.replace('/uploads/', '');
+                imageUrl = `http://localhost:5168/api/files/download?path=${encodeURIComponent(pathWithoutUploads)}`;
+              }
+            }
+
+            if (imageUrl) {
+              imageUrls.push(imageUrl);
+            }
           }
         });
       }
-
-      console.log('🔍 Found image URLs:', imageUrls);
 
       if (imageUrls.length === 0) {
         alert('Không có ảnh nào được upload trong thiết kế này');
@@ -81,11 +105,8 @@ export default function OrdersTable({
       for (let i = 0; i < imageUrls.length; i++) {
         const imageUrl = imageUrls[i];
         try {
-          console.log('🔍 Downloading image:', imageUrl);
-
           // Kiểm tra URL có hợp lệ không
-          if (!imageUrl || !imageUrl.startsWith('http')) {
-            console.warn('Invalid image URL:', imageUrl);
+          if (!imageUrl || (!imageUrl.startsWith('http') && !imageUrl.startsWith('data:image/'))) {
             continue;
           }
 
@@ -96,62 +117,54 @@ export default function OrdersTable({
           // Tạo tên file với extension đúng
           const filename = `${orderNumber}_${orderItem.designName || 'design'}_image_${i + 1}.${extension}`;
 
-          // Thử download bằng cách tạo link trực tiếp trước
-          try {
-            const a = document.createElement('a');
-            a.href = imageUrl;
-            a.download = filename;
-            a.target = '_blank';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-
-            console.log('✅ Downloaded via direct link:', filename);
-          } catch (directError) {
-            console.log('Direct download failed, trying fetch method...');
-
-            // Fallback: Fetch và tạo blob
-            const response = await fetch(imageUrl, {
-              mode: 'cors',
-              credentials: 'omit'
-            });
-
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+          // Download ảnh bằng fetch và blob để force download
+          const response = await fetch(imageUrl, {
+            mode: 'cors',
+            credentials: 'omit',
+            headers: {
+              'Accept': 'image/*,*/*'
             }
+          });
 
-            const blob = await response.blob();
-
-            // Kiểm tra blob có hợp lệ không
-            if (blob.size === 0) {
-              throw new Error('Empty blob received');
-            }
-
-            console.log('📦 Blob info:', {
-              size: blob.size,
-              type: blob.type
-            });
-
-            // Tạo link download từ blob
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-            console.log('✅ Downloaded via fetch:', filename);
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
+
+          const blob = await response.blob();
+
+          // Kiểm tra blob có hợp lệ không
+          if (blob.size === 0) {
+            throw new Error('Empty blob received');
+          }
+
+          // Tạo link download từ blob
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          // Không set target='_blank' để force download
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
 
           // Delay giữa các download
           if (i < imageUrls.length - 1) {
             await new Promise(resolve => setTimeout(resolve, 1000));
           }
         } catch (error) {
-          console.error('❌ Could not download image:', imageUrl, error);
-          alert(`Không thể tải ảnh ${i + 1}: ${error.message}`);
+          // Fallback: Try simple window.open approach
+          try {
+            const link = document.createElement('a');
+            link.href = imageUrl;
+            link.download = filename;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          } catch (fallbackError) {
+            alert(`Không thể tải ảnh ${i + 1}: ${error.message}. Bạn có thể click chuột phải vào ảnh và chọn "Save image as..."`);
+          }
         }
       }
 

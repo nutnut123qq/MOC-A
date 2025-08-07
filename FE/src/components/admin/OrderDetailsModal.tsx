@@ -142,7 +142,39 @@ export default function OrderDetailsModal({
       if (designSession && designSession.designLayers) {
         designSession.designLayers.forEach((layer: any) => {
           if (layer.type === 'image' && layer.content && layer.visible) {
-            imageUrls.push(layer.content);
+            // Handle different content formats
+            let imageUrl = '';
+
+            if (typeof layer.content === 'string') {
+              // Legacy format: direct URL or base64
+              if (layer.content.startsWith('http')) {
+                imageUrl = layer.content;
+              } else if (layer.content.startsWith('/uploads/')) {
+                // Remove /uploads/ prefix for API endpoint
+                const pathWithoutUploads = layer.content.replace('/uploads/', '');
+                imageUrl = `http://localhost:5168/api/files/download?path=${encodeURIComponent(pathWithoutUploads)}`;
+              } else if (layer.content.startsWith('data:image/')) {
+                imageUrl = layer.content; // Base64 data
+              }
+            } else if (typeof layer.content === 'object') {
+              // New format: object with file info
+              if (layer.content.type === 'file' && layer.content.filePath) {
+                // Remove /uploads/ prefix for API endpoint
+                const pathWithoutUploads = layer.content.filePath.replace('/uploads/', '');
+                imageUrl = `http://localhost:5168/api/files/download?path=${encodeURIComponent(pathWithoutUploads)}`;
+              } else if (layer.content.type === 'temp' && layer.content.tempPath) {
+                const pathWithoutUploads = layer.content.tempPath.replace('/uploads/', '');
+                imageUrl = `http://localhost:5168/api/files/download?path=${encodeURIComponent(pathWithoutUploads)}`;
+              } else if (layer.content.filePath) {
+                // Legacy object format
+                const pathWithoutUploads = layer.content.filePath.replace('/uploads/', '');
+                imageUrl = `http://localhost:5168/api/files/download?path=${encodeURIComponent(pathWithoutUploads)}`;
+              }
+            }
+
+            if (imageUrl) {
+              imageUrls.push(imageUrl);
+            }
           }
         });
       }
@@ -159,7 +191,7 @@ export default function OrderDetailsModal({
 
 
           // Kiểm tra URL có hợp lệ không
-          if (!imageUrl || !imageUrl.startsWith('http')) {
+          if (!imageUrl || (!imageUrl.startsWith('http') && !imageUrl.startsWith('data:image/'))) {
             console.warn('Invalid image URL:', imageUrl);
             continue;
           }
@@ -171,51 +203,34 @@ export default function OrderDetailsModal({
           // Tạo tên file với extension đúng
           const filename = `${order.orderNumber}_${orderItem.designName || 'design'}_image_${i + 1}.${extension}`;
 
-          // Thử download bằng cách tạo link trực tiếp trước
-          try {
-            const a = document.createElement('a');
-            a.href = imageUrl;
-            a.download = filename;
-            a.target = '_blank';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+          // Download ảnh bằng fetch và blob để force download
+          const response = await fetch(imageUrl, {
+            mode: 'cors',
+            credentials: 'omit'
+          });
 
-
-          } catch (directError) {
-
-
-            // Fallback: Fetch và tạo blob
-            const response = await fetch(imageUrl, {
-              mode: 'cors',
-              credentials: 'omit'
-            });
-
-            if (!response.ok) {
-              throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-            }
-
-            const blob = await response.blob();
-
-            // Kiểm tra blob có hợp lệ không
-            if (blob.size === 0) {
-              throw new Error('Empty blob received');
-            }
-
-
-
-            // Tạo link download từ blob
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-
-
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
           }
+
+          const blob = await response.blob();
+
+          // Kiểm tra blob có hợp lệ không
+          if (blob.size === 0) {
+            throw new Error('Empty blob received');
+          }
+
+
+          // Tạo link download từ blob
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = filename;
+          // Không set target='_blank' để force download
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
 
           // Delay giữa các download
           if (i < imageUrls.length - 1) {
