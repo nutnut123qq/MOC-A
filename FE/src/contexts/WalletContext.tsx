@@ -108,7 +108,7 @@ export const WalletProvider: React.FC<WalletProviderProps> = ({ children }) => {
         method: 'POST',
         body: JSON.stringify({
           amount,
-          description: description || `Nạp ${amount.toLocaleString()} VND vào ví`,
+          description: description || `Nap ${amount.toLocaleString()}`, // Max 25 chars for PayOS
         }),
       });
 

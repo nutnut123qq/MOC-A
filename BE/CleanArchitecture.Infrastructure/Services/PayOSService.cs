@@ -98,9 +98,11 @@ public class PayOSService : IPayOSService
 
             // Fallback to mock for development if PayOS not configured or fails
             _logger.LogWarning("Using PayOS fallback mode for user {UserId}", userId);
+            var mockCheckoutUrl = $"http://localhost:3000/payment/payos?orderCode={orderCode}&amount={request.Amount}&description={Uri.EscapeDataString(request.Description ?? $"Nạp tiền vào ví - User {userId}")}&returnUrl={Uri.EscapeDataString(returnUrl)}";
+
             return new PaymentResponse
             {
-                CheckoutUrl = $"http://localhost:3000/payment/return?code=00&orderCode={orderCode}",
+                CheckoutUrl = mockCheckoutUrl,
                 OrderCode = orderCode,
                 QrCode = "data:image/png;base64,mock-qr-code",
                 AccountNumber = "19036035704",
@@ -135,51 +137,57 @@ public class PayOSService : IPayOSService
             await _orderService.UpdatePayOSOrderCodeAsync(request.OrderId, orderCode);
 
             // Create PayOS payment link with real API
-            try
+            if (_payOS != null)
             {
-                var paymentData = new PaymentData(
-                    orderCode: long.Parse(orderCode),
-                    amount: (int)request.Amount,
-                    description: request.Description ?? $"Thanh toán đơn hàng #{order.OrderNumber}",
-                    items: new List<ItemData>
+                try
+                {
+                    var paymentData = new PaymentData(
+                        orderCode: long.Parse(orderCode),
+                        amount: (int)request.Amount,
+                        description: request.Description ?? $"Thanh toán đơn hàng #{order.OrderNumber}",
+                        items: new List<ItemData>
+                        {
+                            new ItemData($"Đơn hàng #{order.OrderNumber}", 1, (int)request.Amount)
+                        },
+                        returnUrl: returnUrl,
+                        cancelUrl: cancelUrl
+                    );
+
+                    var createPayment = await _payOS.createPaymentLink(paymentData);
+
+                    return new PaymentResponse
                     {
-                        new ItemData($"Đơn hàng #{order.OrderNumber}", 1, (int)request.Amount)
-                    },
-                    returnUrl: returnUrl,
-                    cancelUrl: cancelUrl
-                );
-
-                var createPayment = await _payOS.createPaymentLink(paymentData);
-
-                return new PaymentResponse
+                        CheckoutUrl = createPayment.checkoutUrl,
+                        OrderCode = orderCode,
+                        QrCode = createPayment.qrCode,
+                        AccountNumber = "",
+                        AccountName = "",
+                        Bin = "",
+                        Amount = request.Amount,
+                        Description = request.Description
+                    };
+                }
+                catch (Exception payOSEx)
                 {
-                    CheckoutUrl = createPayment.checkoutUrl,
-                    OrderCode = orderCode,
-                    QrCode = createPayment.qrCode,
-                    AccountNumber = "",
-                    AccountName = "",
-                    Bin = "",
-                    Amount = request.Amount,
-                    Description = request.Description
-                };
+                    _logger.LogError(payOSEx, "PayOS API error for order {OrderId}", request.OrderId);
+                }
             }
-            catch (Exception payOSEx)
+
+            // Fallback to mock for development if PayOS not configured or fails
+            _logger.LogWarning("Using PayOS fallback mode for order {OrderId}", request.OrderId);
+            var mockCheckoutUrl = $"http://localhost:3000/payment/payos?orderCode={orderCode}&orderId={request.OrderId}&amount={request.Amount}&description={Uri.EscapeDataString(request.Description ?? "Thanh toán đơn hàng")}&returnUrl={Uri.EscapeDataString(returnUrl)}";
+
+            return new PaymentResponse
             {
-                _logger.LogError(payOSEx, "PayOS API error for order {OrderId}", request.OrderId);
-
-                // Fallback to mock for development if PayOS fails
-                return new PaymentResponse
-                {
-                    CheckoutUrl = $"http://localhost:3000/payment/return?code=00&orderCode={orderCode}&orderId={request.OrderId}",
-                    OrderCode = orderCode,
-                    QrCode = "data:image/png;base64,mock-qr-code",
-                    AccountNumber = "19036035704",
-                    AccountName = "NGUYEN VAN A",
-                    Bin = "970415",
-                    Amount = request.Amount,
-                    Description = request.Description
-                };
-            }
+                CheckoutUrl = mockCheckoutUrl,
+                OrderCode = orderCode,
+                QrCode = "data:image/png;base64,mock-qr-code",
+                AccountNumber = "19036035704",
+                AccountName = "NGUYEN VAN A",
+                Bin = "970415",
+                Amount = request.Amount,
+                Description = request.Description
+            };
         }
         catch (Exception ex)
         {

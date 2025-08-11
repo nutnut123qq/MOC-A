@@ -4,12 +4,13 @@ import { useState, useEffect } from 'react';
 import { useWallet } from '@/contexts/WalletContext';
 import {
   WalletIcon,
-  BanknotesIcon
+  BanknotesIcon,
+  CreditCardIcon
 } from '@heroicons/react/24/outline';
 
 interface PaymentOptionsProps {
   orderTotal: number;
-  onPaymentMethodSelect: (method: 'wallet' | 'payos', data?: any) => void;
+  onPaymentMethodSelect: (method: 'wallet' | 'payos' | 'payos-direct', data?: any) => void;
   disabled?: boolean;
 }
 
@@ -83,7 +84,54 @@ export default function PaymentOptions({
           </button>
         </div>
       </div>
-      
+
+      {/* Direct PayOS Payment */}
+      <div className={`border rounded-lg p-4 transition-all ${
+        disabled
+          ? 'border-gray-300 bg-gray-50 opacity-60'
+          : 'border-blue-500 bg-blue-50 hover:bg-blue-100'
+      }`}>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-white rounded-lg">
+              <CreditCardIcon className="w-6 h-6 text-blue-600" />
+            </div>
+            <div>
+              <h4 className="font-medium text-gray-900">Thanh toán trực tiếp</h4>
+              <p className="text-sm text-gray-600">
+                Quét mã QR để thanh toán ngay
+              </p>
+              <div className="flex items-center gap-4 mt-1">
+                <div className="flex items-center gap-1">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h4" />
+                  </svg>
+                  <span className="text-xs text-gray-500">QR Code</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <svg className="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span className="text-xs text-gray-500">Tức thời</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button
+            disabled={disabled || loading}
+            onClick={() => onPaymentMethodSelect('payos-direct')}
+            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+              disabled || loading
+                ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                : 'bg-blue-600 text-white hover:bg-blue-700'
+            }`}
+          >
+            {loading ? 'Đang xử lý...' : 'Thanh toán'}
+          </button>
+        </div>
+      </div>
+
       {/* Cash on Delivery Payment */}
       <div className={`border rounded-lg p-4 transition-all ${
         disabled
@@ -145,6 +193,7 @@ export default function PaymentOptions({
       {/* Payment Notes */}
       <div className="text-sm text-gray-600 space-y-1">
         <p>• Thanh toán từ ví: Tức thời, không phí giao dịch</p>
+        <p>• Thanh toán trực tiếp: Quét mã QR, thanh toán tức thời qua ngân hàng</p>
         <p>• Thanh toán sau khi nhận hàng: Thanh toán bằng tiền mặt khi shipper giao hàng</p>
         <p>• Đơn hàng sẽ được xử lý sau khi xác nhận đặt hàng thành công</p>
       </div>

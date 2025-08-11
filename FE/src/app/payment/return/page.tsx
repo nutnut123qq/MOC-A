@@ -77,7 +77,7 @@ function PaymentReturnContent() {
     };
 
     handlePaymentReturn();
-  }, [searchParams, clearCart]);
+  }, [searchParams]); // Remove clearCart from dependencies to prevent infinite loop
 
   if (status === 'loading') {
     return (

@@ -135,7 +135,7 @@ export default function CheckoutPage() {
     setStep('payment');
   };
 
-  const handlePaymentMethodSelect = async (method: 'wallet' | 'payos') => {
+  const handlePaymentMethodSelect = async (method: 'wallet' | 'payos' | 'payos-direct') => {
     try {
       setLoading(true);
       setError(null);
@@ -167,8 +167,42 @@ export default function CheckoutPage() {
         } else {
           setError('Thanh toán từ ví thất bại');
         }
+      } else if (method === 'payos-direct') {
+        // Direct PayOS payment
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payment/create-order-payment`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          },
+          body: JSON.stringify({
+            orderId: order.id,
+            amount: getOrderTotal(),
+            description: `Don hang #${order.orderNumber}`,
+            returnUrl: `${window.location.origin}/payment/return`,
+            cancelUrl: `${window.location.origin}/payment/cancel`
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to create payment');
+        }
+
+        const paymentResponse = await response.json();
+
+        // Open PayOS checkout in new tab (like wallet top-up)
+        window.open(paymentResponse.checkoutUrl, '_blank');
+
+        // Show success message
+        toast.success('Đã tạo link thanh toán! Vui lòng hoàn tất thanh toán trong tab mới.');
+
+        // Show success message but DON'T clear cart or redirect yet
+        toast.success('Đã tạo link thanh toán! Vui lòng hoàn tất thanh toán trong tab mới.');
+
+        // Stay on checkout page - user will be redirected after payment completion
+        // The PayOS return URL will handle the success flow
       } else {
-        // Pay via PayOS
+        // COD - Pay via PayOS (existing logic for COD)
         const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/payment/create-order-payment`, {
           method: 'POST',
           headers: {
